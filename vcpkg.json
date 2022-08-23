@@ -1,0 +1,44 @@
+{
+  "name": "stronk",
+  "version-semver": "0.1.0",
+  "dependencies": [
+    {
+      "name": "boost-type-index",
+      "version>=": "1.78.0"
+    }
+  ],
+  "default-features": [
+    "fmt",
+    "abseil"
+  ],
+  "features": {
+    "fmt": {
+      "description": "Dependencies for fmt extension",
+      "dependencies": [
+        {
+          "name": "fmt",
+          "version>=": "9.0.0"
+        }
+      ]
+    },
+    "abseil": {
+      "description": "Dependencies for abseil extension",
+      "dependencies": [
+        {
+          "name": "abseil",
+          "version>=": "20211102.1"
+        }
+      ]
+    },
+    "test": {
+      "description": "Dependencies for testing",
+      "dependencies": [
+        {
+          "name": "gtest",
+          "version>=": "1.11.0"
+        }
+      ]
+    }
+  },
+  "builtin-baseline": "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
+}
