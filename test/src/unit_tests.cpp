@@ -1,10 +1,11 @@
 #include <ratio>
 
 #include <gtest/gtest.h>
-#include <utilities/stronk/prefabs.h>
-#include <utilities/stronk/specializers.h>
-#include <utilities/stronk/unit.h>
-#include <utilities/type_list.h>
+#include <stronk/extensions/gtest.h>
+#include <stronk/prefabs.h>
+#include <stronk/specializers.h>
+#include <stronk/unit.h>
+#include <stronk/utilities/type_list.h>
 
 namespace twig::unit_tests
 {
@@ -56,7 +57,7 @@ using TimeSquared = decltype(Time {} * Time {});
 using Force = decltype(Mass {} * Acceleration {});
 
 // Now we have it all set up
-TEST(stronk_units, example)
+TEST(stronk_units, example)  // NOLINT
 {
     Time two_hours = make<Hours>(2);
     EXPECT_EQ(two_hours.unwrap_as<Minutes>(), 120);
@@ -80,8 +81,8 @@ TEST(stronk_units, example)
 using example_1 = NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance, Time>, TypeList<Mass>>>;
 using example_2 = NewUnitType<int32_t, UnitTypeLists<TypeList<Mass, Distance>, TypeList<Time>>>;
 static_assert(Mass::is_single_unit);
-static_assert(Mass::is_unit_type);
 static_assert(!Mass::is_unitless);
+static_assert(std::is_same_v<Mass::is_unit_type, std::true_type>);
 static_assert(std::is_same_v<Mass::pure_t, Mass>);
 static_assert(std::is_same_v<multiply_t<Distance, Time>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Time>, TypeList<>>>>);
 static_assert(std::is_same_v<multiply_t<multiply_t<Distance, Time>, Distance>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Distance, Time>, TypeList<>>>>);
@@ -93,7 +94,7 @@ static_assert(std::is_same_v<multiply_t<example_2, example_1>, NewUnitType<int32
 static_assert(std::is_same_v<divide_t<example_1, example_2>, NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Time, Time>, TypeList<Mass, Mass>>>>);
 // clang-format on
 
-TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
+TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -103,17 +104,18 @@ TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it
     }
 }
 
+// NOLINTNEXTLINE
 TEST(stronk_units,
      when_multiplied_with_own_type_the_value_in_the_resulting_type_behaves_as_if_it_the_values_were_multiplied)
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(TimeSquared {i * j}, Time {i} * Time {j});
+            EXPECT_EQ(TimeSquared {i * j}, Time {i} * Time {j});  // NOLINT
         }
     }
 }
 
-TEST(stronk_units, when_dividing_out_a_type_the_result_corrosponds_to_dividing_out_that_factor)
+TEST(stronk_units, when_dividing_out_a_type_the_result_corrosponds_to_dividing_out_that_factor)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -127,18 +129,18 @@ TEST(stronk_units, when_dividing_out_a_type_the_result_corrosponds_to_dividing_o
     }
 }
 
-TEST(stronk_units, one_over_unit_times_unit_is_one)
+TEST(stronk_units, one_over_unit_times_unit_is_one)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         if (i == 0) {
             continue;
         }
-        EXPECT_FLOAT_EQ(1.0, (1.0 / Distance {static_cast<double>(i)}) * Distance {static_cast<double>(i)});
-        EXPECT_FLOAT_EQ(2.0, (2.0 / Distance {static_cast<double>(i)}) * Distance {static_cast<double>(i)});
+        EXPECT_DOUBLE_EQ(1.0, (1.0 / Distance {static_cast<double>(i)}) * Distance {static_cast<double>(i)});
+        EXPECT_DOUBLE_EQ(2.0, (2.0 / Distance {static_cast<double>(i)}) * Distance {static_cast<double>(i)});
     }
 }
 
-TEST(stronk_units, when_dividing_a_unit_by_another_the_result_is_a_new_type_with_the_divided_values)
+TEST(stronk_units, when_dividing_a_unit_by_another_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -150,7 +152,7 @@ TEST(stronk_units, when_dividing_a_unit_by_another_the_result_is_a_new_type_with
     }
 }
 
-TEST(stronk_units, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_type_with_the_divided_values)
+TEST(stronk_units, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -169,7 +171,7 @@ TEST(stronk_units, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_ty
     }
 }
 
-TEST(stronk_units, generated_units_can_add_and_subtract_and_compare_like_basic_types)
+TEST(stronk_units, generated_units_can_add_and_subtract_and_compare_like_basic_types)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         EXPECT_EQ(-Speed {static_cast<double>(i)}, Speed {static_cast<double>(-i)});
@@ -188,7 +190,7 @@ struct a_prefab_unit : stronk_default_unit<a_prefab_unit, int32_t>
     using stronk_default_unit::stronk_default_unit;
 };
 
-TEST(stronk_default_unit, prefab_units_can_add_and_subtract_and_compare_like_basic_types)
+TEST(stronk_default_unit, prefab_units_can_add_and_subtract_and_compare_like_basic_types)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         EXPECT_EQ(-a_prefab_unit {i}, a_prefab_unit {-i});
