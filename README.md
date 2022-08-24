@@ -13,7 +13,9 @@
 === An easy to customize strong type library with built in support for unit-like behavior ===
 
 ```
-struct your_type : stronk<your_type, int, can_add, can_order, can_equate, can_hash>
+#include <stronk/stronk.h>
+
+struct your_type : twig::stronk<your_type, int, twig::can_add, twig::can_order, twig::can_equate, twig::can_hash>
 {
     using stronk::stronk;
 };
