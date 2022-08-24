@@ -9,8 +9,10 @@ on:
     branches:
     - master
 
+  workflow_dispatch:
+
 env:
-  VCPKG_COMMIT: "b49b2bdf22559c89eddbf29a29621a1dc6929320"
+  VCPKG_COMMIT: "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
 
 jobs:
   lint:

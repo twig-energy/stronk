@@ -79,7 +79,7 @@ struct unit : UnitTypeLists<TypeList<StronkT>,
      */
     template<ratio_with_base_unit_like RatioT>
         requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
-    auto unwrap_as() const;
+    [[nodiscard]] auto unwrap_as() const noexcept;
 };
 
 // You can specialize this struct if you want another type
@@ -267,7 +267,7 @@ template<typename StronkT>
     requires(!is_none_unit_behaving<StronkT>)
 template<ratio_with_base_unit_like RatioT>
     requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
-auto unit<StronkT>::unwrap_as() const
+auto unit<StronkT>::unwrap_as() const noexcept
 {
     using underlying_type = typename StronkT::underlying_type;
     return static_cast<const StronkT&>(*this).template unwrap<StronkT>() * static_cast<underlying_type>(RatioT::den)

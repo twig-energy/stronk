@@ -3,12 +3,14 @@
 
 // Macro for getting the full type of multiplying two units
 // Only works when T1 and T2 has one unit on the multiplication part
+// NOLINTNEXTLINE
 #define STRONK_MULTIPLY_TYPE(T1, T2)                                         \
     NewUnitType<typename twig::underlying_type_of_multiplying<T1, T2>::type, \
                 typename twig::unit_lists_of_multiplying<T1, T2>::unit_description_t>
 
 // Macro for getting the full type of dividing two units
 // Only works when T1 and T2 has one unit on the multiplication part
+// NOLINTNEXTLINE
 #define STRONK_DIVIDE_TYPE(T1, T2)                                        \
     NewUnitType<typename twig::underlying_type_of_dividing<T1, T2>::type, \
                 typename twig::unit_lists_of_dividing<T1, T2>::unit_description_t>
@@ -17,6 +19,7 @@
 // other skills than the default prefab. Only works when T1 and T2 has one unit
 // on the multiplication part `T1` is the first unit, `T2` the second and `...`
 // is skills. Resulting type specializes=`decltype(T1 {} * T2 {})`
+// NOLINTNEXTLINE
 #define STRONK_SPECIALIZE_MULTIPLY(T1, T2, ...)                                                          \
     template<>                                                                                           \
     struct STRONK_MULTIPLY_TYPE(T1, T2)                                                                  \
@@ -32,6 +35,7 @@
 // other skills than the default prefab Only works when T1 and T2 has one unit
 // on the multiplication part `T1` is the first unit, `T2` the second and `...`
 // is skills. Resulting type specializes=`decltype(T1 {} / T2 {})`
+// NOLINTNEXTLINE
 #define STRONK_SPECIALIZE_DIVIDE(T1, T2, ...)                                                         \
     template<>                                                                                        \
     struct STRONK_DIVIDE_TYPE(T1, T2)                                                                 \

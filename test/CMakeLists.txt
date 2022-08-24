@@ -16,6 +16,8 @@ find_package(GTest CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(stronk_test
   src/stronk_tests.cpp
+  src/unit_tests.cpp
+  src/utilities/type_list_tests.cpp
 )
 
 target_link_libraries(

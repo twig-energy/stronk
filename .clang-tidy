@@ -2,18 +2,20 @@
 # Enable ALL the things! Except not really
 # misc-non-private-member-variables-in-classes: the options don't do anything
 Checks: "*,\
-  -google-readability-todo,\
   -altera-*,\
+  -clang-diagnostic-gnu-zero-variadic-macro-arguments,\
+  -cppcoreguidelines-avoid-magic-numbers,\
   -fuchsia-*,\
-  fuchsia-multiple-inheritance,\
+  -google-readability-avoid-underscore-in-googletest-name,\
+  -google-readability-todo,\
+  -hicpp-named-parameter,\
   -llvm-header-guard,\
   -llvm-include-order,\
   -llvmlibc-*,\
   -readability-identifier-naming,\
   -readability-magic-numbers,\
   -readability-named-parameter,\
-  -cppcoreguidelines-avoid-magic-numbers,\
-  -hicpp-named-parameter,\
+  fuchsia-multiple-inheritance,\
   -misc-non-private-member-variables-in-classes"
 WarningsAsErrors: ''
 CheckOptions:
