@@ -9,6 +9,8 @@ on:
     branches:
     - master
 
+  workflow_dispatch:
+
 env:
   VCPKG_COMMIT: "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
 
