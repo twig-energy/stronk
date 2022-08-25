@@ -330,25 +330,6 @@ concept can_isnan_like = requires(T v)
     return elem.isnan();
 }
 
-template<typename T>
-concept can_round_like = requires(T v)
-{
-    stronk_like<T>;
-    {
-        v.round()
-        } -> std::same_as<T>;
-};
-
-[[nodiscard]] auto round(can_round_like auto val) noexcept
-{
-    return val.round();
-}
-
-[[nodiscard]] auto round(can_round_like auto val, int8_t decimals) noexcept
-{
-    return val.round(decimals);
-}
-
 template<typename StronkT>
 struct can_be_used_as_flag
 {
