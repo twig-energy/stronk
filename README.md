@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/twig-energy/stronk/branch/main/graph/badge.svg?token=TWO57YT2YA)](https://codecov.io/gh/twig-energy/stronk)
 ```
     ==================================================================
 
