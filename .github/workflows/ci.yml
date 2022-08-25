@@ -110,15 +110,19 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-22.04, ubuntu-22.04, windows-2022]
-        include:
-              - compiler: clang
-              - compiler: gcc
-                os: ubuntu-22.04
-              - compiler: gcc
-                os: macos-latest
-              - compiler: msvc
-                os: windows-2022
+        os: [macos-latest, ubuntu-22.04, windows-2022]
+        compiler: [gcc, clang, msvc]
+        exclude:
+          - os: windows-2022
+            compiler: clang
+          - os: windows-2022
+            compiler: gcc
+          - os: ubuntu-22.04
+            compiler: msvc
+          - os: macos-latest
+            compiler: msvc
+          - os: macos-latest
+            compiler: clang
 
     runs-on: ${{ matrix.os }}
 

@@ -167,9 +167,7 @@
       "inherits": [
         "ci-build",
         "ci-unix",
-        "clang-tidy",
         "vcpkg",
-        "cppcheck",
         "dev-mode",
         "gcc"
       ]
