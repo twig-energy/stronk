@@ -71,9 +71,6 @@
     {
       "name": "flags-unix",
       "hidden": true,
-      "inherits": [
-        "gcc"
-      ],
       "cacheVariables": {
         "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wshadow -Wformat=2 -Wundef -Werror=float-equal"
       }
@@ -111,12 +108,15 @@
     {
       "name": "coverage-unix",
       "binaryDir": "${sourceDir}/build/coverage",
-      "inherits": "ci-unix",
+      "inherits": [
+        "ci-unix",
+        "gcc"
+      ],
       "hidden": true,
       "cacheVariables": {
         "ENABLE_COVERAGE": "ON",
         "CMAKE_BUILD_TYPE": "Coverage",
-        "CMAKE_CXX_FLAGS_COVERAGE": "-Og -g --coverage -fkeep-inline-functions -fkeep-static-functions",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-Og -g --coverage",
         "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
         "CMAKE_SHARED_LINKER_FLAGS_COVERAGE": "--coverage",
         "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "Coverage;RelWithDebInfo;Release;Debug;"
@@ -158,7 +158,8 @@
         "ci-build",
         "ci-unix",
         "dev-mode",
-        "vcpkg"
+        "vcpkg",
+        "gcc"
       ]
     },
     {

@@ -29,7 +29,7 @@ inline constexpr auto default_rel_tol = []() -> T {
 };
 
 /**
- * @brief create a comparator lambda for floating points with given absolute and relative tolorances
+ * @brief create a comparator lambda for floating points with given absolute and relative tolerances
  *
  */
 template<typename T>

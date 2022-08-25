@@ -1,13 +1,13 @@
 ```
-==================================================================
+    ==================================================================
 
-*      //   ) ) /__  ___/ //   ) )  //   ) ) /|    / / //   / /  *
-*     ((          / /    //___/ /  //   / / //|   / / //__ / /   *
-*       \\       / /    / ___ (   //   / / // |  / / //__  /     *
-*         ) )   / /    //   | |  //   / / //  | / / //   \ \     *
-*  ((___ / /   / /    //    | | ((___/ / //   |/ / //     \ \    *
+    *      //   ) ) /__  ___/ //   ) )  //   ) ) /|    / / //   / /  *
+    *     ((          / /    //___/ /  //   / / //|   / / //__ / /   *
+    *       \\       / /    / ___ (   //   / / // |  / / //__  /     *
+    *         ) )   / /    //   | |  //   / / //  | / / //   \ \     *
+    *  ((___ / /   / /    //    | | ((___/ / //   |/ / //     \ \    *
 
-==================================================================
+    ==================================================================
 ```
 
 === An easy to customize strong type library with built in support for unit-like behavior ===
@@ -35,7 +35,7 @@ struct your_type : twig::stronk<your_type, int, twig::can_add, twig::can_order, 
 - `can_equate`: `operator==` with regular equality
 - `can_equate_with_is_close`: `operator==` but with numpy's `is_close` definition of equal
 - `can_equate_with_is_close_nan_equals`: `operator==` but with numpy's `is_close` definition of equal, nans being equal
-- `can_equate_with_is_close_abs_tol_only`: `operator==` with a small absolute tolorance for difference
+- `can_equate_with_is_close_abs_tol_only`: `operator==` with a small absolute tolerance for difference
 - `can_less_than_greater_than`: `operator<` and `operator>` (prefer the `can_order` skill instead)
 - `can_less_than_greater_than_or_equal`: operator <= and operator >= (prefer the `can_order` skill instead)
 - `can_be_used_as_flag`: for boolean values used as flags
