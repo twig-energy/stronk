@@ -13,7 +13,7 @@ add_custom_target(run-examples)
 
 function(add_example NAME)
   add_executable("${NAME}" "${NAME}.cpp")
-  target_link_libraries("${NAME}" PRIVATE twig::stronk)
+  target_link_libraries("${NAME}" PRIVATE twig::stronk twig::stronk_pch)
   target_compile_features("${NAME}" PRIVATE cxx_std_20)
   add_custom_target("run_${NAME}" COMMAND "${NAME}" VERBATIM)
   add_dependencies("run_${NAME}" "${NAME}")
