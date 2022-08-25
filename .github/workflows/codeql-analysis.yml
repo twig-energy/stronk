@@ -21,7 +21,7 @@ on:
     - cron: '44 8 * * 1'
 env:
   VCPKG_COMMIT: "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
-  
+
 jobs:
   analyze:
     name: Analyze
@@ -50,21 +50,21 @@ jobs:
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
-        
+
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
       with: { committish: "${{ env.VCPKG_COMMIT }}" }
-      
+
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    
-    - run: |
-       echo "Run, Build Application using script"
-       cmake --preset=ci-ubuntu
-       cmake --build build --config Release -j 2
+
+    - name: Build
+      run: |
+        cmake --preset=ci-codeql
+        cmake --build build --config Release -j 2
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
