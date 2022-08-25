@@ -18,7 +18,7 @@ install(
 )
 
 install(
-    TARGETS twig_stronk twig_stronk_pch
+    TARGETS twig_stronk
     EXPORT stronkTargets
     INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
