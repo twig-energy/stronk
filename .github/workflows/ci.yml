@@ -16,7 +16,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
       run: pip3 install codespell
 
     - name: Lint
-      run: cmake -D FORMAT_COMMAND=clang-format-12 -P cmake/lint.cmake
+      run: cmake -D FORMAT_COMMAND=clang-format-13 -P cmake/lint.cmake
 
     - name: Spell check
       if: always()
@@ -37,14 +37,13 @@ jobs:
   coverage:
     needs: [lint]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # To enable coverage, delete the last line from the conditional below and
     # edit the "<name>" placeholder to your GitHub name.
     # If you do not wish to use codecov, then simply delete this job from the
     # workflow.
-    if: github.repository_owner == '<name>'
-      && false
+    if: github.repository_owner == 'twig-energy'
 
     steps:
     - uses: actions/checkout@v2
@@ -58,6 +57,7 @@ jobs:
       with: { committish: "${{ env.VCPKG_COMMIT }}" }
 
     - name: Configure
+      env: { CXX: clang++-13 }
       run: cmake --preset=ci-coverage
 
     - name: Build
@@ -78,7 +78,7 @@ jobs:
   sanitize:
     needs: [lint]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
@@ -110,7 +110,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-2022]
+        os: [macos-latest, ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
@@ -118,8 +118,8 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install static analyzers
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install clang-tidy cppcheck -y -q
+      if: matrix.os == 'ubuntu-22.04'
+      run: sudo apt-get install clang-tidy-13 cppcheck -y -q
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
@@ -138,3 +138,8 @@ jobs:
     - name: Test
       working-directory: build
       run: ctest --output-on-failure -C Release -j 2
+
+    - name: Publish C++ Unit Tests Report
+      uses: mikepenz/action-junit-report@v2
+      with:
+        report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml

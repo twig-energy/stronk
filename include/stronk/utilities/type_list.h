@@ -103,30 +103,30 @@ struct RemoveAllT<R, T, Ts...>
  * @tparam IndexV current index to compare in Ts...
  * @tparam Ts
  */
-template<typename T, typename... Ts>
+template<typename A, typename... As>
 struct TypeListMerge
 {
-    template<typename MergedBaseTypeListT, typename OT, typename... OTs>
+    template<typename MergedBaseTypeListT, typename B, typename... Bs>
     [[nodiscard]] constexpr static auto merge(MergedBaseTypeListT)
     {
         using boost::typeindex::ctti_type_index;
-        constexpr auto t_before_o = ctti_type_index::type_id<T>().before(ctti_type_index::type_id<OT>());
+        constexpr auto t_before_o = ctti_type_index::type_id<A>().before(ctti_type_index::type_id<B>());
 
         if constexpr (t_before_o) {
-            if constexpr (sizeof...(Ts) == 0) {
-                using res_t = typename Concat<MergedBaseTypeListT>::template With<T, OT, OTs...>::type;
+            if constexpr (sizeof...(As) == 0) {
+                using res_t = typename Concat<MergedBaseTypeListT>::template With<A, B, Bs...>::type;
                 return res_t();
             } else {
-                using res_t = typename Concat<MergedBaseTypeListT>::template With<T>::type;
-                return TypeListMerge<Ts...>::template merge<res_t, OT, OTs...>(res_t());
+                using res_t = typename Concat<MergedBaseTypeListT>::template With<A>::type;
+                return TypeListMerge<As...>::template merge<res_t, B, Bs...>(res_t());
             }
         } else {
-            if constexpr (sizeof...(OTs) == 0) {
-                using res_t = typename Concat<MergedBaseTypeListT>::template With<OT, T, Ts...>::type;
+            if constexpr (sizeof...(Bs) == 0) {
+                using res_t = typename Concat<MergedBaseTypeListT>::template With<B, A, As...>::type;
                 return res_t();
             } else {
-                using res_t = typename Concat<MergedBaseTypeListT>::template With<OT>::type;
-                return TypeListMerge<T, Ts...>::template merge<res_t, OTs...>(res_t());
+                using res_t = typename Concat<MergedBaseTypeListT>::template With<B>::type;
+                return TypeListMerge<A, As...>::template merge<res_t, Bs...>(res_t());
             }
         }
     }

@@ -28,8 +28,8 @@ struct Mass : stronk<Mass, int64_t, unit, can_equate, can_gtest_print>
     using stronk::stronk;
 };
 
-// Some systems might want to create a stronk type for Meters, Kilometers, LightYears, etc. but we can also utilize the
-// std::ratio system to have a single type for Distance.
+// Some systems might want to create a stronk type for `Meters`, `Kilometers`, `LightYears`, etc. but we can also
+// utilize the std::ratio system to have a single type for `Distance`.
 struct Meters : std::ratio<1, 1>
 {
     using base_unit_t = Distance;
@@ -50,7 +50,8 @@ struct Hours : std::ratio<1'000'000'000ULL * 60 * 60, 1>
     using base_unit_t = Time;
 };
 
-// The name of the generated type for Distance over Time is not really reader-friendly so making an alias can be nice.
+// The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
+// nice.
 using Speed = decltype(Distance {} / Time {});
 using Acceleration = decltype(Speed {} / Time {});
 using TimeSquared = decltype(Time {} * Time {});
@@ -67,7 +68,7 @@ TEST(stronk_units, example)  // NOLINT
 
     // Dividing different units will generate a new type (Distance/Time)
     Speed fifteen_km_per_hour = ten_km / forty_minutes;
-    // And you get your original type out once theres only one type left
+    // And you get your original type out once there's only one type left
     Distance distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
 
     // units can be multiplied and divided by IdentityUnits (values without units)

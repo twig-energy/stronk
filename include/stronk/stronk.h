@@ -192,7 +192,7 @@ struct can_less_than_greater_than_or_equal
     }
 };
 
-// "Paramater type" class for 'can_equate_with_is_close_base'
+// "Parameter type" class for 'can_equate_with_is_close_base'
 struct is_close_params
 {
     template<typename T>
@@ -208,7 +208,7 @@ struct is_close_params
     static constexpr bool nan_equals = false;
 };
 
-// "Paramater type" class for 'can_equate_with_is_close_base'
+// "Parameter type" class for 'can_equate_with_is_close_base'
 struct is_close_with_nan_equals_params
 {
     template<typename T>
@@ -224,7 +224,7 @@ struct is_close_with_nan_equals_params
     static constexpr bool nan_equals = true;
 };
 
-// "Paramater type" class for 'can_equate_with_is_close_base'
+// "Parameter type" class for 'can_equate_with_is_close_base'
 struct is_close_using_abs_tol_only_params
 {
     template<typename T>
