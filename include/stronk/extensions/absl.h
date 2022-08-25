@@ -6,7 +6,7 @@
 namespace twig
 {
 template<class StronkT>
-struct can_hash
+struct can_absl_hash
 {
     template<typename H>
     friend auto AbslHashValue(H h, const StronkT& c) -> H

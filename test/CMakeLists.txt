@@ -12,17 +12,23 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 find_package(GTest CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(absl CONFIG REQUIRED)
 
 # ---- Tests ----
 add_executable(stronk_test
+  src/extensions_tests.cpp
   src/stronk_tests.cpp
   src/unit_tests.cpp
   src/utilities/type_list_tests.cpp
 )
 
 target_link_libraries(
-  stronk_test PRIVATE
+  stronk_test
+  PRIVATE
   stronk::stronk
+  absl::hash
+  fmt::fmt
   GTest::gtest_main
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)
