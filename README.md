@@ -11,7 +11,7 @@
     ==================================================================
 ```
 
-=== An easy to customize strong type library with built in support for unit-like behavior ===
+=== An easy to customize, strong type library with built in support for unit-like behavior ===
 
 ```
 #include <stronk/stronk.h>
