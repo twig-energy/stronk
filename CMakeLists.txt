@@ -13,6 +13,8 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+find_package(Boost REQUIRED)
+
 # ---- Declare library ----
 add_library(twig_stronk INTERFACE)
 add_library(twig::stronk ALIAS twig_stronk)
@@ -26,6 +28,7 @@ target_include_directories(
   twig_stronk ${warning_guard}
   INTERFACE
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}/type_index>"
 )
 
 target_compile_features(twig_stronk INTERFACE cxx_std_20)
