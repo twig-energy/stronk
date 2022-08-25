@@ -41,7 +41,7 @@ the project:
     {
       "name": "dev",
       "binaryDir": "${sourceDir}/build/dev",
-      "inherits": ["dev-mode", "vcpkg", "ci-<os>"],
+      "inherits": ["dev-mode", "vcpkg", "ci-<os>", "<compiler>"],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
