@@ -110,7 +110,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-22.04, windows-2022]
+        os: [macos-latest, ubuntu-22.04, ubuntu-22.04, windows-2022]
+        include:
+              - compiler: clang
+              - compiler: gcc
+                os: ubuntu-22.04
+              - compiler: gcc
+                os: macos-latest
+              - compiler: msvc
+                os: windows-2022
 
     runs-on: ${{ matrix.os }}
 
@@ -127,7 +135,7 @@ jobs:
 
     - name: Configure
       shell: pwsh
-      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
+      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
 
     - name: Build
       run: cmake --build build --config Release -j 2

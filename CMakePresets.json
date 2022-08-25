@@ -153,7 +153,7 @@
       "hidden": true
     },
     {
-      "name": "ci-macos",
+      "name": "ci-macos-gcc",
       "inherits": [
         "ci-build",
         "ci-unix",
@@ -163,18 +163,31 @@
       ]
     },
     {
-      "name": "ci-ubuntu",
+      "name": "ci-ubuntu-gcc",
       "inherits": [
         "ci-build",
         "ci-unix",
         "clang-tidy",
         "vcpkg",
         "cppcheck",
-        "dev-mode"
+        "dev-mode",
+        "gcc"
       ]
     },
     {
-      "name": "ci-windows",
+      "name": "ci-ubuntu-clang",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "clang-tidy",
+        "vcpkg",
+        "cppcheck",
+        "dev-mode",
+        "clang"
+      ]
+    },
+    {
+      "name": "ci-windows-msvc",
       "inherits": [
         "ci-build",
         "ci-win64",
