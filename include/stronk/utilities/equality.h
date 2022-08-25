@@ -3,7 +3,7 @@
 
 #include <stronk/utilities/constexpr_helpers.h>
 
-namespace twig
+namespace twig::stronk_details
 {
 
 template<std::floating_point T>
@@ -54,4 +54,4 @@ constexpr auto is_close(const T& a, const T& b, T abs_tol, T rel_tol, bool nan_e
     return is_close(abs_tol, rel_tol, nan_equals)(a, b);
 };
 
-}  // namespace twig
+}  // namespace twig::stronk_details

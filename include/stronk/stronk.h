@@ -198,12 +198,12 @@ struct is_close_params
     template<typename T>
     static constexpr auto abs_tol()
     {
-        return twig::default_abs_tol<T>();
+        return twig::stronk_details::default_abs_tol<T>();
     }
     template<typename T>
     static constexpr auto rel_tol()
     {
-        return twig::default_rel_tol<T>();
+        return twig::stronk_details::default_rel_tol<T>();
     }
     static constexpr bool nan_equals = false;
 };
@@ -214,12 +214,12 @@ struct is_close_with_nan_equals_params
     template<typename T>
     static constexpr auto abs_tol()
     {
-        return twig::default_abs_tol<T>();
+        return twig::stronk_details::default_abs_tol<T>();
     }
     template<typename T>
     static constexpr auto rel_tol()
     {
-        return twig::default_rel_tol<T>();
+        return twig::stronk_details::default_rel_tol<T>();
     }
     static constexpr bool nan_equals = true;
 };
@@ -230,7 +230,7 @@ struct is_close_using_abs_tol_only_params
     template<typename T>
     static constexpr auto abs_tol() -> T
     {
-        return twig::default_abs_tol<T>();
+        return twig::stronk_details::default_abs_tol<T>();
     }
 
     template<typename T>
@@ -253,7 +253,7 @@ struct can_equate_with_is_close_base
 
         constexpr auto abs_tol = CloseParamsT::template abs_tol<type>();
         constexpr auto rel_tol = CloseParamsT::template rel_tol<type>();
-        return twig::is_close(abs_tol, rel_tol, CloseParamsT::nan_equals)(inner_val_1, inner_val_2);
+        return twig::stronk_details::is_close(abs_tol, rel_tol, CloseParamsT::nan_equals)(inner_val_1, inner_val_2);
     }
 };
 

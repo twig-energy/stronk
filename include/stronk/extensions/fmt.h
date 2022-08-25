@@ -7,7 +7,7 @@
 
 namespace twig
 {
-template<str::StringLiteral FormatStringV>
+template<stronk_details::str::StringLiteral FormatStringV>
 struct can_fmt_format_builder
 {
     template<typename StronkT>
@@ -20,7 +20,7 @@ struct can_fmt_format_builder
 template<typename StronkT>
 struct can_fmt_format
 {
-    constexpr static const auto fmt_string = str::StringLiteral("{}");
+    constexpr static const auto fmt_string = stronk_details::str::StringLiteral("{}");
 };
 
 template<typename T>

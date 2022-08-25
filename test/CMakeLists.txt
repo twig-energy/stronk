@@ -26,7 +26,7 @@ add_executable(stronk_test
 target_link_libraries(
   stronk_test
   PRIVATE
-  stronk::stronk
+  twig::stronk
   absl::hash
   fmt::fmt
   GTest::gtest_main

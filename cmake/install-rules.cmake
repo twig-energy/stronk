@@ -1,5 +1,5 @@
 if(PROJECT_IS_TOP_LEVEL)
-  set(CMAKE_INSTALL_INCLUDEDIR include/stronk CACHE PATH "")
+    set(CMAKE_INSTALL_INCLUDEDIR include/stronk CACHE PATH "")
 endif()
 
 # Project is configured with no languages, so tell GNUInstallDirs the lib dir
@@ -18,7 +18,7 @@ install(
 )
 
 install(
-    TARGETS stronk_stronk
+    TARGETS twig_stronk
     EXPORT stronkTargets
     INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
@@ -57,5 +57,5 @@ install(
 )
 
 if(PROJECT_IS_TOP_LEVEL)
-  include(CPack)
+    include(CPack)
 endif()
