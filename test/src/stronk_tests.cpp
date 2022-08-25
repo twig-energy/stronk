@@ -2,7 +2,6 @@
 #include <array>
 
 #include <gtest/gtest.h>
-#include <stronk/extensions/absl.h>
 #include <stronk/extensions/fmt.h>
 #include <stronk/prefabs.h>
 #include <stronk/stronk.h>
@@ -298,21 +297,14 @@ TEST(can_divide, dividing_behaves_similar_to_integers)  // NOLINT
     }
 }
 
-struct a_formattable_type
-    : stronk<a_formattable_type, int, can_format_builder<"a_formattable_type({})">::type, can_stream>
+struct a_streamable_type : stronk<a_streamable_type, int, can_stream>
 {
     using stronk::stronk;
 };
 
-TEST(can_format_builder, format_string_is_correctly_applied_via_fmt_format)  // NOLINT
-{
-    auto formattable = a_formattable_type {5};
-    EXPECT_EQ(fmt::format("{}", formattable), "a_formattable_type(5)");
-}
-
 TEST(can_stream, streaming_to_ostream_prints_the_value)  // NOLINT
 {
-    auto formattable = a_formattable_type {5};
+    auto formattable = a_streamable_type {5};
     auto sstream = std::stringstream();
     sstream << formattable;
 
@@ -375,7 +367,7 @@ struct a_negatable_type : stronk<a_negatable_type, int32_t, can_negate, can_equa
     using stronk::stronk;
 };
 
-TEST(negatable, when_negating_it_works_like_integers)  // NOLINT
+TEST(can_negate, when_negating_it_works_like_integers)  // NOLINT
 {
     for (auto i = -10; i < 10; i++) {
         EXPECT_EQ(-a_negatable_type {i}, a_negatable_type {-i});
@@ -416,6 +408,20 @@ TEST(flag, flag_values_corrosponds_to_bool_values)  // NOLINT
 
     EXPECT_TRUE(a_flag_type::on().is_on());
     EXPECT_FALSE(a_flag_type::on().is_off());
+}
+
+struct a_hashable_type : stronk<a_hashable_type, int64_t, can_hash>
+{
+    using stronk::stronk;
+};
+
+TEST(can_hash, can_hash_overloads_std_hash)  // NOLINT
+{
+    for (auto i = -10; i < 10; i++) {
+        auto hash = std::hash<a_hashable_type> {}(a_hashable_type {i});
+        auto expected_val = std::hash<int64_t> {}(i);
+        EXPECT_EQ(hash, expected_val);
+    }
 }
 
 }  // namespace twig

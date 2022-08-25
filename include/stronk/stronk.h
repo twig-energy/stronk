@@ -376,25 +376,6 @@ struct can_be_used_as_flag
     }
 };
 
-template<str::StringLiteral FormatStringV>
-struct can_format_builder
-{
-    template<typename StronkT>
-    struct type
-    {
-        constexpr static const auto fmt_string = FormatStringV;
-    };
-};
-template<typename StronkT, str::StringLiteral FormatStringV>
-using can_format = typename can_format_builder<FormatStringV>::template type<StronkT>;
-
-template<typename T>
-concept can_format_like = requires(T v)
-{
-    stronk_like<T>;
-    T::fmt_string;
-};
-
 template<typename StronkT>
 struct can_stream
 {
@@ -404,4 +385,21 @@ struct can_stream
     }
 };
 
+template<typename StronkT>
+struct can_hash
+{
+    using can_hash_indicator = std::true_type;
+};
+template<typename StronkT>
+concept can_hash_like = std::same_as<typename StronkT::can_hash_indicator, std::true_type>;
+
 }  // namespace twig
+
+template<twig::can_hash_like T>
+struct std::hash<T>
+{
+    [[nodiscard]] auto operator()(T const& s) const noexcept -> std::size_t
+    {
+        return std::hash<typename T::underlying_type> {}(s.template unwrap<T>());
+    }
+};

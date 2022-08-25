@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/twig-energy/stronk/branch/main/graph/badge.svg?token=TWO57YT2YA)](https://codecov.io/gh/twig-energy/stronk)
 ```
     ==================================================================
 
@@ -39,16 +40,17 @@ struct your_type : twig::stronk<your_type, int, twig::can_add, twig::can_order, 
 - `can_less_than_greater_than`: `operator<` and `operator>` (prefer the `can_order` skill instead)
 - `can_less_than_greater_than_or_equal`: operator <= and operator >= (prefer the `can_order` skill instead)
 - `can_be_used_as_flag`: for boolean values used as flags
+- `can_hash`: implements the `std::hash<T>`.
 
 ### Units
 - `unit`: enables unit behavior for multiplication and division.
 - `identity_unit`: enables unit behavior, but does not affect the type of multiplication and division.
 
 ### Third Party Library extensions (see `stronk/extensions/<library>.h`):
-- `can_hash`: implements the `AbslHashValue` friend function.
+- `can_absl_hash`: implements the `AbslHashValue` friend function.
 - `can_gtest_print`: for printing the values in gtest check macros
-- `can_format_builder<"an_fmt_formatstring{}">::type`: implements `struct fmt::formatter<T>`. Will enable `std::format` in the future as well.
-
+- `can_fmt_format`: implements `struct fmt::formatter<T>` with default formatting string `"{}"`. In the future we will add a `can_format` for `std::format`.
+- `can_fmt_format_builder<"fmt format string{}">::skill`: implements `struct fmt::formatter<T>`. In the future we will add a `can_format_builder<"std format string">` for `std::format`.
 ### Prefabs: (see `stronk/prefabs.h`)
 - `stronk_default_unit`: arithmetic unit with most of the regular operations
 - `stronk_flag`: flag like boolean with equal operators etc.

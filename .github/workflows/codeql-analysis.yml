@@ -62,7 +62,7 @@ jobs:
       run: |
         cmake --preset=ci-codeql
         cmake --build build --config Release -j 2
-        cmake --install build --prefix install
+        cmake --install build --prefix bin
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

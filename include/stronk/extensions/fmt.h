@@ -5,7 +5,36 @@
 #include <fmt/core.h>
 #include <stronk/stronk.h>
 
-template<twig::can_format_like T>
+namespace twig
+{
+template<str::StringLiteral FormatStringV>
+struct can_fmt_format_builder
+{
+    template<typename StronkT>
+    struct skill
+    {
+        constexpr static const auto fmt_string = FormatStringV;
+    };
+};
+
+template<typename StronkT>
+struct can_fmt_format
+{
+    constexpr static const auto fmt_string = str::StringLiteral("{}");
+};
+
+template<typename T>
+concept can_fmt_format_like = requires(T v)
+{
+    stronk_like<T>;
+    {
+        T::fmt_string.value
+        } -> std::convertible_to<std::string_view>;
+};
+
+}  // namespace twig
+
+template<twig::can_fmt_format_like T>
 struct fmt::formatter<T> : formatter<string_view>
 {
     template<typename FormatContext>
