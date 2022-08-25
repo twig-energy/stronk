@@ -33,6 +33,8 @@ target_include_directories(
 
 target_compile_features(twig_stronk INTERFACE cxx_std_20)
 
+target_link_libraries(twig_stronk INTERFACE Boost::boost)
+
 # ---- Declare library ----
 add_library(twig_stronk_pch INTERFACE)
 add_library(twig::stronk_pch ALIAS twig_stronk_pch)
