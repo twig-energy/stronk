@@ -43,7 +43,7 @@
       }
     },
     {
-      "name": "clang",
+      "name": "clang-13",
       "hidden": true,
       "environment": {
         "CXX": "clang++-13",
@@ -51,12 +51,16 @@
       }
     },
     {
-      "name": "gcc",
+      "name": "gcc-11",
       "hidden": true,
       "environment": {
         "CXX": "g++-11",
         "CC": "gcc-11"
       }
+    },
+    {
+      "name": "msvc",
+      "hidden": true
     },
     {
       "name": "ci-std",
@@ -109,8 +113,7 @@
       "name": "coverage-unix",
       "binaryDir": "${sourceDir}/build/coverage",
       "inherits": [
-        "ci-unix",
-        "gcc"
+        "ci-unix"
       ],
       "hidden": true,
       "cacheVariables": {
@@ -127,7 +130,8 @@
       "inherits": [
         "coverage-unix",
         "dev-mode",
-        "vcpkg"
+        "vcpkg",
+        "gcc-11"
       ],
       "cacheVariables": {
         "COVERAGE_HTML_COMMAND": ""
@@ -153,34 +157,46 @@
       "hidden": true
     },
     {
-      "name": "ci-macos",
+      "name": "ci-macos-gcc-11",
       "inherits": [
         "ci-build",
         "ci-unix",
         "dev-mode",
         "vcpkg",
-        "gcc"
+        "gcc-11"
       ]
     },
     {
-      "name": "ci-ubuntu",
+      "name": "ci-ubuntu-gcc-11",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "vcpkg",
+        "dev-mode",
+        "gcc-11"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-13",
       "inherits": [
         "ci-build",
         "ci-unix",
         "clang-tidy",
         "vcpkg",
         "cppcheck",
-        "dev-mode"
+        "dev-mode",
+        "clang-13"
       ]
     },
     {
-      "name": "ci-windows",
+      "name": "ci-windows-msvc",
       "inherits": [
         "ci-build",
         "ci-win64",
         "dev-mode",
         "vcpkg",
-        "vcpkg-win64-static"
+        "vcpkg-win64-static",
+        "msvc"
       ]
     },
     {
@@ -189,7 +205,8 @@
         "ci-build",
         "ci-unix",
         "vcpkg",
-        "dev-mode"
+        "dev-mode",
+        "gcc-11"
       ]
     }
   ]
