@@ -18,7 +18,7 @@ install(
 )
 
 install(
-    TARGETS twig_stronk
+    TARGETS twig_stronk twig_stronk_pch
     EXPORT stronkTargets
     INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
@@ -51,7 +51,7 @@ install(
 
 install(
     EXPORT stronkTargets
-    NAMESPACE stronk::
+    NAMESPACE twig::
     DESTINATION "${stronk_INSTALL_CMAKEDIR}"
     COMPONENT stronk_Development
 )
