@@ -35,25 +35,6 @@ target_compile_features(twig_stronk INTERFACE cxx_std_20)
 
 target_link_libraries(twig_stronk INTERFACE Boost::boost)
 
-# ---- Declare library ----
-add_library(twig_stronk_pch INTERFACE)
-add_library(twig::stronk_pch ALIAS twig_stronk_pch)
-set_property(
-  TARGET twig_stronk_pch PROPERTY
-  EXPORT_NAME stronk_pch
-)
-target_link_libraries(twig_stronk_pch INTERFACE twig_stronk)
-target_precompile_headers(twig_stronk_pch INTERFACE
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/prefabs.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/specializers.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/stronk.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/unit.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/utilities/constexpr_helpers.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/utilities/equality.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/utilities/strings.h>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/stronk/utilities/type_list.h>"
-)
-
 # ---- Install rules ----
 if(NOT CMAKE_SKIP_INSTALL_RULES)
   include(cmake/install-rules.cmake)
