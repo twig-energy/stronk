@@ -18,7 +18,7 @@
 
 struct your_type : twig::stronk<your_type, int, twig::can_add, twig::can_order, twig::can_equate, twig::can_hash>
 {
-    using stronk::stronk;
+    using twig::stronk;
 };
 ```
 

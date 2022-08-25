@@ -1,7 +1,5 @@
 #pragma once
-#include <cstdint>
 #include <type_traits>
-#include <typeindex>
 
 #include <boost/type_index/ctti_type_index.hpp>
 #include <stronk/utilities/constexpr_helpers.h>
@@ -150,7 +148,7 @@ struct TypeList
         return size() == 0;
     }
 
-    using first_t = variadic::first_type_of_t<Ts..., void>;  // void if empty
+    using first_t = stronk_details::variadic::first_type_of_t<Ts..., void>;  // void if empty
 
     template<typename T>
     [[nodiscard]] constexpr static auto add()
@@ -185,7 +183,7 @@ struct TypeList
     template<typename T>
     [[nodiscard]] constexpr static auto contains() -> bool
     {
-        return variadic::contains_type<T, Ts...>();
+        return stronk_details::variadic::contains_type<T, Ts...>();
     }
 
     // Functions between TypeLists

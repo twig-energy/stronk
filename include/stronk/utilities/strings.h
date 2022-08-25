@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace twig::str
+namespace twig::stronk_details::str
 {
 
 // A string literal, useful for templating on compile time known strings.
@@ -16,4 +16,4 @@ struct StringLiteral
     char value[N];  // NOLINT
 };
 
-}  // namespace twig::str
+}  // namespace twig::stronk_details::str

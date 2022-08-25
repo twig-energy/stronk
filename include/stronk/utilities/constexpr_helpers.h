@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 
-namespace twig
+namespace twig::stronk_details
 {
 
 template<typename T>
@@ -29,4 +29,4 @@ constexpr auto contains_type() -> bool
 
 }  // namespace variadic
 
-}  // namespace twig
+}  // namespace twig::stronk_details
