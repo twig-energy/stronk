@@ -61,9 +61,8 @@ jobs:
     - name: Build
       run: |
         cmake --preset=ci-codeql
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+        cmake --build build --config Release -j 2
+        cmake --install build --prefix install
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
