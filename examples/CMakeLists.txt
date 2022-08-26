@@ -22,4 +22,4 @@ endfunction()
 
 add_example(unit_example)
 
-add_folders(Example)
+add_folders(Examples)

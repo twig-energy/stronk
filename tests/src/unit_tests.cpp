@@ -45,7 +45,7 @@ struct Minutes : std::ratio<1'000'000'000ULL * 60, 1>
     using base_unit_t = Time;
 };
 
-struct Hours : std::ratio<1'000'000'000ULL * 60 * 60, 1>
+struct Hours : std::ratio<Minutes::num * 60, 1>
 {
     using base_unit_t = Time;
 };
