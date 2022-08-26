@@ -1,5 +1,6 @@
 [![codecov](https://codecov.io/gh/twig-energy/stronk/branch/main/graph/badge.svg?token=TWO57YT2YA)](https://codecov.io/gh/twig-energy/stronk)
-```
+[![license](https://img.shields.io/github/license/twig-energy/stronk)](LICENSE)
+```text
     ==================================================================
 
     *      //   ) ) /__  ___/ //   ) )  //   ) ) /|    / / //   / /  *
@@ -77,5 +78,5 @@ See the [LICENSE](LICENSE.md) document.
 
 # Examples
 
-```cpp:examples/unit_example.cpp
-```
+<!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./examples/unit_example.cpp) -->
+<!-- MARKDOWN-AUTO-DOCS:END -->
