@@ -1,10 +1,9 @@
 name: Embed examples into README
 
 on:
-  push:
+  pull_request:
     branches:
-      - '**'
-      - '!main'
+    - main
 
 jobs:
   auto-update-readme:
@@ -12,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Markdown autodocs
-        uses: dineshsonachalam/markdown-autodocs@v1.0.5
+        uses: dineshsonachalam/markdown-autodocs@v1.0.6
         with:
           commit_message: Update README.md
           output_file_paths: '[./README.md]'
