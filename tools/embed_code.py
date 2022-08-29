@@ -1,6 +1,9 @@
 """
-compile_docs parses the code in the tests folder,
-  gets the text in the tests and then injects them into all the .md files in this directory
+  Parse markdown document and embed the referenced code into code blocks
+
+  Example syntax for code blocks:
+    ```cpp:file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
+    ```
 """
 
 from asyncore import file_dispatcher
@@ -135,7 +138,7 @@ def output_result(file_to_embed_into: Path, result_str: str, inline: bool):
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Embed code into readme')
-    parser.add_argument("-f", "--file", type=Path, default=Path("./README.md"))
+    parser.add_argument("-f", "--file", type=Path)
     parser.add_argument('-i', '--inline', action='store_true')
     return parser.parse_args()
 
