@@ -11,7 +11,7 @@ struct Time : twig::stronk<Time, double, twig::unit>
     using stronk::stronk;
 };
 
-// Note: For the macros you need to call them from within the twig namespace:
+// Note: For the specializer macros you need to call them from within the twig namespace:
 namespace twig
 {
 // Lets say we want to have Distance / Time specialized to be hashable.
