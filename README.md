@@ -14,10 +14,16 @@
 
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
+#### What:
 - Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality your own types.
-- Automatically combine types with physics-like unit behavior to verify your implementation at compile time. 
+- Automatically combine types with physics-like unit behavior.
+
+#### Why:
+- Strong types allow you to catch argument ordering mismatches.
+- Unit-like behavior allows you to use the type system to to verify the correctness of your implementations.
 - Catch refactoring bugs at compile time by limiting access to the underlying values.
 
+#### How:
 ```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
