@@ -69,7 +69,7 @@ void watts_and_identity_units()
     watt *= 2.;
     watt /= MyScalar {2.};
 
-    // However identity unit divided by a unit results in a new unit.
+    // However as identity unit divided by a unit results in a new unit type of.
     auto one_over_watt = 1.0 / watt + MyScalar {1.0} / watt;  // NOLINT
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
