@@ -8,7 +8,6 @@ struct Watt : twig::stronk_default_unit<Watt, double>
 {
     using stronk_default_unit::stronk_default_unit;
 };
-// And we also try to add an identity-unit type
 
 void watts_and_identity_units()
 {
@@ -46,7 +45,7 @@ void watt_hours_and_generating_new_units()
     Watt watt = watt_hours / Hours {3.5};
 }
 
-// Lets introduce money so we can really start combining types.
+// Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
     using stronk::stronk;
@@ -72,4 +71,4 @@ auto main() -> int
     watt_hours_and_generating_new_units();
     introducing_another_type();
 }
-static_assert(__LINE__ == 75UL, "update readme if this changes");
+static_assert(__LINE__ == 74UL, "update readme if this changes");
