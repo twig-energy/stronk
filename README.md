@@ -15,7 +15,7 @@
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
 #### What:
-- Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality your own types.
+- Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality to your own types.
 - Automatically combine types with physics-like unit behavior: `10 [Meter] / 2 [Second] = 5 [Meter / Second]`.
 
 #### Why:
