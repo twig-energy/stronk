@@ -60,10 +60,10 @@ void watts_and_identity_units()
     Watt watt = Watt {30.};
     watt += Watt {4.} - Watt {2.};  // we can add and subtract units
 
-    // Multiplying and dividing with identity unit does not change the type.
+    // Multiplying and dividing with an identity_unit (such as scalars) does not change the type.
     watt *= 2.;
 
-    // However as identity unit divided by a unit results in a new unit type of.
+    // However an identity_unit divided by a regular unit results in a new unit type.
     auto one_over_watt = 1.0 / watt;
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
@@ -71,15 +71,14 @@ void watts_and_identity_units()
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=24:line_end=46
-// Next we introduce hours and a new unit_like type
+```cpp :file=./examples/unit_energy_example.cpp:line_start=24:line_end=45
+// Lets introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
 };
 
-// We can now dynamically generate a new type based on our stronk types.
-// The generated type is very verbose so adding an alias can be helpful
+// We can now dynamically generate a new type!
 using WattHours = decltype(Watt {} * Hours {});
 
 void watt_hours_and_generating_new_units()
@@ -87,10 +86,10 @@ void watt_hours_and_generating_new_units()
     // Multiplying the right units together will automatically produce the new type
     WattHours watt_hours = Hours {3.5} * Watt {25.0};
 
-    // this new type can also add and subtract from itself.
+    // The new type supports adding, subtracting, comparing etc by default.
     watt_hours -= WattHours {10.} + WattHours {2.};
 
-    // We can get back the hours or the watt by dividing by them out.
+    // We can get back to Hours or Watt by dividing the opposite out.
     Hours hours = watt_hours / Watt {25.0};
     Watt watt = watt_hours / Hours {3.5};
 }
@@ -98,7 +97,7 @@ void watt_hours_and_generating_new_units()
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=47:line_end=66
+```cpp :file=./examples/unit_energy_example.cpp:line_start=46:line_end=65
 // Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
@@ -112,7 +111,7 @@ void introducing_another_type()
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
     auto euros_per_watt_hour = Euro {300.} / watt_hours;
 
-    // which ofcours also can be handled like any other unit which allows this flexible strongly typed system.
+    // This flexibility allows us to very expessively write code while having the type system checking our code.
     Euro price_for_buying_5_megawatt = euros_per_watt_hour * twig::make<std::mega, WattHours>(5.);
 
     auto watt_hours_per_euro = 1. / euros_per_watt_hour;  // `(Watt * Hours) / Euro`
