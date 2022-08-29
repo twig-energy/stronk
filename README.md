@@ -14,7 +14,7 @@
 
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
-```cpp:file=./examples/firstname_lastname_example.cpp
+```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
 
@@ -43,7 +43,7 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit like behavior:
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
 #include <ratio>
 
 #include <stronk/prefabs.h>
@@ -75,9 +75,9 @@ void watts_and_identity_units()
 }
 ```
 
-These new generated types are also units which can be used to generate new units:
+Different units can be combined by multiplying or dividing them:
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=31:line_end=53
+```cpp :file=./examples/unit_energy_example.cpp:line_start=31:line_end=53
 // Next we introduce hours and a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
@@ -102,7 +102,9 @@ void watt_hours_and_generating_new_units()
 }
 ```
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=55:line_end=74
+These new generated types are also units which can be used to generate new units:
+
+```cpp :file=./examples/unit_energy_example.cpp:line_start=55:line_end=74
 // Lets introduce money so we can really start combining types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
