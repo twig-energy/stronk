@@ -12,7 +12,7 @@ struct LastName : twig::stronk<LastName, std::string, twig::can_stream>
     using stronk::stronk;
 };
 
-// Strong types protects you from accidentially parsing a wrong arguments to wrong positions.
+// Strong types protects you from accidentally parsing a wrong arguments to wrong positions.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
     std::cout << firstname << " " << lastname << std::endl;

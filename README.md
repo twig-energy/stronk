@@ -29,7 +29,7 @@ struct LastName : twig::stronk<LastName, std::string, twig::can_stream>
     using stronk::stronk;
 };
 
-// Strong types protects you from accidentially parsing a wrong arguments to wrong positions.
+// Strong types protects you from accidentally parsing a wrong arguments to wrong positions.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
     std::cout << firstname << " " << lastname << std::endl;
@@ -168,7 +168,7 @@ Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount 
 
 # Using Stronk in Your Project
 The project is CMake FetchContent ready and we are working on exposing it on vcpkg.
-After retreiving stronk, add the following to your CMakeLists.txt
+After retrieving stronk, add the following to your CMakeLists.txt
 
 ```cmake
 find_package(stronk CONFIG REQUIRED)
