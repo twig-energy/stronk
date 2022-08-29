@@ -14,6 +14,10 @@
 
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
+- Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality your own types.
+- Automatically combine types with physics-like unit behavior to verify your implementation at compile time. 
+- Catch refactoring bugs at compile time by limiting access to the underlying values.
+
 ```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
@@ -217,7 +221,9 @@ target_link_libraries(
 )
 ```
 
-### Dependencies
+### Requirements
+A c++20 compatible compiler and standard library with concepts support.
+
 We depend on Boost's type_index package to get compile time generated ids for each type to be able to sort types for units (so we can compare types generated from different expressions).
 
 In the extensions subfolder we have added skills for common third party libraries: `fmt`, `absl` and `gtest`. Using any of these will ofcourse also require you to install those dependencies.
