@@ -16,7 +16,7 @@
 
 #### What:
 - Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality your own types.
-- Automatically combine types with physics-like unit behavior.
+- Automatically combine types with physics-like unit behavior: `10 [Meter] / 2 [Second] = 5 [Meter / Second]`.
 
 #### Why:
 - Strong types allow you to catch argument ordering mismatches.
