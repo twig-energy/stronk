@@ -161,6 +161,50 @@ Adding new skills is easy so feel free to add more.
 
 Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount of inspiration
 
+## Examples:
+
+### Specializers:
+In case you want to specialize the resulting type of unit multiplication and division you can utilize the `stronk/specializer.h` header.
+
+By default the units are generated with the `stronk_default_prefab` type.
+
+```cpp :file=./examples/specializers_example.cpp:line_end=22
+#include <stronk/specializers.h>
+
+// Lets consider the following units:
+struct Distance : twig::stronk<Distance, double, twig::unit>
+{
+    using stronk::stronk;
+};
+
+struct Time : twig::stronk<Time, double, twig::unit>
+{
+    using stronk::stronk;
+};
+
+// Note: For the macros you need to call them from within the twig namespace:
+namespace twig
+{
+// Lets say we want to have Distance / Time specialized to be hashable.
+// We can use the STRONK_SPECIALIZE_DIVIDE macro to specialize the generated type.
+STRONK_SPECIALIZE_DIVIDE(Distance, Time, can_hash);
+// Now any expression resulting the `Distance{} / Time{}` type will result in a unit type with the can_hash skill
+
+}  // namespace twig
+```
+
+You can also specialize the underlying type of multiplying two units:
+By default the `underlying_type` is the default result of multiplying or dividing the underlying types of the two units themselves.
+
+```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
+// Lets specialize Time^2 to use int64_t as its underlying type.
+template<>
+struct twig::underlying_type_of_multiplying<Time, Time>
+{
+    using type = int64_t;
+};
+```
+
 # Using Stronk in Your Project
 The project is CMake FetchContent ready and we are working on exposing it on vcpkg.
 After retrieving stronk, add the following to your CMakeLists.txt
