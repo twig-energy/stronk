@@ -235,7 +235,7 @@ A c++20 compatible compiler and standard library with concepts support.
 
 We depend on Boost's type_index package to get compile time generated ids for each type to be able to sort types for units (so we can compare types generated from different expressions).
 
-In the extensions subfolder we have added skills for common third party libraries: `fmt`, `absl` and `gtest`. using these also requires the relevant third party libraries to be installed.
+In the extensions subfolder we have added skills for common third party libraries: `fmt`, `absl` and `gtest`. Using these also requires the relevant third party libraries to be installed.
 
 # Building and installing
 
