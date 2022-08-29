@@ -14,6 +14,16 @@
 
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
+#### What:
+- Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality to your own types.
+- Automatically combine types with physics-like unit behavior: `10 [Meter] / 2 [Second] = 5 [Meter / Second]`.
+
+#### Why:
+- Strong types allow you to catch argument ordering mismatches.
+- Unit-like behavior allows you to use the type system to verify the correctness of your implementations.
+- Catch refactoring bugs at compile time by limiting access to the underlying values.
+
+#### How:
 ```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
@@ -24,15 +34,18 @@ struct FirstName : twig::stronk<FirstName, std::string, twig::can_stream>
 {
     using stronk::stronk;
 };
-struct LastName : twig::stronk<LastName, std::string, twig::can_stream>
+struct LastName : twig::stronk<LastName, std::string>
 {
     using stronk::stronk;
 };
 
-// Strong types protects you from accidentally parsing a wrong arguments to wrong positions.
+// Strong types protects you from accidentally passing the wrong argument to the wrong parameter.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
-    std::cout << firstname << " " << lastname << std::endl;
+    // The twig::can_stream skill overloads the `operator<<(ostream&)` for your type.
+    std::cout << firstname << " ";
+    // You can also access the underlying type by using the .unwrap<Type>() function.
+    std::cout << lastname.unwrap<LastName>() << std::endl;
 }
 
 auto main() -> int
@@ -217,10 +230,12 @@ target_link_libraries(
 )
 ```
 
-### Dependencies
+### Requirements
+A c++20 compatible compiler and standard library with concepts support.
+
 We depend on Boost's type_index package to get compile time generated ids for each type to be able to sort types for units (so we can compare types generated from different expressions).
 
-In the extensions subfolder we have added skills for common third party libraries: `fmt`, `absl` and `gtest`. Using any of these will ofcourse also require you to install those dependencies.
+In the extensions subfolder we have added skills for common third party libraries: `fmt`, `absl` and `gtest`. Using these also requires the relevant third party libraries to be installed.
 
 # Building and installing
 

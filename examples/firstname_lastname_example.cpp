@@ -7,15 +7,18 @@ struct FirstName : twig::stronk<FirstName, std::string, twig::can_stream>
 {
     using stronk::stronk;
 };
-struct LastName : twig::stronk<LastName, std::string, twig::can_stream>
+struct LastName : twig::stronk<LastName, std::string>
 {
     using stronk::stronk;
 };
 
-// Strong types protects you from accidentally parsing a wrong arguments to wrong positions.
+// Strong types protects you from accidentally passing the wrong argument to the wrong parameter.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
-    std::cout << firstname << " " << lastname << std::endl;
+    // The twig::can_stream skill overloads the `operator<<(ostream&)` for your type.
+    std::cout << firstname << " ";
+    // You can also access the underlying type by using the .unwrap<Type>() function.
+    std::cout << lastname.unwrap<LastName>() << std::endl;
 }
 
 auto main() -> int
