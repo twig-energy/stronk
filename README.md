@@ -20,7 +20,7 @@
 
 #### Why:
 - Strong types allow you to catch argument ordering mismatches.
-- Unit-like behavior allows you to use the type system to to verify the correctness of your implementations.
+- Unit-like behavior allows you to use the type system to verify the correctness of your implementations.
 - Catch refactoring bugs at compile time by limiting access to the underlying values.
 
 #### How:
