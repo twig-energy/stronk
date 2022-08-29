@@ -9,10 +9,6 @@ struct Watt : twig::stronk_default_unit<Watt, double>
     using stronk_default_unit::stronk_default_unit;
 };
 // And we also try to add an identity-unit type
-struct MyScalar : twig::stronk<MyScalar, double, twig::identity_unit>
-{
-    using stronk::stronk;
-};
 
 void watts_and_identity_units()
 {
@@ -21,13 +17,11 @@ void watts_and_identity_units()
 
     // Multiplying and dividing with identity unit does not change the type.
     watt *= 2.;
-    watt /= MyScalar {2.};
 
     // However as identity unit divided by a unit results in a new unit type of.
-    auto one_over_watt = 1.0 / watt + MyScalar {1.0} / watt;  // NOLINT
+    auto one_over_watt = 1.0 / watt;
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
-static_assert(__LINE__ == 30UL, "update readme if this changes");
 
 // Next we introduce hours and a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
@@ -35,7 +29,7 @@ struct Hours : twig::stronk<Hours, double, twig::unit>
     using stronk::stronk;
 };
 
-// We can now dynamically generate a new compile time type based on our stronk types.
+// We can now dynamically generate a new type based on our stronk types.
 // The generated type is very verbose so adding an alias can be helpful
 using WattHours = decltype(Watt {} * Hours {});
 
@@ -51,7 +45,6 @@ void watt_hours_and_generating_new_units()
     Hours hours = watt_hours / Watt {25.0};
     Watt watt = watt_hours / Hours {3.5};
 }
-static_assert(__LINE__ == 54UL, "update readme if this changes");
 
 // Lets introduce money so we can really start combining types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
@@ -72,7 +65,6 @@ void introducing_another_type()
     auto watt_hours_per_euro = 1. / euros_per_watt_hour;  // `(Watt * Hours) / Euro`
     WattHours watt_hours_affordable_for_500_euros = watt_hours_per_euro * Euro {500.};
 }
-static_assert(__LINE__ == 75UL, "update readme if this changes");
 
 auto main() -> int
 {
@@ -80,3 +72,4 @@ auto main() -> int
     watt_hours_and_generating_new_units();
     introducing_another_type();
 }
+static_assert(__LINE__ == 75UL, "update readme if this changes");

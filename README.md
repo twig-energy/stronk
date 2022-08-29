@@ -43,7 +43,7 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=24
 #include <ratio>
 
 #include <stronk/prefabs.h>
@@ -55,10 +55,6 @@ struct Watt : twig::stronk_default_unit<Watt, double>
     using stronk_default_unit::stronk_default_unit;
 };
 // And we also try to add an identity-unit type
-struct MyScalar : twig::stronk<MyScalar, double, twig::identity_unit>
-{
-    using stronk::stronk;
-};
 
 void watts_and_identity_units()
 {
@@ -67,24 +63,23 @@ void watts_and_identity_units()
 
     // Multiplying and dividing with identity unit does not change the type.
     watt *= 2.;
-    watt /= MyScalar {2.};
 
     // However as identity unit divided by a unit results in a new unit type of.
-    auto one_over_watt = 1.0 / watt + MyScalar {1.0} / watt;  // NOLINT
+    auto one_over_watt = 1.0 / watt;
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
 ```
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=31:line_end=53
+```cpp :file=./examples/unit_energy_example.cpp:line_start=25:line_end=47
 // Next we introduce hours and a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
 };
 
-// We can now dynamically generate a new compile time type based on our stronk types.
+// We can now dynamically generate a new type based on our stronk types.
 // The generated type is very verbose so adding an alias can be helpful
 using WattHours = decltype(Watt {} * Hours {});
 
@@ -104,7 +99,7 @@ void watt_hours_and_generating_new_units()
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=55:line_end=74
+```cpp :file=./examples/unit_energy_example.cpp:line_start=48:line_end=67
 // Lets introduce money so we can really start combining types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
@@ -187,11 +182,7 @@ In the extensions subfolder we have added skills for common third party librarie
 
 # Building and installing
 
-See the [BUILDING](BUILDING.md) document.
-
-# Contributing
-
-See the [CONTRIBUTING](CONTRIBUTING.md) document.
+For more information on how to build see the [BUILDING](BUILDING.md) and [HACKING](HACKING.md) documents.
 
 # Licensing
 
