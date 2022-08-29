@@ -18,6 +18,7 @@ find_package(absl CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(stronk_test
   src/extensions_tests.cpp
+  src/specializers_tests.cpp
   src/stronk_tests.cpp
   src/unit_tests.cpp
   src/utilities/type_list_tests.cpp

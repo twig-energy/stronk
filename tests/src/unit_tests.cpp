@@ -203,46 +203,4 @@ TEST(stronk_default_unit, prefab_units_can_add_and_subtract_and_compare_like_bas
     }
 }
 
-struct specializer_type_a : stronk_default_unit<specializer_type_a, int32_t>
-{
-    using stronk_default_unit::stronk_default_unit;
-};
-struct specializer_type_b : stronk_default_unit<specializer_type_b, int32_t>
-{
-    using stronk_default_unit::stronk_default_unit;
-};
-
 }  // namespace twig::unit_tests
-
-namespace twig
-{
-STRONK_SPECIALIZE_MULTIPLY(unit_tests::specializer_type_a, unit_tests::specializer_type_a);
-STRONK_SPECIALIZE_MULTIPLY(unit_tests::specializer_type_a, unit_tests::specializer_type_b, can_equate);
-STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_a, unit_tests::specializer_type_b, can_equate, can_stream);
-
-using specializer_type_a_squared = decltype(unit_tests::specializer_type_a {} * unit_tests::specializer_type_a {});
-using specializer_type_a_times_b = decltype(unit_tests::specializer_type_a {} * unit_tests::specializer_type_b {});
-using specializer_type_a_divided_by_b = decltype(unit_tests::specializer_type_a {} / unit_tests::specializer_type_b {});
-
-STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_squared, unit_tests::specializer_type_a);  // a^3
-STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_squared, unit_tests::specializer_type_b);  // a^2 * b
-// STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_times_b, unit_tests::specializer_type_a); // a^2 * b
-STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_times_b, unit_tests::specializer_type_b);  // a * b^2
-STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_divided_by_b, unit_tests::specializer_type_a);  // a^2 / b
-// STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_divided_by_b, unit_tests::specializer_type_b); // a
-
-// STRONK_SPECIALIZE_DIVIDE(specializer_type_a_squared, unit_tests::specializer_type_a); // a
-// STRONK_SPECIALIZE_DIVIDE(specializer_type_a_squared, unit_tests::specializer_type_b);  // a^2 / b
-// STRONK_SPECIALIZE_DIVIDE(specializer_type_a_times_b, unit_tests::specializer_type_a); // b
-// STRONK_SPECIALIZE_DIVIDE(specializer_type_a_times_b, unit_tests::specializer_type_b);  // a
-STRONK_SPECIALIZE_DIVIDE(specializer_type_a_divided_by_b, unit_tests::specializer_type_a);  // 1 / b
-STRONK_SPECIALIZE_DIVIDE(specializer_type_a_divided_by_b, unit_tests::specializer_type_b);  // a / b^2
-
-// STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_a, specializer_type_a_squared); // a
-STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_b, specializer_type_a_squared);  // b / a^2
-// STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_a, specializer_type_a_times_b); // b
-// STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_b, specializer_type_a_times_b); // a
-// STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_a, specializer_type_a_divided_by_b);  // b
-STRONK_SPECIALIZE_DIVIDE(unit_tests::specializer_type_b, specializer_type_a_divided_by_b);  // b^2
-
-}  // namespace twig

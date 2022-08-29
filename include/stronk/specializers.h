@@ -1,4 +1,6 @@
 #pragma once
+#include <stronk/prefabs.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 // Macro for getting the full type of multiplying two units

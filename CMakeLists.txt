@@ -28,7 +28,6 @@ target_include_directories(
   twig_stronk ${warning_guard}
   INTERFACE
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-  "$<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}/type_index>"
 )
 
 target_compile_features(twig_stronk INTERFACE cxx_std_20)

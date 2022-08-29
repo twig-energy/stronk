@@ -9,10 +9,13 @@ jobs:
   auto-update-readme:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Markdown autodocs
-        uses: dineshsonachalam/markdown-autodocs@v1.0.6
-        with:
-          commit_message: Update README.md
-          output_file_paths: '[./README.md]'
-          categories: '[code-block]'
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Update Readme
+      run: python tools/update_readme.py -i
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply php-cs-fixer changes
