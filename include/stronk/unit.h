@@ -83,14 +83,14 @@ struct unit : UnitTypeLists<TypeList<StronkT>,
 };
 
 // You can specialize this struct if you want another type
-template<typename T1, typename T2>
+template<stronk_like T1, stronk_like T2>
 struct underlying_type_of_multiplying
 {
     using type = decltype(std::declval<typename T1::underlying_type>() * std::declval<typename T2::underlying_type>());
 };
 
 // You can specialize this struct if you want another type
-template<typename T1, typename T2>
+template<stronk_like T1, stronk_like T2>
 struct underlying_type_of_dividing
 {
     using type = decltype(std::declval<typename T1::underlying_type>() / std::declval<typename T2::underlying_type>());
@@ -170,6 +170,13 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
     return a;
 }
 
+template<unit_like A, identity_unit_like T>
+constexpr auto operator*=(A& a, const T& b) noexcept -> A&
+{
+    a.template unwrap<A>() *= b.template unwrap<T>();
+    return a;
+}
+
 // ==================
 // Divide
 // ==================
@@ -213,8 +220,9 @@ constexpr auto operator/(const T& a, const T& b) noexcept -> T
 template<identity_unit_like T, unit_like B>
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
-    return NewUnitType<typename B::underlying_type, UnitTypeLists<TypeList<>, TypeList<B>>> {a.template unwrap<T>()
-                                                                                             / b.template unwrap<B>()};
+    return NewUnitType<typename B::underlying_type,
+                       UnitTypeLists<typename B::divided_part, typename B::multiplied_part>> {a.template unwrap<T>()
+                                                                                              / b.template unwrap<B>()};
 }
 
 template<unit_like A, identity_unit_like T>
@@ -227,8 +235,9 @@ template<typename T, unit_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
-    return NewUnitType<typename B::underlying_type, UnitTypeLists<TypeList<>, TypeList<B>>> {a
-                                                                                             / b.template unwrap<B>()};
+    return NewUnitType<typename B::underlying_type,
+                       UnitTypeLists<typename B::divided_part, typename B::multiplied_part>> {a
+                                                                                              / b.template unwrap<B>()};
 }
 
 template<unit_like A, typename T>
@@ -243,6 +252,12 @@ template<unit_like A, typename T>
 constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
+    return a;
+}
+template<unit_like A, identity_unit_like T>
+constexpr auto operator/=(A& a, const T& b) noexcept -> A&
+{
+    a.template unwrap<A>() /= b.template unwrap<T>();
     return a;
 }
 

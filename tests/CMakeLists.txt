@@ -18,6 +18,7 @@ find_package(absl CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(stronk_test
   src/extensions_tests.cpp
+  src/specializers_tests.cpp
   src/stronk_tests.cpp
   src/unit_tests.cpp
   src/utilities/type_list_tests.cpp
@@ -35,4 +36,4 @@ target_compile_features(stronk_test PRIVATE cxx_std_20)
 add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_output=xml:")
 
 # ---- End-of-file commands ----
-add_folders(Test)
+add_folders(Tests)
