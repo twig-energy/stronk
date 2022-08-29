@@ -14,7 +14,7 @@
 
 === An easy to customize, strong type library with built in support for unit-like behavior ===
 
-```cpp:file=./examples/firstname_lastname_example.cpp
+```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
 
@@ -43,7 +43,7 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit like behavior:
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=23
 #include <ratio>
 
 #include <stronk/prefabs.h>
@@ -54,38 +54,31 @@ struct Watt : twig::stronk_default_unit<Watt, double>
 {
     using stronk_default_unit::stronk_default_unit;
 };
-// And we also try to add an identity-unit type
-struct MyScalar : twig::stronk<MyScalar, double, twig::identity_unit>
-{
-    using stronk::stronk;
-};
 
 void watts_and_identity_units()
 {
     Watt watt = Watt {30.};
     watt += Watt {4.} - Watt {2.};  // we can add and subtract units
 
-    // Multiplying and dividing with identity unit does not change the type.
+    // Multiplying and dividing with an identity_unit (such as scalars) does not change the type.
     watt *= 2.;
-    watt /= MyScalar {2.};
 
-    // However as identity unit divided by a unit results in a new unit type of.
-    auto one_over_watt = 1.0 / watt + MyScalar {1.0} / watt;  // NOLINT
+    // However an identity_unit divided by a regular unit results in a new unit type.
+    auto one_over_watt = 1.0 / watt;
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
 ```
 
-These new generated types are also units which can be used to generate new units:
+Different units can be combined by multiplying or dividing them:
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=31:line_end=53
-// Next we introduce hours and a new unit_like type
+```cpp :file=./examples/unit_energy_example.cpp:line_start=24:line_end=45
+// Lets introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
 };
 
-// We can now dynamically generate a new compile time type based on our stronk types.
-// The generated type is very verbose so adding an alias can be helpful
+// We can now dynamically generate a new type!
 using WattHours = decltype(Watt {} * Hours {});
 
 void watt_hours_and_generating_new_units()
@@ -93,17 +86,19 @@ void watt_hours_and_generating_new_units()
     // Multiplying the right units together will automatically produce the new type
     WattHours watt_hours = Hours {3.5} * Watt {25.0};
 
-    // this new type can also add and subtract from itself.
+    // The new type supports adding, subtracting, comparing etc by default.
     watt_hours -= WattHours {10.} + WattHours {2.};
 
-    // We can get back the hours or the watt by dividing by them out.
+    // We can get back to Hours or Watt by dividing the opposite out.
     Hours hours = watt_hours / Watt {25.0};
     Watt watt = watt_hours / Hours {3.5};
 }
 ```
 
-```cpp:file=./examples/unit_energy_example.cpp:line_start=55:line_end=74
-// Lets introduce money so we can really start combining types.
+These new generated types are also units which can be used to generate new units:
+
+```cpp :file=./examples/unit_energy_example.cpp:line_start=46:line_end=65
+// Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
     using stronk::stronk;
@@ -116,7 +111,7 @@ void introducing_another_type()
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
     auto euros_per_watt_hour = Euro {300.} / watt_hours;
 
-    // which ofcours also can be handled like any other unit which allows this flexible strongly typed system.
+    // This flexibility allows us to very expessively write code while having the type system checking our code.
     Euro price_for_buying_5_megawatt = euros_per_watt_hour * twig::make<std::mega, WattHours>(5.);
 
     auto watt_hours_per_euro = 1. / euros_per_watt_hour;  // `(Watt * Hours) / Euro`
@@ -166,6 +161,50 @@ Adding new skills is easy so feel free to add more.
 
 Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount of inspiration
 
+## Examples:
+
+### Specializers:
+In case you want to specialize the resulting type of unit multiplication and division you can utilize the `stronk/specializer.h` header.
+
+By default the units are generated with the `stronk_default_prefab` type.
+
+```cpp :file=./examples/specializers_example.cpp:line_end=22
+#include <stronk/specializers.h>
+
+// Lets consider the following units:
+struct Distance : twig::stronk<Distance, double, twig::unit>
+{
+    using stronk::stronk;
+};
+
+struct Time : twig::stronk<Time, double, twig::unit>
+{
+    using stronk::stronk;
+};
+
+// Note: For the specializer macros you need to call them from within the twig namespace:
+namespace twig
+{
+// Lets say we want to have Distance / Time specialized to be hashable.
+// We can use the STRONK_SPECIALIZE_DIVIDE macro to specialize the generated type.
+STRONK_SPECIALIZE_DIVIDE(Distance, Time, can_hash);
+// Now any expression resulting the `Distance{} / Time{}` type will result in a unit type with the can_hash skill
+
+}  // namespace twig
+```
+
+You can also specialize the underlying type of multiplying two units:
+By default the `underlying_type` is the default result of multiplying or dividing the underlying types of the two units themselves.
+
+```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
+// Lets specialize Time^2 to use int64_t as its underlying type.
+template<>
+struct twig::underlying_type_of_multiplying<Time, Time>
+{
+    using type = int64_t;
+};
+```
+
 # Using Stronk in Your Project
 The project is CMake FetchContent ready and we are working on exposing it on vcpkg.
 After retrieving stronk, add the following to your CMakeLists.txt
@@ -185,11 +224,7 @@ In the extensions subfolder we have added skills for common third party librarie
 
 # Building and installing
 
-See the [BUILDING](BUILDING.md) document.
-
-# Contributing
-
-See the [CONTRIBUTING](CONTRIBUTING.md) document.
+For more information on how to build see the [BUILDING](BUILDING.md) and [HACKING](HACKING.md) documents.
 
 # Licensing
 

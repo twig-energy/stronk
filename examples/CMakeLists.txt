@@ -23,6 +23,6 @@ endfunction()
 add_example(unit_example)
 add_example(firstname_lastname_example)
 add_example(unit_energy_example)
-add_example(specializing_example)
+add_example(specializers_example)
 
 add_folders(Examples)
