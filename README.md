@@ -1,15 +1,15 @@
 [![codecov](https://codecov.io/gh/twig-energy/stronk/branch/main/graph/badge.svg?token=TWO57YT2YA)](https://codecov.io/gh/twig-energy/stronk)
 [![license](https://img.shields.io/github/license/twig-energy/stronk)](LICENSE)
 ```text
-    ==================================================================
+            ==================================================================
 
-    *      //   ) ) /__  ___/ //   ) )  //   ) ) /|    / / //   / /  *
-    *     ((          / /    //___/ /  //   / / //|   / / //__ / /   *
-    *       \\       / /    / ___ (   //   / / // |  / / //__  /     *
-    *         ) )   / /    //   | |  //   / / //  | / / //   \ \     *
-    *  ((___ / /   / /    //    | | ((___/ / //   |/ / //     \ \    *
+            *      //   ) ) /__  ___/ //   ) )  //   ) ) /|    / / //   / /  *
+            *     ((          / /    //___/ /  //   / / //|   / / //__ / /   *
+            *       \\       / /    / ___ (   //   / / // |  / / //__  /     *
+            *         ) )   / /    //   | |  //   / / //  | / / //   \ \     *
+            *  ((___ / /   / /    //    | | ((___/ / //   |/ / //     \ \    *
 
-    ==================================================================
+            ==================================================================
 ```
 
 ## An easy to customize, strong type library with built-in support for unit-like behavior
@@ -20,7 +20,7 @@
 
 #### Why:
 - Strong types allow you to catch argument ordering mismatches.
-- Unit-like behavior allows you to use the type system to verify the correctness of your implementations.
+- Unit-like behavior allows you to use the type system to verify the correctness of your implementation.
 - Catch refactoring bugs at compile time by limiting access to the underlying values.
 
 #### How:
@@ -73,7 +73,7 @@ void watts_and_identity_units()
     Watt watt = Watt {30.};
     watt += Watt {4.} - Watt {2.};  // we can add and subtract units
 
-    // Multiplying and dividing with an identity_unit (such as scalars) does not change the type.
+    // Multiplying and dividing with an identity_unit (such as floats and integers) does not change the type.
     watt *= 2.;
 
     // However an identity_unit divided by a regular unit results in a new unit type.
@@ -97,14 +97,14 @@ using WattHours = decltype(Watt {} * Hours {});
 void watt_hours_and_generating_new_units()
 {
     // Multiplying the right units together will automatically produce the new type
-    WattHours watt_hours = Hours {3.5} * Watt {25.0};
+    WattHours watt_hours = Hours {3.} * Watt {25.};
 
     // The new type supports adding, subtracting, comparing etc by default.
     watt_hours -= WattHours {10.} + WattHours {2.};
 
     // We can get back to Hours or Watt by dividing the opposite out.
-    Hours hours = watt_hours / Watt {25.0};
-    Watt watt = watt_hours / Hours {3.5};
+    Hours hours = watt_hours / Watt {25.};
+    Watt watt = watt_hours / Hours {3.};
 }
 ```
 
@@ -119,16 +119,16 @@ struct Euro : twig::stronk<Euro, double, twig::unit>
 
 void introducing_another_type()
 {
-    // There are make functions for std::ratio like types. It simply scales the input value and does not change the type
-    WattHours watt_hours = twig::make<std::mega, WattHours>(1.);
+    // twig::make allows you to scale the input value but it does not change the resulting type
+    WattHours one_mega_watt_hour = twig::make<std::mega, WattHours>(1.);
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    auto euros_per_watt_hour = Euro {300.} / watt_hours;
+    auto euros_per_mega_watt_hour = Euro {300.} / one_mega_watt_hour;
 
-    // This flexibility allows us to very expessively write code while having the type system checking our code.
-    Euro price_for_buying_5_megawatt = euros_per_watt_hour * twig::make<std::mega, WattHours>(5.);
+    // This flexibility allows us to write expessive code, while having the type system check our implementation.
+    Euro price_for_buying_5_mega_watt_hours = euros_per_mega_watt_hour * twig::make<std::mega, WattHours>(5.);
 
-    auto watt_hours_per_euro = 1. / euros_per_watt_hour;  // `(Watt * Hours) / Euro`
-    WattHours watt_hours_affordable_for_500_euros = watt_hours_per_euro * Euro {500.};
+    auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
+    WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
 }
 ```
 
