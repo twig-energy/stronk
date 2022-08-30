@@ -31,10 +31,10 @@ the project:
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 14,
+    "minor": 20,
     "patch": 0
   },
   "configurePresets": [
@@ -44,6 +44,9 @@ the project:
       "inherits": ["dev-mode", "vcpkg", "ci-<os>", "<compiler>"],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "VCPKG_ROOT": "<local_path_to_vcpkg_exe>"
       }
     }
   ],
@@ -77,9 +80,7 @@ in the terminal.
 
 ### Dependency manager
 
-The above preset will make use of the [vcpkg][vcpkg] dependency manager. After
-installing it, make sure the `VCPKG_ROOT` environment variable is pointing at
-the directory where the vcpkg executable is. On Windows, you might also want
+The above preset will make use of the [vcpkg][vcpkg] dependency manager. On Windows, you might also want
 to inherit from the `vcpkg-win64-static` preset, which will make vcpkg install
 the dependencies as static libraries. This is only necessary if you don't want
 to setup `PATH` to run tests.
