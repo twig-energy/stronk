@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <numeric>
 
 #include <gtest/gtest.h>
 #include <stronk/extensions/fmt.h>
@@ -421,6 +422,114 @@ TEST(can_hash, can_hash_overloads_std_hash)  // NOLINT
         auto hash = std::hash<a_hashable_type> {}(a_hashable_type {i});
         auto expected_val = std::hash<int64_t> {}(i);
         EXPECT_EQ(hash, expected_val);
+    }
+}
+
+struct a_size_string_type : stronk<a_size_string_type, std::string, can_size>
+{
+    using stronk::stronk;
+};
+
+struct a_size_vector_type : stronk<a_size_vector_type, std::vector<int>, can_size>
+{
+    using stronk::stronk;
+};
+
+TEST(can_size, can_size_works_for_strings)
+{
+    EXPECT_TRUE(a_size_string_type("").empty());
+    EXPECT_FALSE(a_size_string_type("a").empty());
+    for (size_t i = 0; i < 16; i++) {
+        EXPECT_EQ(a_size_string_type(std::to_string(i)).size(), std::to_string(i).size());
+        EXPECT_EQ(a_size_string_type(std::to_string(i)).empty(), std::to_string(i).empty());
+    }
+}
+
+TEST(can_size, can_size_works_for_vectors)
+{
+    for (size_t i = 0; i < 16; i++) {
+        EXPECT_EQ(a_size_vector_type(std::vector<int>(i)).size(), std::vector<int>(i).size());
+        EXPECT_EQ(a_size_vector_type(std::vector<int>(i)).empty(), std::vector<int>(i).empty());
+    }
+}
+
+struct a_can_iterate_vector_type : stronk<a_can_iterate_vector_type, std::vector<int>, can_iterate>
+{
+    using stronk::stronk;
+};
+
+TEST(can_const_iterate, can_const_iterate_works_for_vectors)
+{
+    for (size_t i = 0; i < 16; i++) {
+        const auto vector = [&i]()
+        {
+            auto tmp = std::vector<int>(i);
+            std::iota(tmp.begin(), tmp.end(), -8);
+            return tmp;
+        }();
+        auto curr = -8;
+        for (const auto& val : vector) {
+            EXPECT_EQ(val, curr);
+            curr++;
+        }
+    }
+}
+
+TEST(can_iterate, can_iterate_works_for_vectors)
+{
+    for (size_t i = 0; i < 16; i++) {
+        auto vector = [&i]()
+        {
+            auto tmp = std::vector<int>(i);
+            std::iota(tmp.begin(), tmp.end(), -8);
+            return tmp;
+        }();
+        auto curr = -8;
+        for (auto& val : vector) {
+            EXPECT_EQ(val, curr);
+            curr++;
+        }
+    }
+}
+
+struct a_can_index_vector_type : stronk<a_can_index_vector_type, std::vector<int>, can_index>
+{
+    using stronk::stronk;
+};
+
+TEST(can_const_index, can_const_index_works_for_vectors)
+{
+    for (size_t i = 0; i < 16; i++) {
+        const auto vector = [&i]()
+        {
+            auto tmp = std::vector<int>(i);
+            std::iota(tmp.begin(), tmp.end(), -8);
+            return tmp;
+        }();
+        auto curr = -8;
+        for (auto j = 0; j < 16; j++) {
+            EXPECT_EQ(vector[i], curr);
+            EXPECT_EQ(vector.at(i), curr);
+            curr++;
+        }
+    }
+}
+
+TEST(can_index, can_index_works_for_vectors)
+{
+    for (size_t i = 0; i < 16; i++) {
+        auto vector = [&i]()
+        {
+            auto tmp = std::vector<int>(i);
+            std::iota(tmp.begin(), tmp.end(), -8);
+            return tmp;
+        }();
+        auto curr = -8;
+        for (auto j = 0; j < 16; j++) {
+            EXPECT_EQ(vector[i], curr);
+            EXPECT_EQ(vector.at(i), curr);
+            curr++;
+        }
     }
 }
 

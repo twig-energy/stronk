@@ -134,6 +134,8 @@ void introducing_another_type()
 
 Units are a great way of using the type system to validate your code.
 
+Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount of inspiration
+
 ## Current list of skills
 Skills adds functionality to your stronk types. We have implemented a number of generic skills which should help you get started.
 
@@ -143,10 +145,10 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_subtract`: binary `operator-` and `operator=-`
 - `can_multiply`: binary `operator*` and `operator=*` (not compatible with units, we encourage you to use units instead)
 - `can_divide`: binary `operator/` and `operator=/` (not compatible with units, we encourage you to use units instead)
-- `can_abs`: `twig::abs` will accept strong-types with this skill. `twig::abs` will not accept strong types without this skill.
-- `can_isnan`: `twig::isnan` will accept strong-types with this skill
-- `can_stream`: `operator<<(std::ostream)`, stream the underlying value to the stream.
-- `can_order`: `operator<=>`, note you probably also want to add `can_equate` or one of its relatives, since the compiler cannot generate equality with the `operator<=>` for stronk types (since its not default implemented)
+- `can_abs`: overloads `twig::abs`
+- `can_isnan`: overloads `twig::isnan`
+- `can_stream`: overloads `operator<<(std::ostream)`, stream the underlying value to the stream.
+- `can_order`: `operator<=>`, note you probably also want to add `can_equate`, since the compiler cannot generate equality with the `operator<=>` for stronk types.
 - `can_equate`: `operator==` with regular equality
 - `can_equate_with_is_close`: `operator==` but with numpy's `is_close` definition of equal
 - `can_equate_with_is_close_nan_equals`: `operator==` but with numpy's `is_close` definition of equal, nans being equal
@@ -154,7 +156,12 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_less_than_greater_than`: `operator<` and `operator>` (prefer the `can_order` skill instead)
 - `can_less_than_greater_than_or_equal`: operator <= and operator >= (prefer the `can_order` skill instead)
 - `can_be_used_as_flag`: for boolean values used as flags
-- `can_hash`: implements the `std::hash<T>`.
+- `can_hash`: specializes `std::hash<T>`.
+- `can_size`: implements `.size()` and `.empty()`
+- `can_const_iterate` implements `begin() const`, `end() const`, `cbegin() const` and `cend() const`.
+- `can_iterate` adds the `can_const_iterate` as well implementing `begin()`, `end()`.
+- `can_const_index` implements `operator[](const auto&) const` and `at(const auto&) const`
+- `can_index` adds the `can_const_index` as well implementing `operator[](const auto&)` and `at(const auto&)`.
 
 ### Units
 - `unit`: enables unit behavior for multiplication and division.
@@ -165,14 +172,14 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_gtest_print`: for printing the values in gtest check macros
 - `can_fmt_format`: implements `struct fmt::formatter<T>` with default formatting string `"{}"`. In the future we will add a `can_format` for `std::format`.
 - `can_fmt_format_builder<"fmt format string{}">::skill`: implements `struct fmt::formatter<T>`. In the future we will add a `can_format_builder<"std format string">` for `std::format`.
-### Prefabs: (see `stronk/prefabs.h`)
-- `stronk_default_unit`: arithmetic unit with most of the regular operations
-- `stronk_flag`: flag like boolean with equal operators etc.
 
 Adding new skills is easy so feel free to add more.
 
+## Prefabs: (see `stronk/prefabs.h`)
+Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
-Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount of inspiration
+- `stronk_default_unit`: arithmetic unit with most of the regular operations
+- `stronk_flag`: flag like boolean with equal operators etc.
 
 ## Examples:
 
