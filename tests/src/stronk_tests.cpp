@@ -507,9 +507,9 @@ TEST(can_const_index, can_const_index_works_for_vectors)
             return tmp;
         }();
         auto curr = -8;
-        for (auto j = 0; j < 16; j++) {
-            EXPECT_EQ(vector[i], curr);
-            EXPECT_EQ(vector.at(i), curr);
+        for (size_t j = 0; j < i; j++) {
+            EXPECT_EQ(vector.at(j), curr);
+            EXPECT_EQ(vector[j], curr);
             curr++;
         }
     }
@@ -525,9 +525,9 @@ TEST(can_index, can_index_works_for_vectors)
             return tmp;
         }();
         auto curr = -8;
-        for (auto j = 0; j < 16; j++) {
-            EXPECT_EQ(vector[i], curr);
-            EXPECT_EQ(vector.at(i), curr);
+        for (size_t j = 0; j < i; j++) {
+            EXPECT_EQ(vector.at(j), curr);
+            EXPECT_EQ(vector[j], curr);
             curr++;
         }
     }
