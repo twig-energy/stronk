@@ -13,55 +13,59 @@ namespace twig
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
-  private:
-    T _v;
-
-  public:
     using underlying_type = T;
+    // we need this value to be publicly available for stronk types to be usable as non-type template parameters.
+    // Therefore, to discourage usage we have given it a long ugly name: yuck.
+    underlying_type _you_should_no_be_using_this_but_rather_unwrap;
 
     constexpr stronk() noexcept
-        : _v()
+        : _you_should_no_be_using_this_but_rather_unwrap()
     {
     }
 
-    constexpr explicit stronk(const T& value) noexcept
-        : _v(value)
+    constexpr explicit stronk(const underlying_type& value) noexcept
+        : _you_should_no_be_using_this_but_rather_unwrap(value)
     {
     }
 
-    constexpr explicit stronk(T&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
-        : _v(std::move(value))
+    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
+        : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
     {
     }
 
     template<typename Expected>
     [[nodiscard]] constexpr auto unwrap() noexcept -> underlying_type&
     {
-        static_assert(std::is_same_v<Expected, Tag>);
-        return this->_v;
+        static_assert(std::is_same_v<Expected, Tag>,
+                      "To access the underlying type you need to provide the stronk type you expect to be querying. By "
+                      "doing so you will be protected from unsafe accesses if you chose to change the type");
+        return this->_you_should_no_be_using_this_but_rather_unwrap;
     }
 
     template<typename Expected>
     [[nodiscard]] constexpr auto unwrap() const noexcept -> const underlying_type&
     {
-        static_assert(std::is_same_v<Expected, Tag>);
-        return this->_v;
+        static_assert(std::is_same_v<Expected, Tag>,
+                      "To access the underlying type you need to provide the stronk type you expect to be querying. By "
+                      "doing so you will be protected from unsafe accesses if you chose to change the type");
+        return this->_you_should_no_be_using_this_but_rather_unwrap;
     }
 
     constexpr friend void swap(stronk& a, stronk& b) noexcept
     {
         using std::swap;
-        swap(static_cast<T&>(a._v), static_cast<T&>(b._v));
+        swap(static_cast<T&>(a._you_should_no_be_using_this_but_rather_unwrap),
+             static_cast<T&>(b._you_should_no_be_using_this_but_rather_unwrap));
     }
 
   protected:
     [[nodiscard]] constexpr auto val() noexcept -> T&
     {
-        return this->_v;
+        return this->_you_should_no_be_using_this_but_rather_unwrap;
     }
     [[nodiscard]] constexpr auto val() const noexcept -> const T&
     {
-        return this->_v;
+        return this->_you_should_no_be_using_this_but_rather_unwrap;
     }
 };
 

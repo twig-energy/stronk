@@ -533,4 +533,15 @@ TEST(can_index, can_index_works_for_vectors)
     }
 }
 
+struct a_none_type_template_parameter_type : stronk<a_none_type_template_parameter_type, int32_t>
+{
+    using stronk::stronk;
+};
+template<a_none_type_template_parameter_type Val>
+struct AnotherType
+{
+};
+
+constexpr static auto gravity = AnotherType<a_none_type_template_parameter_type {25}>();
+
 }  // namespace twig
