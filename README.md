@@ -12,7 +12,7 @@
     ==================================================================
 ```
 
-=== An easy to customize, strong type library with built in support for unit-like behavior ===
+## An easy to customize, strong type library with built-in support for unit-like behavior
 
 #### What:
 - Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality to your own types.
@@ -54,7 +54,7 @@ auto main() -> int
 }
 ```
 
-On top of providing strong type utilities, `stronk` also enables unit like behavior:
+On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=23
 #include <ratio>
