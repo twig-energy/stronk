@@ -134,7 +134,7 @@ void introducing_another_type()
 
 Units are a great way of using the type system to validate your code.
 
-Credit to https://www.foonathan.net/2016/10/strong-typedefs/ for a great amount of inspiration
+Credit to [Jonathan Müller](https://github.com/foonathan)'s [blogpost](https://www.foonathan.net/2016/10/strong-typedefs/) and [Jonathan Boccara](https://github.com/joboccara)'s [blogpost](https://www.fluentcpp.com/2016/12/08/strong-types-for-strong-interfaces/) - both of which has been great sources of inspiration.
 
 ## Current list of skills
 Skills adds functionality to your stronk types. We have implemented a number of generic skills which should help you get started.
