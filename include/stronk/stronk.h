@@ -374,6 +374,110 @@ struct can_hash
 template<typename StronkT>
 concept can_hash_like = std::same_as<typename StronkT::can_hash_indicator, std::true_type>;
 
+template<typename StronkT>
+struct can_size
+{
+    [[nodiscard]] constexpr auto size() const noexcept -> std::size_t
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().size();
+    }
+    [[nodiscard]] constexpr auto empty() const noexcept -> bool
+    {
+        return this->size() == static_cast<std::size_t>(0);
+    }
+};
+
+template<typename StronkT>
+struct can_const_iterate
+{
+    [[nodiscard]] constexpr auto begin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto end() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+
+    [[nodiscard]] constexpr auto cbegin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto cend() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+};
+
+template<typename StronkT>
+struct can_iterate : can_const_iterate<StronkT>
+{
+    [[nodiscard]] constexpr auto begin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto end() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+
+    [[nodiscard]] constexpr auto cbegin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto cend() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+
+    [[nodiscard]] constexpr auto begin() noexcept
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto end() noexcept
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+};
+
+template<typename StronkT>
+struct can_const_index
+{
+    [[nodiscard]] constexpr auto operator[](const auto& indexer) const noexcept -> const auto&
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>()[indexer];
+    }
+
+    [[nodiscard]] constexpr auto at(const auto& indexer) const -> const auto&
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().at(indexer);
+    }
+};
+
+template<typename StronkT>
+struct can_index
+{
+    [[nodiscard]] constexpr auto operator[](const auto& indexer) const noexcept -> const auto&
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>()[indexer];
+    }
+
+    [[nodiscard]] constexpr auto at(const auto& indexer) const -> const auto&
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().at(indexer);
+    }
+
+    [[nodiscard]] constexpr auto operator[](const auto& indexer) noexcept -> auto&
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>()[indexer];
+    }
+
+    [[nodiscard]] constexpr auto at(const auto& indexer) -> auto&
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>().at(indexer);
+    }
+};
+
 }  // namespace twig
 
 template<twig::can_hash_like T>
