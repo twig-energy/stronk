@@ -465,7 +465,7 @@ TEST(can_const_iterate, can_const_iterate_works_for_vectors)
         {
             auto tmp = std::vector<int>(i);
             std::iota(tmp.begin(), tmp.end(), -8);
-            return tmp;
+            return a_can_iterate_vector_type(tmp);
         }();
         auto curr = -8;
         for (const auto& val : vector) {
@@ -482,7 +482,7 @@ TEST(can_iterate, can_iterate_works_for_vectors)
         {
             auto tmp = std::vector<int>(i);
             std::iota(tmp.begin(), tmp.end(), -8);
-            return tmp;
+            return a_can_iterate_vector_type(tmp);
         }();
         auto curr = -8;
         for (auto& val : vector) {
@@ -504,7 +504,7 @@ TEST(can_const_index, can_const_index_works_for_vectors)
         {
             auto tmp = std::vector<int>(i);
             std::iota(tmp.begin(), tmp.end(), -8);
-            return tmp;
+            return a_can_index_vector_type(tmp);
         }();
         auto curr = -8;
         for (size_t j = 0; j < i; j++) {
@@ -522,7 +522,7 @@ TEST(can_index, can_index_works_for_vectors)
         {
             auto tmp = std::vector<int>(i);
             std::iota(tmp.begin(), tmp.end(), -8);
-            return tmp;
+            return a_can_index_vector_type(tmp);
         }();
         auto curr = -8;
         for (size_t j = 0; j < i; j++) {

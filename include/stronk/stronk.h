@@ -383,7 +383,7 @@ struct can_size
     }
     [[nodiscard]] constexpr auto empty() const noexcept -> bool
     {
-        return this->size() == 0ULL;
+        return this->size() == static_cast<std::size_t>(0);
     }
 };
 
@@ -396,7 +396,7 @@ struct can_const_iterate
     }
     [[nodiscard]] constexpr auto end() const noexcept
     {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end() == 0ULL;
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
     }
 
     [[nodiscard]] constexpr auto cbegin() const noexcept
@@ -405,20 +405,38 @@ struct can_const_iterate
     }
     [[nodiscard]] constexpr auto cend() const noexcept
     {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end() == 0ULL;
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
     }
 };
 
 template<typename StronkT>
 struct can_iterate : can_const_iterate<StronkT>
 {
+    [[nodiscard]] constexpr auto begin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto end() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+
+    [[nodiscard]] constexpr auto cbegin() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
+    }
+    [[nodiscard]] constexpr auto cend() const noexcept
+    {
+        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
+    }
+
     [[nodiscard]] constexpr auto begin() noexcept
     {
         return static_cast<StronkT&>(*this).template unwrap<StronkT>().begin();
     }
     [[nodiscard]] constexpr auto end() noexcept
     {
-        return static_cast<StronkT&>(*this).template unwrap<StronkT>().end() == 0ULL;
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>().end();
     }
 };
 
@@ -437,16 +455,26 @@ struct can_const_index
 };
 
 template<typename StronkT>
-struct can_index : can_const_index<StronkT>
+struct can_index
 {
-    [[nodiscard]] constexpr auto operator[](const auto& indexer) noexcept -> auto&
+    [[nodiscard]] constexpr auto operator[](const auto& indexer) const noexcept -> const auto&
     {
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>()[indexer];
     }
 
-    [[nodiscard]] constexpr auto at(const auto& indexer) -> auto&
+    [[nodiscard]] constexpr auto at(const auto& indexer) const -> const auto&
     {
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>().at(indexer);
+    }
+
+    [[nodiscard]] constexpr auto operator[](const auto& indexer) noexcept -> auto&
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>()[indexer];
+    }
+
+    [[nodiscard]] constexpr auto at(const auto& indexer) -> auto&
+    {
+        return static_cast<StronkT&>(*this).template unwrap<StronkT>().at(indexer);
     }
 };
 
