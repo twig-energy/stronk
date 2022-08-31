@@ -113,8 +113,7 @@ struct unit_lists_of_multiplying
 template<unit_like A, unit_like B>
 constexpr auto operator*(const A& a, const B& b) noexcept
 {
-    using underlying_type = typename underlying_type_of_multiplying<A, B>::type;
-    auto res = static_cast<underlying_type>(a.template unwrap<A>() * b.template unwrap<B>());
+    auto res = a.template unwrap<A>() * b.template unwrap<B>();
 
     using unit_description_t = typename unit_lists_of_multiplying<A, B>::unit_description_t;
     if constexpr (unit_description_t::is_unitless) {
@@ -123,7 +122,8 @@ constexpr auto operator*(const A& a, const B& b) noexcept
         using pure_t = typename unit_description_t::pure_t;  // unwrap out into original type.
         return pure_t {static_cast<typename pure_t::underlying_type>(res)};
     } else {
-        return NewUnitType<underlying_type, unit_description_t> {res};
+        using underlying_type = typename underlying_type_of_multiplying<A, B>::type;
+        return NewUnitType<underlying_type, unit_description_t> {static_cast<underlying_type>(res)};
     }
 }
 
@@ -194,8 +194,7 @@ struct unit_lists_of_dividing
 template<unit_like A, unit_like B>
 constexpr auto operator/(const A& a, const B& b) noexcept
 {
-    using underlying_type = typename underlying_type_of_dividing<A, B>::type;
-    auto res = static_cast<underlying_type>(a.template unwrap<A>() / b.template unwrap<B>());
+    auto res = a.template unwrap<A>() / b.template unwrap<B>();
 
     using unit_description_t = typename unit_lists_of_dividing<A, B>::unit_description_t;
     if constexpr (unit_description_t::is_unitless) {
@@ -204,7 +203,8 @@ constexpr auto operator/(const A& a, const B& b) noexcept
         using pure_t = typename unit_description_t::pure_t;
         return pure_t {static_cast<typename pure_t::underlying_type>(res)};
     } else {
-        return NewUnitType<underlying_type, unit_description_t> {res};
+        using underlying_type = typename underlying_type_of_dividing<A, B>::type;
+        return NewUnitType<underlying_type, unit_description_t> {static_cast<underlying_type>(res)};
     }
 }
 

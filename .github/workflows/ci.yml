@@ -157,3 +157,18 @@ jobs:
         report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
         require_tests: true
         fail_on_failure: true
+
+    - name: Benchmarks
+      working-directory: build
+      if: matrix.os != 'windows-2022'
+      run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
+
+    - name: Benchmarks-windows
+      working-directory: build
+      if: matrix.os == 'windows-2022'
+      run: |
+        ls ${{ github.workspace }}/build
+        ls ${{ github.workspace }}/build/benchmarks
+        ls ${{ github.workspace }}/build/benchmarks/Release
+        ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
+
