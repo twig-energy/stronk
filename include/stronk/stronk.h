@@ -22,10 +22,8 @@ struct stronk : public Skills<Tag>...
     // Therefore, to discourage direct usage of it, we have given it a long ugly name.
     underlying_type _you_should_no_be_using_this_but_rather_unwrap;
 
-    constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) requires(std::is_default_constructible_v<T>)
-        : _you_should_no_be_using_this_but_rather_unwrap()
-    {
-    }
+    constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) requires(
+        std::is_default_constructible_v<T>) = default;
 
     constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
         should_be_copy_constructed<T>)
@@ -46,9 +44,16 @@ struct stronk : public Skills<Tag>...
     }
 
     template<typename O>
-        requires(std::convertible_to<O, T>)
+        requires(std::convertible_to<O, T> && !should_be_copy_constructed<O>)
     constexpr explicit stronk(const O& value) noexcept
-        : _you_should_no_be_using_this_but_rather_unwrap(value)
+        : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
+    {
+    }
+
+    template<typename O>
+        requires(std::convertible_to<O, T>&& should_be_copy_constructed<O>)
+    constexpr explicit stronk(O value) noexcept
+        : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
     {
     }
 
