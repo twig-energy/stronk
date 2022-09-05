@@ -135,7 +135,7 @@ jobs:
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-<os>-<compiler>-<hash>" }
+      with: { committish: "${{ env.VCPKG_COMMIT }}"}
 
     - name: Configure
       shell: pwsh
