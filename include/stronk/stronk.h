@@ -12,7 +12,7 @@ namespace twig
 {
 
 template<typename T>
-using copy_or_ref = std::conditional_t<std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*), T, const T&>;
+concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
 
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
@@ -22,15 +22,25 @@ struct stronk : public Skills<Tag>...
     // Therefore, to discourage direct usage of it, we have given it a long ugly name.
     underlying_type _you_should_no_be_using_this_but_rather_unwrap;
 
-    constexpr stronk() noexcept
+    constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) requires(std::is_default_constructible_v<T>)
         : _you_should_no_be_using_this_but_rather_unwrap()
     {
     }
 
-    template<typename O>
-        requires(std::convertible_to<O, T>)
-    constexpr explicit stronk(O&& value) noexcept
-        : _you_should_no_be_using_this_but_rather_unwrap(std::forward<O>(value))
+    constexpr explicit stronk(underlying_type value) noexcept requires(should_be_copy_constructed<T>)
+        : _you_should_no_be_using_this_but_rather_unwrap(value)
+    {
+    }
+
+    constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
+        !should_be_copy_constructed<T>)
+        : _you_should_no_be_using_this_but_rather_unwrap(value)
+    {
+    }
+
+    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
+        !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
+        : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
     {
     }
 
@@ -98,7 +108,7 @@ struct can_add
 
     constexpr friend auto operator+(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT {lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>()};
+        return StronkT(lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>());
     }
 };
 
@@ -113,7 +123,7 @@ struct can_subtract
 
     constexpr friend auto operator-(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT {lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>()};
+        return StronkT(lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>());
     }
 };
 
@@ -155,7 +165,6 @@ struct can_divide
 // multiplying two A*A with can_multiply results in type 'A', where with units
 // it results in an 'A^2' type. Therefore the two systems cannot be mixed. We
 // recommend using units.
-// TODO(anders.wind) simplify
 template<typename StronkT>
 concept is_none_unit_behaving =
     (std::same_as<typename StronkT::can_multiply_with_self,

@@ -542,6 +542,6 @@ struct AnotherType
 {
 };
 
-constexpr static auto gravity = AnotherType<a_none_type_template_parameter_type {25}>();
+constexpr static auto gravity = AnotherType<a_none_type_template_parameter_type {25}>();  // NOLINT
 
 }  // namespace twig
