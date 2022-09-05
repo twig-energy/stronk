@@ -10,12 +10,16 @@
 
 namespace twig
 {
+
+template<typename T>
+using copy_or_ref = std::conditional_t<std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*), T, const T&>;
+
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
     using underlying_type = T;
     // we need this value to be publicly available for stronk types to be usable as non-type template parameters.
-    // Therefore, to discourage usage we have given it a long ugly name: yuck.
+    // Therefore, to discourage direct usage of it, we have given it a long ugly name.
     underlying_type _you_should_no_be_using_this_but_rather_unwrap;
 
     constexpr stronk() noexcept
@@ -23,13 +27,10 @@ struct stronk : public Skills<Tag>...
     {
     }
 
-    constexpr explicit stronk(const underlying_type& value) noexcept
-        : _you_should_no_be_using_this_but_rather_unwrap(value)
-    {
-    }
-
-    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
-        : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
+    template<typename O>
+        requires(std::convertible_to<O, T>)
+    constexpr explicit stronk(O&& value) noexcept
+        : _you_should_no_be_using_this_but_rather_unwrap(std::forward<O>(value))
     {
     }
 
