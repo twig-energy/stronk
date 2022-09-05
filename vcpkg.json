@@ -10,10 +10,7 @@
       "version>=": "1.78.0"
     }
   ],
-  "default-features": [
-    "fmt",
-    "abseil"
-  ],
+  "default-features": [],
   "features": {
     "fmt": {
       "description": "Dependencies for fmt extension",
@@ -39,6 +36,15 @@
         {
           "name": "gtest",
           "version>=": "1.11.0"
+        }
+      ]
+    },
+    "benchmark": {
+      "description": "Dependencies for benchmarking",
+      "dependencies": [
+        {
+          "name": "benchmark",
+          "version>=": "1.6.0"
         }
       ]
     }
