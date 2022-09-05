@@ -27,7 +27,8 @@ struct stronk : public Skills<Tag>...
     {
     }
 
-    constexpr explicit stronk(underlying_type value) noexcept requires(should_be_copy_constructed<T>)
+    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
+        should_be_copy_constructed<T>)
         : _you_should_no_be_using_this_but_rather_unwrap(value)
     {
     }
@@ -41,6 +42,13 @@ struct stronk : public Skills<Tag>...
     constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
         !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
         : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
+    {
+    }
+
+    template<typename O>
+        requires(std::convertible_to<O, T>)
+    constexpr explicit stronk(const O& value) noexcept
+        : _you_should_no_be_using_this_but_rather_unwrap(value)
     {
     }
 
