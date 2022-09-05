@@ -30,7 +30,7 @@ struct generate_randomish
 {
     auto operator()() -> T
     {
-        return static_cast<char>(std::rand());  // NOLINT
+        return static_cast<T>(std::rand());  // NOLINT
     }
 };
 

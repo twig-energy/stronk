@@ -11,7 +11,7 @@ static void benchmark_default_onto_vector(benchmark::State& state)
     for (auto _ : state) {
         auto vec = std::vector<T>();
         for (auto i = 0; i < state.range(0); i++) {
-            vec.emplace_back(T());
+            vec.emplace_back();
         }
         benchmark::DoNotOptimize(vec);
     }
@@ -19,7 +19,7 @@ static void benchmark_default_onto_vector(benchmark::State& state)
 
 BENCHMARK_TEMPLATE(benchmark_default_onto_vector, int8_t)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_default_onto_vector, int8_t_wrapping_type)->Range(32ULL, 8ULL << 10ULL);
-BENCHMARK_TEMPLATE(benchmark_default_onto_vector, decltype(int64_t_wrapping_type {} * int64_t_wrapping_type {}))
+BENCHMARK_TEMPLATE(benchmark_default_onto_vector, decltype(int8_t_wrapping_type {} * int8_t_wrapping_type {}))
     ->Range(32ULL, 8ULL << 10ULL);
 
 BENCHMARK_TEMPLATE(benchmark_default_onto_vector, int64_t)->Range(32ULL, 8ULL << 10ULL);
