@@ -13,6 +13,7 @@ Checks: "*,\
   -fuchsia-*,\
   -google-readability-avoid-underscore-in-googletest-name,\
   -google-readability-todo,\
+  -google-runtime-references,\
   -hicpp-named-parameter,\
   -llvm-header-guard,\
   -llvm-include-order,\

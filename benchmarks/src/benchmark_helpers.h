@@ -1,10 +1,13 @@
 #pragma once
 #include <cstdint>
+#include <limits>
 #include <random>
 #include <sstream>
 #include <string>
 
 #include <stronk/prefabs.h>
+#include <stronk/utilities/constexpr_helpers.h>
+
 struct int8_t_wrapping_type : twig::stronk_default_unit<int8_t_wrapping_type, int8_t>
 {
     using stronk_default_unit::stronk_default_unit;
@@ -50,9 +53,16 @@ auto rand(T mi, T ma) -> T
     if constexpr (std::is_floating_point_v<T>) {
         std::uniform_real_distribution<T> dist(mi, ma);
         return dist(get_random_device());
+    } else if constexpr (std::is_integral_v<T>) {
+        if constexpr (sizeof(T) <= 1) {
+            std::uniform_int_distribution<std::conditional_t<std::is_unsigned_v<T>, uint16_t, int16_t>> dist(mi, ma);
+            return static_cast<T>(dist(get_random_device()));
+        } else {
+            std::uniform_int_distribution<T> dist(mi, ma);
+            return dist(get_random_device());
+        }
     } else {
-        std::uniform_int_distribution<T> dist(mi, ma);
-        return dist(get_random_device());
+        static_assert(twig::stronk_details::not_implemented_type<T> {});
     }
 }
 
@@ -82,7 +92,7 @@ struct generate_randomish<std::string>
     {
         auto ss = std::stringstream();
         for (auto i = 0; i < 16; i++) {
-            ss << details::rand<char>();
+            ss << generate_randomish<char> {}();
         }
         return ss.str();
     }
