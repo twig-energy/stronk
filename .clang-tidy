@@ -5,6 +5,11 @@ Checks: "*,\
   -altera-*,\
   -clang-diagnostic-gnu-zero-variadic-macro-arguments,\
   -cppcoreguidelines-avoid-magic-numbers,\
+  -cppcoreguidelines-avoid-non-const-global-variables,\
+  -cppcoreguidelines-owning-memory,\
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -cppcoreguidelines-avoid-non-const-global-variables,\
+  -cert-err58-cpp,\
   -fuchsia-*,\
   -google-readability-avoid-underscore-in-googletest-name,\
   -google-readability-todo,\

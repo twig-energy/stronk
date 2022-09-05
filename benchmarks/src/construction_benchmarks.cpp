@@ -10,10 +10,11 @@ static void benchmark_default_onto_vector(benchmark::State& state)
 {
     for (auto _ : state) {
         auto vec = std::vector<T>();
+        benchmark::DoNotOptimize(vec.data());
         for (auto i = 0; i < state.range(0); i++) {
             vec.emplace_back();
         }
-        benchmark::DoNotOptimize(vec);
+        benchmark::ClobberMemory();
     }
 }
 
@@ -35,10 +36,11 @@ static void benchmark_rand_onto_vector(benchmark::State& state)
 {
     for (auto _ : state) {
         auto vec = std::vector<T>();
+        benchmark::DoNotOptimize(vec.data());
         for (auto i = 0; i < state.range(0); i++) {
             vec.emplace_back(generate_randomish<T> {}());
         }
-        benchmark::DoNotOptimize(vec);
+        benchmark::ClobberMemory();
     }
 }
 
