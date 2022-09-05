@@ -111,7 +111,7 @@ struct unit_lists_of_multiplying
 };
 
 template<unit_like A, unit_like B>
-constexpr auto operator*(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = a.template unwrap<A>() * b.template unwrap<B>();
 
@@ -192,7 +192,7 @@ struct unit_lists_of_dividing
 };
 
 template<unit_like A, unit_like B>
-constexpr auto operator/(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = a.template unwrap<A>() / b.template unwrap<B>();
 

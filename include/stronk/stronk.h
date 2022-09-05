@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <stronk/utilities/equality.h>
+#include <stronk/utilities/macros.h>
 #include <stronk/utilities/strings.h>
 
 namespace twig
@@ -22,21 +23,25 @@ struct stronk : public Skills<Tag>...
     // Therefore, to discourage direct usage of it, we have given it a long ugly name.
     underlying_type _you_should_no_be_using_this_but_rather_unwrap;
 
+    STRONK_FORCEINLINE
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) requires(
         std::is_default_constructible_v<T>) = default;
 
+    STRONK_FORCEINLINE
     constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
         should_be_copy_constructed<T>)
         : _you_should_no_be_using_this_but_rather_unwrap(value)
     {
     }
 
+    STRONK_FORCEINLINE
     constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
         !should_be_copy_constructed<T>)
         : _you_should_no_be_using_this_but_rather_unwrap(value)
     {
     }
 
+    STRONK_FORCEINLINE
     constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
         !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
         : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
@@ -45,14 +50,14 @@ struct stronk : public Skills<Tag>...
 
     template<typename O>
         requires(std::convertible_to<O, T> && !should_be_copy_constructed<O>)
-    constexpr explicit stronk(const O& value) noexcept
+    STRONK_FORCEINLINE constexpr explicit stronk(const O& value) noexcept
         : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
     {
     }
 
     template<typename O>
         requires(std::convertible_to<O, T>&& should_be_copy_constructed<O>)
-    constexpr explicit stronk(O value) noexcept
+    STRONK_FORCEINLINE constexpr explicit stronk(O value) noexcept
         : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
     {
     }
