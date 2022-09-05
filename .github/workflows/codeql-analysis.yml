@@ -56,7 +56,7 @@ jobs:
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}" }
+      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-codeql-<hash>" }
 
     - name: Build
       run: |

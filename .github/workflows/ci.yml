@@ -54,7 +54,7 @@ jobs:
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}" }
+      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-coverage-<hash>" }
 
     - name: Configure
       env: { CXX: clang++-13 }
@@ -85,7 +85,7 @@ jobs:
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}" }
+      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-sanitize-<hash>" }
 
     - name: Configure
       env: { CXX: clang++-13 }
@@ -135,7 +135,7 @@ jobs:
 
     - name: Install vcpkg
       uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}" }
+      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-<os>-<compiler>-<hash>" }
 
     - name: Configure
       shell: pwsh
@@ -167,8 +167,5 @@ jobs:
       working-directory: build
       if: matrix.os == 'windows-2022'
       run: |
-        ls ${{ github.workspace }}/build
-        ls ${{ github.workspace }}/build/benchmarks
-        ls ${{ github.workspace }}/build/benchmarks/Release
         ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
 
