@@ -21,11 +21,9 @@ struct stronk : public Skills<Tag>...
     using underlying_type = T;
     // we need this value to be publicly available for stronk types to be usable as non-type template parameters.
     // Therefore, to discourage direct usage of it, we have given it a long ugly name.
-    underlying_type _you_should_no_be_using_this_but_rather_unwrap;
+    T _you_should_no_be_using_this_but_rather_unwrap;
 
-    STRONK_FORCEINLINE
-    constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) requires(
-        std::is_default_constructible_v<T>) = default;
+    constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
     STRONK_FORCEINLINE
     constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
@@ -83,8 +81,7 @@ struct stronk : public Skills<Tag>...
     constexpr friend void swap(stronk& a, stronk& b) noexcept
     {
         using std::swap;
-        swap(static_cast<T&>(a._you_should_no_be_using_this_but_rather_unwrap),
-             static_cast<T&>(b._you_should_no_be_using_this_but_rather_unwrap));
+        swap(a._you_should_no_be_using_this_but_rather_unwrap, b._you_should_no_be_using_this_but_rather_unwrap);
     }
 
   protected:
@@ -299,9 +296,23 @@ template<typename StronkT>
 using can_equate_with_is_close_abs_tol_only =
     can_equate_with_is_close_base<StronkT, is_close_using_abs_tol_only_params>;
 
-template<typename T, typename StronkT>
-using default_can_equate = std::
-    conditional_t<std::is_floating_point_v<T>, can_equate_with_is_close_abs_tol_only<StronkT>, can_equate<StronkT>>;
+template<typename T>
+struct default_can_equate_builder
+{
+    template<typename StronkT>
+    struct skill : can_equate<StronkT>
+    {
+    };
+};
+
+template<std::floating_point T>
+struct default_can_equate_builder<T>
+{
+    template<typename StronkT>
+    struct skill : can_equate_with_is_close_abs_tol_only<StronkT>
+    {
+    };
+};
 
 template<typename StronkT>
 struct can_order

@@ -6,27 +6,32 @@
 #include <string>
 
 #include <stronk/prefabs.h>
+#include <stronk/stronk.h>
 #include <stronk/utilities/constexpr_helpers.h>
 
 struct int8_t_wrapping_type : twig::stronk_default_unit<int8_t_wrapping_type, int8_t>
 {
     using stronk_default_unit::stronk_default_unit;
 };
+static_assert(sizeof(int8_t_wrapping_type) == sizeof(int8_t));
 
 struct int64_t_wrapping_type : twig::stronk_default_unit<int64_t_wrapping_type, int64_t>
 {
     using stronk_default_unit::stronk_default_unit;
 };
+static_assert(sizeof(int64_t_wrapping_type) == sizeof(int64_t));
 
 struct double_wrapping_type : twig::stronk_default_unit<double_wrapping_type, double>
 {
     using stronk_default_unit::stronk_default_unit;
 };
+static_assert(sizeof(double_wrapping_type) == sizeof(double));
 
 struct string_wrapping_type : twig::stronk_default_unit<string_wrapping_type, std::string>
 {
     using stronk_default_unit::stronk_default_unit;
 };
+static_assert(sizeof(string_wrapping_type) == sizeof(std::string));
 
 namespace details
 {
@@ -62,16 +67,14 @@ auto rand(T mi, T ma) -> T
             return dist(get_random_device());
         }
     } else {
-        static_assert(twig::stronk_details::not_implemented_type<T> {});
+        // static_assert(twig::stronk_details::not_implemented_type<T> {});
     }
 }
 
 template<typename T>
 auto rand() -> T
 {
-    T mi = 0;
-    T ma = default_max_for_random<T>();
-    return rand(mi, ma);
+    return T();
 }
 
 }  // namespace details
@@ -79,16 +82,15 @@ auto rand() -> T
 template<typename T>
 struct generate_randomish
 {
-    auto operator()() -> T
+    auto operator()() const -> T
     {
         return details::rand<T>();
     }
 };
-
 template<>
 struct generate_randomish<std::string>
 {
-    auto operator()() -> std::string
+    auto operator()() const -> std::string
     {
         auto ss = std::stringstream();
         for (auto i = 0; i < 16; i++) {
@@ -101,9 +103,9 @@ struct generate_randomish<std::string>
 template<twig::stronk_like T>
 struct generate_randomish<T>
 {
-    auto operator()() -> T
+    auto operator()() const -> T
     {
-        return T(generate_randomish<typename T::underlying_type> {}());
+        return T {generate_randomish<typename T::underlying_type> {}()};
     }
 };
 
