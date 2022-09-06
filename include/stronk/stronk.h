@@ -46,20 +46,6 @@ struct stronk : public Skills<Tag>...
     {
     }
 
-    template<typename O>
-        requires(std::convertible_to<O, T> && !should_be_copy_constructed<O>)
-    STRONK_FORCEINLINE constexpr explicit stronk(const O& value) noexcept
-        : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
-    {
-    }
-
-    template<typename O>
-        requires(std::convertible_to<O, T>&& should_be_copy_constructed<O>)
-    STRONK_FORCEINLINE constexpr explicit stronk(O value) noexcept
-        : _you_should_no_be_using_this_but_rather_unwrap(static_cast<T>(value))
-    {
-    }
-
     template<typename Expected>
     [[nodiscard]] constexpr auto unwrap() noexcept -> underlying_type&
     {
