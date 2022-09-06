@@ -19,30 +19,32 @@ template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
     using underlying_type = T;
-    // we need this value to be publicly available for stronk types to be usable as non-type template parameters.
-    // Therefore, to discourage direct usage of it, we have given it a long ugly name.
-    T _you_should_no_be_using_this_but_rather_unwrap;
+
+    // we need the underlying value to have public visibility for stronk types to be usable as non-type template
+    // parameters. This is to fulfil the `literal class type` requirement.
+    // To discourage direct usage of the underlying value, we have given it a long ugly name.
+    T _you_should_not_be_using_this_but_rather_unwrap;
 
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
     STRONK_FORCEINLINE
     constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
         should_be_copy_constructed<T>)
-        : _you_should_no_be_using_this_but_rather_unwrap(value)
+        : _you_should_not_be_using_this_but_rather_unwrap(value)
     {
     }
 
     STRONK_FORCEINLINE
     constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
         !should_be_copy_constructed<T>)
-        : _you_should_no_be_using_this_but_rather_unwrap(value)
+        : _you_should_not_be_using_this_but_rather_unwrap(value)
     {
     }
 
     STRONK_FORCEINLINE
     constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
         !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
-        : _you_should_no_be_using_this_but_rather_unwrap(std::move(value))
+        : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
     {
     }
 
@@ -52,7 +54,7 @@ struct stronk : public Skills<Tag>...
         static_assert(std::is_same_v<Expected, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
-        return this->_you_should_no_be_using_this_but_rather_unwrap;
+        return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 
     template<typename Expected>
@@ -61,23 +63,23 @@ struct stronk : public Skills<Tag>...
         static_assert(std::is_same_v<Expected, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
-        return this->_you_should_no_be_using_this_but_rather_unwrap;
+        return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 
     constexpr friend void swap(stronk& a, stronk& b) noexcept
     {
         using std::swap;
-        swap(a._you_should_no_be_using_this_but_rather_unwrap, b._you_should_no_be_using_this_but_rather_unwrap);
+        swap(a._you_should_not_be_using_this_but_rather_unwrap, b._you_should_not_be_using_this_but_rather_unwrap);
     }
 
   protected:
     [[nodiscard]] constexpr auto val() noexcept -> T&
     {
-        return this->_you_should_no_be_using_this_but_rather_unwrap;
+        return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
     [[nodiscard]] constexpr auto val() const noexcept -> const T&
     {
-        return this->_you_should_no_be_using_this_but_rather_unwrap;
+        return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 };
 
