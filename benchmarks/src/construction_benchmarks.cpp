@@ -31,8 +31,8 @@ template<typename T>
 static void benchmark_rand_onto_reserved_vector(benchmark::State& state)
 {
     auto vec = std::vector<T>(static_cast<size_t>(state.range(0)));
+    benchmark::DoNotOptimize(vec.data());
     for (auto _ : state) {
-        benchmark::DoNotOptimize(vec.data());
         for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
             vec[i] = generate_randomish<T> {}();
         }
@@ -56,9 +56,7 @@ static void benchmark_copy_vector_of(benchmark::State& state)
     std::generate(vec.begin(), vec.end(), []() { return generate_randomish<T> {}(); });
     benchmark::DoNotOptimize(vec.data());
     for (auto _ : state) {
-        auto copy_into = std::vector<T>();
-        benchmark::DoNotOptimize(copy_into.data());
-        copy_into = vec;
+        auto copy_into = vec;
         benchmark::DoNotOptimize(copy_into.data());
         benchmark::ClobberMemory();
     }
