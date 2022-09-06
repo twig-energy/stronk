@@ -249,7 +249,7 @@ In the extensions subfolder we have added skills for common third party librarie
 For more information on how to build see the [BUILDING](BUILDING.md) and [HACKING](HACKING.md) documents.
 
 # Benchmarks
-Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
+Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml). 
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
 ```
