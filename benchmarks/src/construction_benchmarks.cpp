@@ -68,6 +68,7 @@ static void benchmark_copy_vector_of(benchmark::State& state)
         auto copy_into = std::vector<T>();
         benchmark::DoNotOptimize(copy_into.data());
         copy_into = vec;
+        benchmark::DoNotOptimize(copy_into.data());
         benchmark::ClobberMemory();
     }
 }

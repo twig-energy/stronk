@@ -34,7 +34,7 @@ static void benchmark_add_units_simd(benchmark::State& state)
     std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
 
     for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
+        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
             auto array_c = std::array<T, WidthV> {};
             benchmark::DoNotOptimize(array_c.data());
             for (size_t j = 0; j < WidthV; j++) {
@@ -92,7 +92,7 @@ static void benchmark_subtract_units_simd(benchmark::State& state)
     std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
 
     for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
+        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
             auto array_c = std::array<T, WidthV> {};
             benchmark::DoNotOptimize(array_c.data());
             for (size_t j = 0; j < WidthV; j++) {
@@ -151,7 +151,7 @@ static void benchmark_multiply_units_simd(benchmark::State& state)
     using res_t = decltype(T {} * O {});
 
     for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
+        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
             auto array_c = std::array<res_t, WidthV> {};
             benchmark::DoNotOptimize(array_c.data());
             for (size_t j = 0; j < WidthV; j++) {
@@ -221,7 +221,7 @@ static void benchmark_divide_units_simd(benchmark::State& state)
     using res_t = decltype(T {} / O {});
 
     for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
+        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
             auto array_c = std::array<res_t, WidthV> {};
             benchmark::DoNotOptimize(array_c.data());
             for (size_t j = 0; j < WidthV; j++) {

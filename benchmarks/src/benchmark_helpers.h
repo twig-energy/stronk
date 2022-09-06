@@ -13,25 +13,21 @@ struct int8_t_wrapping_type : twig::stronk_default_unit<int8_t_wrapping_type, in
 {
     using stronk_default_unit::stronk_default_unit;
 };
-static_assert(sizeof(int8_t_wrapping_type) == sizeof(int8_t));
 
 struct int64_t_wrapping_type : twig::stronk_default_unit<int64_t_wrapping_type, int64_t>
 {
     using stronk_default_unit::stronk_default_unit;
 };
-static_assert(sizeof(int64_t_wrapping_type) == sizeof(int64_t));
 
 struct double_wrapping_type : twig::stronk_default_unit<double_wrapping_type, double>
 {
     using stronk_default_unit::stronk_default_unit;
 };
-static_assert(sizeof(double_wrapping_type) == sizeof(double));
 
 struct string_wrapping_type : twig::stronk_default_unit<string_wrapping_type, std::string>
 {
     using stronk_default_unit::stronk_default_unit;
 };
-static_assert(sizeof(string_wrapping_type) == sizeof(std::string));
 
 namespace details
 {
@@ -112,6 +108,9 @@ struct generate_randomish<T>
 template<typename T>
 auto generate_none_zero_randomish() -> T
 {
-    // generate_randomish is always positive so adding 1 makes sure its not zero
-    return generate_randomish<T> {}() + static_cast<T>(1);
+    auto val = generate_randomish<T> {}();
+    if (val < static_cast<T>(0)) {
+        return val - static_cast<T>(1);
+    }
+    return val + static_cast<T>(1);
 }
