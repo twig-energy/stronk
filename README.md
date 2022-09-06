@@ -277,9 +277,9 @@ benchmark_default_onto_reserved_vector<decltype(int8_t_wrapping_type {} * int8_t
 
 benchmark_default_onto_reserved_vector<int64_t>/32                                                               9.14 ns         9.14 ns     78489801
 benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/32                                                 9.59 ns         9.59 ns     74623569
-benchmark_default_onto_reserved_vector<int64_t>/8192                                                             2314 ns         2314 ns       335606
-
 benchmark_default_onto_reserved_vector<decltype(int64_t_wrapping_type {} * int64_t_wrapping_type {})>/32         9.24 ns         9.23 ns     76368670
+
+benchmark_default_onto_reserved_vector<int64_t>/8192                                                             2314 ns         2314 ns       335606
 benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/8192                                               2157 ns         2156 ns       336977
 benchmark_default_onto_reserved_vector<decltype(int64_t_wrapping_type {} * int64_t_wrapping_type {})>/8192       2134 ns         2133 ns       335419
 

@@ -52,25 +52,25 @@ template<typename T>
 auto rand(T mi, T ma) -> T
 {
     if constexpr (std::is_floating_point_v<T>) {
-        std::uniform_real_distribution<T> dist(mi, ma);
+        auto dist = std::uniform_real_distribution<T>(mi, ma);
         return dist(get_random_device());
+    } else if constexpr (std::is_integral_v<T> && sizeof(T) <= 1) {
+        using random_supported_type = std::conditional_t<std::is_unsigned_v<T>, uint16_t, int16_t>;
+        auto dist = std::uniform_int_distribution<random_supported_type>(static_cast<random_supported_type>(mi),
+                                                                         static_cast<random_supported_type>(ma));
+        return static_cast<T>(dist(get_random_device()));
     } else if constexpr (std::is_integral_v<T>) {
-        if constexpr (sizeof(T) <= 1) {
-            std::uniform_int_distribution<std::conditional_t<std::is_unsigned_v<T>, uint16_t, int16_t>> dist(mi, ma);
-            return static_cast<T>(dist(get_random_device()));
-        } else {
-            std::uniform_int_distribution<T> dist(mi, ma);
-            return dist(get_random_device());
-        }
+        auto dist = std::uniform_int_distribution<T>(mi, ma);
+        return dist(get_random_device());
     } else {
-        // static_assert(twig::stronk_details::not_implemented_type<T> {});
+        static_assert(twig::stronk_details::not_implemented_type<T> {});
     }
 }
 
 template<typename T>
 auto rand() -> T
 {
-    return T();
+    return rand<T>(T(0), default_max_for_random<T>());
 }
 
 }  // namespace details
@@ -108,9 +108,5 @@ struct generate_randomish<T>
 template<typename T>
 auto generate_none_zero_randomish() -> T
 {
-    auto val = generate_randomish<T> {}();
-    if (val < static_cast<T>(0)) {
-        return val - static_cast<T>(1);
-    }
-    return val + static_cast<T>(1);
+    return generate_randomish<T> {}() + static_cast<T>(1);
 }
