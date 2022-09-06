@@ -21,7 +21,7 @@ struct stronk : public Skills<Tag>...
     using underlying_type = T;
 
     // we need the underlying value to have public visibility for stronk types to be usable as non-type template
-    // parameters. This is to fulfil the `literal class type` requirement.
+    // parameters. This is to fulfill the `literal class type` requirement.
     // To discourage direct usage of the underlying value, we have given it a long ugly name.
     T _you_should_not_be_using_this_but_rather_unwrap;
 
