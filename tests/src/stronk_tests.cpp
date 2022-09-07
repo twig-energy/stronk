@@ -541,4 +541,20 @@ struct type_which_requires_stronk_none_type_template_param
 constexpr static auto instantiation_of_a_stronk_non_type_template_param =
     type_which_requires_stronk_none_type_template_param<an_int_test_type {25}>();
 
+struct a_string_type : stronk<a_string_type, std::string, can_size, can_equate>
+{
+    using stronk::stronk;
+};
+
+TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
+{
+    auto val = a_string_type {"hello"};
+    auto moved_to = std::move(val);
+    EXPECT_EQ(moved_to, a_string_type {"hello"});
+    EXPECT_TRUE(val.empty());
+
+    auto raw_string = std::move(moved_to).unwrap<a_string_type>();
+    EXPECT_TRUE(moved_to.empty());
+    EXPECT_EQ(raw_string, "hello");
+}
 }  // namespace twig
