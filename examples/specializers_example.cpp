@@ -41,4 +41,4 @@ auto main() -> int
     auto speed_hash = std::hash<Speed> {}(Speed {25.});
     static_assert((Time {2.} * Time {4.}).unwrap<decltype(Time {} * Time {})>() == 8ULL);
 }
-static_assert(__LINE__ == 37UL, "update readme if this changes");
+static_assert(__LINE__ == 44UL, "update readme if this changes");
