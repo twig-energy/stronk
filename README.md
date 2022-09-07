@@ -219,10 +219,10 @@ By default the `underlying_type` is the default result of multiplying or dividin
 ```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
 // Lets specialize Time^2 to use int64_t as its underlying type.
 template<>
-struct twig::underlying_type_of_multiplying<Time, Time>
+struct twig::underlying_multiply_operation<Time, Time>
 {
-    using type = int64_t;
-};
+    using res_type = int64_t;
+
 ```
 
 # Using Stronk in Your Project
