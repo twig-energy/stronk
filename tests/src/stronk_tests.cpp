@@ -435,7 +435,7 @@ struct a_size_vector_type : stronk<a_size_vector_type, std::vector<int>, can_siz
     using stronk::stronk;
 };
 
-TEST(can_size, can_size_works_for_strings)
+TEST(can_size, can_size_works_for_strings)  // NOLINT
 {
     EXPECT_TRUE(a_size_string_type("").empty());
     EXPECT_FALSE(a_size_string_type("a").empty());
@@ -445,7 +445,7 @@ TEST(can_size, can_size_works_for_strings)
     }
 }
 
-TEST(can_size, can_size_works_for_vectors)
+TEST(can_size, can_size_works_for_vectors)  // NOLINT
 {
     for (size_t i = 0; i < 16; i++) {
         EXPECT_EQ(a_size_vector_type(std::vector<int>(i)).size(), std::vector<int>(i).size());
@@ -458,7 +458,7 @@ struct a_can_iterate_vector_type : stronk<a_can_iterate_vector_type, std::vector
     using stronk::stronk;
 };
 
-TEST(can_const_iterate, can_const_iterate_works_for_vectors)
+TEST(can_const_iterate, can_const_iterate_works_for_vectors)  // NOLINT
 {
     for (size_t i = 0; i < 16; i++) {
         const auto vector = [&i]()
@@ -475,7 +475,7 @@ TEST(can_const_iterate, can_const_iterate_works_for_vectors)
     }
 }
 
-TEST(can_iterate, can_iterate_works_for_vectors)
+TEST(can_iterate, can_iterate_works_for_vectors)  // NOLINT
 {
     for (size_t i = 0; i < 16; i++) {
         auto vector = [&i]()
@@ -497,7 +497,7 @@ struct a_can_index_vector_type : stronk<a_can_index_vector_type, std::vector<int
     using stronk::stronk;
 };
 
-TEST(can_const_index, can_const_index_works_for_vectors)
+TEST(can_const_index, can_const_index_works_for_vectors)  // NOLINT
 {
     for (size_t i = 0; i < 16; i++) {
         const auto vector = [&i]()
@@ -515,7 +515,7 @@ TEST(can_const_index, can_const_index_works_for_vectors)
     }
 }
 
-TEST(can_index, can_index_works_for_vectors)
+TEST(can_index, can_index_works_for_vectors)  // NOLINT
 {
     for (size_t i = 0; i < 16; i++) {
         auto vector = [&i]()
@@ -541,18 +541,54 @@ struct type_which_requires_stronk_none_type_template_param
 constexpr static auto instantiation_of_a_stronk_non_type_template_param =
     type_which_requires_stronk_none_type_template_param<an_int_test_type {25}>();
 
-struct a_string_type : stronk<a_string_type, std::string, can_size, can_equate>
+struct MarkIfMovedType
+{
+    bool* indicator;
+
+    explicit MarkIfMovedType(bool* indicator_)
+        : indicator(indicator_)
+    {
+    }
+
+    MarkIfMovedType(const MarkIfMovedType& o) = default;
+    MarkIfMovedType(MarkIfMovedType&& s) noexcept
+        : indicator(s.indicator)
+    {
+        (*this->indicator) = true;
+        s.indicator = nullptr;
+    }
+
+    auto operator=(const MarkIfMovedType&) -> MarkIfMovedType& = delete;
+    auto operator=(MarkIfMovedType&&) noexcept -> MarkIfMovedType& = delete;
+    ~MarkIfMovedType() = default;
+};
+struct a_move_indicating_type : stronk<a_move_indicating_type, MarkIfMovedType>
 {
     using stronk::stronk;
 };
 
-TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
+TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)  // NOLINT
 {
-    auto val = a_string_type {"hello"};
-    auto moved_to = std::move(val);
-    EXPECT_EQ(moved_to, a_string_type {"hello"});
+    {  // wrapping type
+        auto marker = false;
+        auto val = a_move_indicating_type(MarkIfMovedType {&marker});
+        marker = false;
+        auto copy = val;
+        (void)copy;
+        EXPECT_FALSE(marker);
+        auto moved = std::move(val);
+        EXPECT_TRUE(marker);
+    }
 
-    auto raw_string = std::move(moved_to).unwrap<a_string_type>();
-    EXPECT_EQ(raw_string, "hello");
+    {  // underlying type
+        auto marker = false;
+        auto val = a_move_indicating_type {MarkIfMovedType {&marker}};
+        marker = false;
+        auto copy = val.unwrap<a_move_indicating_type>();  // NOLINT
+        (void)copy;
+        EXPECT_FALSE(marker);
+        auto moved = std::move(val).unwrap<a_move_indicating_type>();
+        EXPECT_TRUE(marker);
+    }
 }
 }  // namespace twig
