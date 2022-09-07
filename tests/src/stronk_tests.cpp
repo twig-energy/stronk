@@ -587,7 +587,7 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)  // NOLINT
         auto copy = val.unwrap<a_move_indicating_type>();  // NOLINT
         (void)copy;
         EXPECT_FALSE(marker);
-        auto moved = std::move(val).unwrap<a_move_indicating_type>();
+        auto moved = std::move(val.unwrap<a_move_indicating_type>());
         EXPECT_TRUE(marker);
     }
 }

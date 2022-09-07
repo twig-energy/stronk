@@ -49,30 +49,21 @@ struct stronk : public Skills<Tag>...
     }
 
     template<typename Expected>
+    [[nodiscard]] constexpr auto unwrap() noexcept -> underlying_type&
+    {
+        static_assert(std::is_same_v<Expected, Tag>,
+                      "To access the underlying type you need to provide the stronk type you expect to be querying. By "
+                      "doing so you will be protected from unsafe accesses if you chose to change the type");
+        return this->_you_should_not_be_using_this_but_rather_unwrap;
+    }
+
+    template<typename Expected>
     [[nodiscard]] constexpr auto unwrap() const noexcept -> const underlying_type&
     {
         static_assert(std::is_same_v<Expected, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
         return this->_you_should_not_be_using_this_but_rather_unwrap;
-    }
-
-    template<typename Expected>
-    [[nodiscard]] constexpr auto unwrap() & noexcept -> underlying_type&
-    {
-        static_assert(std::is_same_v<Expected, Tag>,
-                      "To access the underlying type you need to provide the stronk type you expect to be querying. By "
-                      "doing so you will be protected from unsafe accesses if you chose to change the type");
-        return this->_you_should_not_be_using_this_but_rather_unwrap;
-    }
-
-    template<typename Expected>
-    [[nodiscard]] constexpr auto unwrap() && noexcept -> underlying_type&&
-    {
-        static_assert(std::is_same_v<Expected, Tag>,
-                      "To access the underlying type you need to provide the stronk type you expect to be querying. By "
-                      "doing so you will be protected from unsafe accesses if you chose to change the type");
-        return std::move(this->_you_should_not_be_using_this_but_rather_unwrap);
     }
 
     constexpr friend void swap(stronk& a, stronk& b) noexcept
