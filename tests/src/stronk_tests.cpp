@@ -551,10 +551,8 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
     auto val = a_string_type {"hello"};
     auto moved_to = std::move(val);
     EXPECT_EQ(moved_to, a_string_type {"hello"});
-    EXPECT_TRUE(val.empty());
 
     auto raw_string = std::move(moved_to).unwrap<a_string_type>();
-    EXPECT_TRUE(moved_to.empty());
     EXPECT_EQ(raw_string, "hello");
 }
 }  // namespace twig
