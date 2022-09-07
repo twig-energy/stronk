@@ -22,15 +22,17 @@
 // on the multiplication part `T1` is the first unit, `T2` the second and `...`
 // is skills. Resulting type specializes=`decltype(T1 {} * T2 {})`
 // NOLINTNEXTLINE
-#define STRONK_SPECIALIZE_MULTIPLY(T1, T2, ...)                                                          \
-    template<>                                                                                           \
-    struct STRONK_MULTIPLY_TYPE(T1, T2)                                                                  \
-        : stronk<STRONK_MULTIPLY_TYPE(T1, T2),                                                           \
-                 typename twig::underlying_type_of_multiplying<T1, T2>::type __VA_OPT__(, ) __VA_ARGS__> \
-        , twig::unit_lists_of_multiplying<T1, T2>::unit_description_t                                    \
-    {                                                                                                    \
-        using stronk::stronk;                                                                            \
-    };                                                                                                   \
+#define STRONK_SPECIALIZE_MULTIPLY(T1, T2, ...)                                                              \
+    template<>                                                                                               \
+    struct STRONK_MULTIPLY_TYPE(T1, T2)                                                                      \
+        : stronk<STRONK_MULTIPLY_TYPE(T1, T2),                                                               \
+                 typename twig::underlying_type_of_multiplying<T1, T2>::type,                                \
+                 unit_type_list_skill_builder<twig::unit_lists_of_multiplying<T1, T2>::unit_description_t>:: \
+                     template skill __VA_OPT__(, ) __VA_ARGS__>                                              \
+                                                                                                             \
+    {                                                                                                        \
+        using stronk::stronk;                                                                                \
+    };                                                                                                       \
     static_assert(std::is_same_v<decltype(T1 {} * T2 {}), STRONK_MULTIPLY_TYPE(T1, T2)>)
 
 // Specialize the struct created when dividing two types. Allows you to add
@@ -38,13 +40,15 @@
 // on the multiplication part `T1` is the first unit, `T2` the second and `...`
 // is skills. Resulting type specializes=`decltype(T1 {} / T2 {})`
 // NOLINTNEXTLINE
-#define STRONK_SPECIALIZE_DIVIDE(T1, T2, ...)                                                         \
-    template<>                                                                                        \
-    struct STRONK_DIVIDE_TYPE(T1, T2)                                                                 \
-        : stronk<STRONK_DIVIDE_TYPE(T1, T2),                                                          \
-                 typename twig::underlying_type_of_dividing<T1, T2>::type __VA_OPT__(, ) __VA_ARGS__> \
-        , twig::unit_lists_of_dividing<T1, T2>::unit_description_t                                    \
-    {                                                                                                 \
-        using stronk::stronk;                                                                         \
-    };                                                                                                \
+#define STRONK_SPECIALIZE_DIVIDE(T1, T2, ...)                                                             \
+    template<>                                                                                            \
+    struct STRONK_DIVIDE_TYPE(T1, T2)                                                                     \
+        : stronk<STRONK_DIVIDE_TYPE(T1, T2),                                                              \
+                 typename twig::underlying_type_of_dividing<T1, T2>::type,                                \
+                 unit_type_list_skill_builder<twig::unit_lists_of_dividing<T1, T2>::unit_description_t>:: \
+                     template skill __VA_OPT__(, ) __VA_ARGS__>                                           \
+                                                                                                          \
+    {                                                                                                     \
+        using stronk::stronk;                                                                             \
+    };                                                                                                    \
     static_assert(std::is_same_v<decltype(T1 {} / T2 {}), STRONK_DIVIDE_TYPE(T1, T2)>)

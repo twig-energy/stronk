@@ -48,18 +48,6 @@ struct UnitTypeLists<TypeList<>, TypeList<>>
 };
 using IdentityUnitTypeList = UnitTypeLists<TypeList<>, TypeList<>>;
 
-// You can specialize this type if you want to add other skills to your dynamic
-// types.
-template<typename T, typename UnitTypeListsT>
-struct NewUnitType
-    : stronk<NewUnitType<T, UnitTypeListsT>, T, can_order, can_add, can_subtract, can_negate>
-    , UnitTypeListsT
-    , default_can_equate<T, NewUnitType<T, UnitTypeListsT>>
-{
-    using stronk_base = stronk<NewUnitType<T, UnitTypeListsT>, T, can_order, can_add, can_subtract, can_negate>;
-    using stronk_base::stronk_base;
-};
-
 template<typename StronkT>
 struct identity_unit : IdentityUnitTypeList  // use this as a stronk skill.
 {
@@ -80,6 +68,38 @@ struct unit : UnitTypeLists<TypeList<StronkT>,
     template<ratio_with_base_unit_like RatioT>
         requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
     [[nodiscard]] auto unwrap_as() const noexcept;
+};
+
+template<typename UnitTypeListsT>
+struct unit_type_list_skill_builder
+{
+    template<typename StronkT>
+    struct skill : UnitTypeListsT
+    {
+    };
+};
+
+// You can specialize this type if you want to add other skills to your dynamic
+// types.
+template<typename T, typename UnitTypeListsT>
+struct NewUnitType
+    : stronk<NewUnitType<T, UnitTypeListsT>,
+             T,
+             can_order,
+             can_add,
+             can_subtract,
+             can_negate,
+             default_can_equate_builder<T>::template skill,
+             unit_type_list_skill_builder<UnitTypeListsT>::template skill>
+{
+    using stronk<NewUnitType<T, UnitTypeListsT>,
+                 T,
+                 can_order,
+                 can_add,
+                 can_subtract,
+                 can_negate,
+                 default_can_equate_builder<T>::template skill,
+                 unit_type_list_skill_builder<UnitTypeListsT>::template skill>::stronk;
 };
 
 // You can specialize this struct if you want another type
@@ -111,7 +131,7 @@ struct unit_lists_of_multiplying
 };
 
 template<unit_like A, unit_like B>
-constexpr auto operator*(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = a.template unwrap<A>() * b.template unwrap<B>();
 
@@ -192,7 +212,7 @@ struct unit_lists_of_dividing
 };
 
 template<unit_like A, unit_like B>
-constexpr auto operator/(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = a.template unwrap<A>() / b.template unwrap<B>();
 

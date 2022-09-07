@@ -533,4 +533,12 @@ TEST(can_index, can_index_works_for_vectors)
     }
 }
 
+template<an_int_test_type Val>
+struct type_which_requires_stronk_none_type_template_param
+{
+};
+
+constexpr static auto instantiation_of_a_stronk_non_type_template_param =
+    type_which_requires_stronk_none_type_template_param<an_int_test_type {25}>();
+
 }  // namespace twig

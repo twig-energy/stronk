@@ -7,18 +7,31 @@ namespace twig
 
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk_default_unit
-    : stronk<Tag, T, unit, can_add, can_subtract, can_negate, can_order, Skills...>
-    , default_can_equate<T, Tag>
+    : stronk<Tag,
+             T,
+             unit,
+             can_add,
+             can_subtract,
+             can_negate,
+             can_order,
+             default_can_equate_builder<T>::template skill,
+             Skills...>
 {
-    using stronk_base = stronk<Tag, T, unit, can_add, can_subtract, can_negate, can_order, Skills...>;
-    using stronk_base::stronk_base;
+    using stronk<Tag,
+                 T,
+                 unit,
+                 can_add,
+                 can_subtract,
+                 can_negate,
+                 can_order,
+                 default_can_equate_builder<T>::template skill,
+                 Skills...>::stronk;
 };
 
 template<typename Tag, template<typename> typename... Skills>
 struct stronk_flag : stronk<Tag, bool, can_be_used_as_flag, can_order, can_equate, Skills...>
 {
-    using stronk_base = stronk<Tag, bool, can_be_used_as_flag, can_order, can_equate, Skills...>;
-    using stronk_base::stronk_base;
+    using stronk<Tag, bool, can_be_used_as_flag, can_order, can_equate, Skills...>::stronk;
 };
 
 }  // namespace twig
