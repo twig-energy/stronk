@@ -23,9 +23,16 @@ STRONK_SPECIALIZE_DIVIDE(Distance, Time, can_hash);
 
 // Lets specialize Time^2 to use int64_t as its underlying type.
 template<>
-struct twig::underlying_type_of_multiplying<Time, Time>
+struct twig::underlying_multiply_operation<Time, Time>
 {
-    using type = int64_t;
+    using res_type = int64_t;
+
+    STRONK_FORCEINLINE
+    constexpr static auto multiply(const typename Time::underlying_type& v1,
+                                   const typename Time::underlying_type& v2) noexcept -> res_type
+    {
+        return static_cast<int64_t>(v1 * v2);
+    }
 };
 
 auto main() -> int
@@ -34,4 +41,4 @@ auto main() -> int
     auto speed_hash = std::hash<Speed> {}(Speed {25.});
     static_assert((Time {2.} * Time {4.}).unwrap<decltype(Time {} * Time {})>() == 8ULL);
 }
-static_assert(__LINE__ == 37UL, "update readme if this changes");
+static_assert(__LINE__ == 44UL, "update readme if this changes");

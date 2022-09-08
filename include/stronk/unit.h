@@ -102,18 +102,34 @@ struct NewUnitType
                  unit_type_list_skill_builder<UnitTypeListsT>::template skill>::stronk;
 };
 
-// You can specialize this struct if you want another type
+// You can specialize this struct if you want another underlying multiply operation
 template<stronk_like T1, stronk_like T2>
-struct underlying_type_of_multiplying
+struct underlying_multiply_operation
 {
-    using type = decltype(std::declval<typename T1::underlying_type>() * std::declval<typename T2::underlying_type>());
+    using res_type =
+        decltype(std::declval<typename T1::underlying_type>() * std::declval<typename T2::underlying_type>());
+
+    STRONK_FORCEINLINE
+    constexpr static auto multiply(const typename T1::underlying_type& v1,
+                                   const typename T2::underlying_type& v2) noexcept -> res_type
+    {
+        return v1 * v2;
+    }
 };
 
-// You can specialize this struct if you want another type
+// You can specialize this struct if you want another underlying divide operation
 template<stronk_like T1, stronk_like T2>
-struct underlying_type_of_dividing
+struct underlying_divide_operation
 {
-    using type = decltype(std::declval<typename T1::underlying_type>() / std::declval<typename T2::underlying_type>());
+    using res_type =
+        decltype(std::declval<typename T1::underlying_type>() / std::declval<typename T2::underlying_type>());
+
+    STRONK_FORCEINLINE
+    constexpr static auto divide(const typename T1::underlying_type& v1,
+                                 const typename T2::underlying_type& v2) noexcept -> res_type
+    {
+        return v1 / v2;
+    }
 };
 
 // ==================
@@ -133,7 +149,7 @@ struct unit_lists_of_multiplying
 template<unit_like A, unit_like B>
 STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
-    auto res = a.template unwrap<A>() * b.template unwrap<B>();
+    auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
     using unit_description_t = typename unit_lists_of_multiplying<A, B>::unit_description_t;
     if constexpr (unit_description_t::is_unitless) {
@@ -142,8 +158,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
         using pure_t = typename unit_description_t::pure_t;  // unwrap out into original type.
         return pure_t {static_cast<typename pure_t::underlying_type>(res)};
     } else {
-        using underlying_type = typename underlying_type_of_multiplying<A, B>::type;
-        return NewUnitType<underlying_type, unit_description_t> {static_cast<underlying_type>(res)};
+        return NewUnitType<typename underlying_multiply_operation<A, B>::res_type, unit_description_t> {res};
     }
 }
 
@@ -214,7 +229,7 @@ struct unit_lists_of_dividing
 template<unit_like A, unit_like B>
 STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
-    auto res = a.template unwrap<A>() / b.template unwrap<B>();
+    auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
     using unit_description_t = typename unit_lists_of_dividing<A, B>::unit_description_t;
     if constexpr (unit_description_t::is_unitless) {
@@ -223,8 +238,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
         using pure_t = typename unit_description_t::pure_t;
         return pure_t {static_cast<typename pure_t::underlying_type>(res)};
     } else {
-        using underlying_type = typename underlying_type_of_dividing<A, B>::type;
-        return NewUnitType<underlying_type, unit_description_t> {static_cast<underlying_type>(res)};
+        return NewUnitType<typename underlying_divide_operation<A, B>::res_type, unit_description_t> {res};
     }
 }
 

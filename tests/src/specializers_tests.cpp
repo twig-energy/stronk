@@ -1,4 +1,6 @@
+#include <gtest/gtest.h>
 #include <stronk/specializers.h>
+#include <stronk/unit.h>
 
 namespace twig::tests
 {
@@ -16,6 +18,32 @@ struct specializer_type_b : stronk_default_unit<specializer_type_b, int32_t>
 
 namespace twig
 {
+template<>
+struct underlying_multiply_operation<tests::specializer_type_a, tests::specializer_type_b>
+{
+    using res_type = int64_t;
+
+    STRONK_FORCEINLINE
+    constexpr static auto multiply(const typename tests::specializer_type_a::underlying_type& v1,
+                                   const typename tests::specializer_type_b::underlying_type& v2) noexcept -> res_type
+    {
+        return static_cast<int64_t>(v1) * static_cast<int64_t>(v2) + 1LL;
+    }
+};
+
+template<>
+struct underlying_divide_operation<tests::specializer_type_a, tests::specializer_type_b>
+{
+    using res_type = int64_t;
+
+    STRONK_FORCEINLINE
+    constexpr static auto divide(const typename tests::specializer_type_a::underlying_type& v1,
+                                 const typename tests::specializer_type_b::underlying_type& v2) noexcept -> res_type
+    {
+        return static_cast<int64_t>(v1) / static_cast<int64_t>(v2) + 1LL;
+    }
+};
+
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_a);
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_b, can_equate);
 STRONK_SPECIALIZE_DIVIDE(tests::specializer_type_a, tests::specializer_type_b, can_equate, can_stream);
@@ -46,3 +74,26 @@ STRONK_SPECIALIZE_DIVIDE(tests::specializer_type_b, specializer_type_a_squared);
 STRONK_SPECIALIZE_DIVIDE(tests::specializer_type_b, specializer_type_a_divided_by_b);  // b^2
 
 }  // namespace twig
+
+namespace twig::tests
+{
+
+TEST(underlying_multiply_operation, the_multiplying_function_is_overloaded)  // NOLINT
+{
+    using res_type = decltype(tests::specializer_type_a {} * tests::specializer_type_b {});
+
+    // we have specialized it to return int64_t and add one to the result
+    static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
+    EXPECT_EQ(tests::specializer_type_a {10} * tests::specializer_type_b {20}, res_type {200 + 1});
+}
+
+TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
+{
+    using res_type = decltype(tests::specializer_type_a {} / tests::specializer_type_b {});
+
+    // we have specialized it to return int64_t and add one to the result
+    static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
+    EXPECT_EQ(tests::specializer_type_a {120} / tests::specializer_type_b {2}, res_type {60 + 1});
+}
+
+}  // namespace twig::tests

@@ -188,7 +188,7 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=22
+```cpp :file=./examples/specializers_example.cpp:line_end=36
 #include <stronk/specializers.h>
 
 // Lets consider the following units:
@@ -211,6 +211,20 @@ STRONK_SPECIALIZE_DIVIDE(Distance, Time, can_hash);
 // Now any expression resulting the `Distance{} / Time{}` type will result in a unit type with the can_hash skill
 
 }  // namespace twig
+
+// Lets specialize Time^2 to use int64_t as its underlying type.
+template<>
+struct twig::underlying_multiply_operation<Time, Time>
+{
+    using res_type = int64_t;
+
+    STRONK_FORCEINLINE
+    constexpr static auto multiply(const typename Time::underlying_type& v1,
+                                   const typename Time::underlying_type& v2) noexcept -> res_type
+    {
+        return static_cast<int64_t>(v1 * v2);
+    }
+};
 ```
 
 You can also specialize the underlying type of multiplying two units:
@@ -219,10 +233,10 @@ By default the `underlying_type` is the default result of multiplying or dividin
 ```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
 // Lets specialize Time^2 to use int64_t as its underlying type.
 template<>
-struct twig::underlying_type_of_multiplying<Time, Time>
+struct twig::underlying_multiply_operation<Time, Time>
 {
-    using type = int64_t;
-};
+    using res_type = int64_t;
+
 ```
 
 # Using Stronk in Your Project
@@ -249,7 +263,7 @@ In the extensions subfolder we have added skills for common third party librarie
 For more information on how to build see the [BUILDING](BUILDING.md) and [HACKING](HACKING.md) documents.
 
 # Benchmarks
-Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml). 
+Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
 ```

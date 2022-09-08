@@ -135,13 +135,13 @@ struct can_multiply
 {
     using can_multiply_with_self = std::true_type;
 
-    friend auto operator*=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    constexpr friend auto operator*=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
         lhs.template unwrap<StronkT>() *= rhs.template unwrap<StronkT>();
         return lhs;
     }
 
-    friend auto operator*(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    constexpr friend auto operator*(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
         return StronkT {lhs.template unwrap<StronkT>() * rhs.template unwrap<StronkT>()};
     }

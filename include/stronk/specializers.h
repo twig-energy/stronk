@@ -6,15 +6,15 @@
 // Macro for getting the full type of multiplying two units
 // Only works when T1 and T2 has one unit on the multiplication part
 // NOLINTNEXTLINE
-#define STRONK_MULTIPLY_TYPE(T1, T2)                                         \
-    NewUnitType<typename twig::underlying_type_of_multiplying<T1, T2>::type, \
+#define STRONK_MULTIPLY_TYPE(T1, T2)                                            \
+    NewUnitType<typename twig::underlying_multiply_operation<T1, T2>::res_type, \
                 typename twig::unit_lists_of_multiplying<T1, T2>::unit_description_t>
 
 // Macro for getting the full type of dividing two units
 // Only works when T1 and T2 has one unit on the multiplication part
 // NOLINTNEXTLINE
-#define STRONK_DIVIDE_TYPE(T1, T2)                                        \
-    NewUnitType<typename twig::underlying_type_of_dividing<T1, T2>::type, \
+#define STRONK_DIVIDE_TYPE(T1, T2)                                            \
+    NewUnitType<typename twig::underlying_divide_operation<T1, T2>::res_type, \
                 typename twig::unit_lists_of_dividing<T1, T2>::unit_description_t>
 
 // Specialize the struct created when multiplying two types. Allows you to add
@@ -26,7 +26,7 @@
     template<>                                                                                               \
     struct STRONK_MULTIPLY_TYPE(T1, T2)                                                                      \
         : stronk<STRONK_MULTIPLY_TYPE(T1, T2),                                                               \
-                 typename twig::underlying_type_of_multiplying<T1, T2>::type,                                \
+                 typename twig::underlying_multiply_operation<T1, T2>::res_type,                             \
                  unit_type_list_skill_builder<twig::unit_lists_of_multiplying<T1, T2>::unit_description_t>:: \
                      template skill __VA_OPT__(, ) __VA_ARGS__>                                              \
                                                                                                              \
@@ -44,7 +44,7 @@
     template<>                                                                                            \
     struct STRONK_DIVIDE_TYPE(T1, T2)                                                                     \
         : stronk<STRONK_DIVIDE_TYPE(T1, T2),                                                              \
-                 typename twig::underlying_type_of_dividing<T1, T2>::type,                                \
+                 typename twig::underlying_divide_operation<T1, T2>::res_type,                            \
                  unit_type_list_skill_builder<twig::unit_lists_of_dividing<T1, T2>::unit_description_t>:: \
                      template skill __VA_OPT__(, ) __VA_ARGS__>                                           \
                                                                                                           \
