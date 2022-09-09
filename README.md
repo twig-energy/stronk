@@ -447,4 +447,4 @@ benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>    
 
 # Licensing
 
-See the [LICENSE](LICENSE.md) document.
+See the [LICENSE](LICENSE) document.
