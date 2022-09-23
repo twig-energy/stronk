@@ -607,12 +607,18 @@ struct a_type_with_a_constructor
 };
 
 struct a_convert_constructible_type
-    : stronk<a_convert_constructible_type, a_type_with_a_constructor, can_forward_constructor_arg>
+    : stronk<a_convert_constructible_type, a_type_with_a_constructor, can_forward_constructor_args>
+{
+    using stronk::stronk;
+};
+
+struct a_none_convert_constructible_type : stronk<a_none_convert_constructible_type, a_type_with_a_constructor>
 {
     using stronk::stronk;
 };
 
 static_assert(std::constructible_from<a_type_with_a_constructor, int>);
+static_assert(!std::constructible_from<a_none_convert_constructible_type, int>);
 
 TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertible_value)  // NOLINT
 {

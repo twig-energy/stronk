@@ -16,7 +16,7 @@ template<typename T>
 concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
 
 template<typename StronkT>
-concept can_forward_constructor_arg_like = std::same_as<typename StronkT::can_copy_construct, std::true_type>;
+concept can_forward_constructor_args_like = std::same_as<typename StronkT::can_copy_construct, std::true_type>;
 
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
@@ -52,13 +52,12 @@ struct stronk : public Skills<Tag>...
     {
     }
 
-    template<typename ConvertConstructibleT>
-        requires(
-            std::constructible_from<underlying_type,
-                                    ConvertConstructibleT> && !std::is_same_v<ConvertConstructibleT, underlying_type>)
-    STRONK_FORCEINLINE constexpr explicit stronk(const ConvertConstructibleT& value) requires(
-        can_forward_constructor_arg_like<self_t>)
-        : _you_should_not_be_using_this_but_rather_unwrap(value)
+    template<typename... ConvertConstructibleTs>
+        requires(std::constructible_from<underlying_type,
+                                         ConvertConstructibleTs...> && sizeof...(ConvertConstructibleTs) >= 1)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values) requires(
+        can_forward_constructor_args_like<self_t>)
+        : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }
 
@@ -106,7 +105,7 @@ concept stronk_like = requires(T v)
 };
 
 template<typename StronkT>
-struct can_forward_constructor_arg
+struct can_forward_constructor_args
 {
     using can_copy_construct = std::true_type;
 };

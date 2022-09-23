@@ -162,6 +162,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_iterate` adds the `can_const_iterate` as well implementing `begin()`, `end()`.
 - `can_const_index` implements `operator[](const auto&) const` and `at(const auto&) const`
 - `can_index` adds the `can_const_index` as well implementing `operator[](const auto&)` and `at(const auto&)`.
+- `can_forward_constructor_args` adds a constructor which forwards arguments to the inner class.
 
 ### Units
 - `unit`: enables unit behavior for multiplication and division.
