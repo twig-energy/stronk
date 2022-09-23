@@ -15,9 +15,13 @@ namespace twig
 template<typename T>
 concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
 
+template<typename StronkT>
+concept can_forward_constructor_arg_like = std::same_as<typename StronkT::can_copy_construct, std::true_type>;
+
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
+    using self_t = stronk<Tag, T, Skills...>;
     using underlying_type = T;
 
     // we need the underlying value to have public visibility for stronk types to be usable as non-type template
@@ -35,8 +39,8 @@ struct stronk : public Skills<Tag>...
     }
 
     STRONK_FORCEINLINE
-    constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
-        !should_be_copy_constructed<T>)
+    constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>)  // NOLINT
+        requires(!should_be_copy_constructed<T>)
         : _you_should_not_be_using_this_but_rather_unwrap(value)
     {
     }
@@ -48,19 +52,29 @@ struct stronk : public Skills<Tag>...
     {
     }
 
-    template<typename Expected>
+    template<typename ConvertConstructibleT>
+        requires(
+            std::constructible_from<underlying_type,
+                                    ConvertConstructibleT> && !std::is_same_v<ConvertConstructibleT, underlying_type>)
+    STRONK_FORCEINLINE constexpr explicit stronk(const ConvertConstructibleT& value) requires(
+        can_forward_constructor_arg_like<self_t>)
+        : _you_should_not_be_using_this_but_rather_unwrap(value)
+    {
+    }
+
+    template<typename ExpectedT>
     [[nodiscard]] constexpr auto unwrap() noexcept -> underlying_type&
     {
-        static_assert(std::is_same_v<Expected, Tag>,
+        static_assert(std::is_same_v<ExpectedT, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
         return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 
-    template<typename Expected>
+    template<typename ExpectedT>
     [[nodiscard]] constexpr auto unwrap() const noexcept -> const underlying_type&
     {
-        static_assert(std::is_same_v<Expected, Tag>,
+        static_assert(std::is_same_v<ExpectedT, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
         return this->_you_should_not_be_using_this_but_rather_unwrap;
@@ -89,6 +103,12 @@ concept stronk_like = requires(T v)
     {
         v.template unwrap<T>()
         } -> std::convertible_to<typename T::underlying_type>;
+};
+
+template<typename StronkT>
+struct can_forward_constructor_arg
+{
+    using can_copy_construct = std::true_type;
 };
 
 template<typename StronkT>
