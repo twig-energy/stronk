@@ -536,10 +536,14 @@ TEST(can_index, can_index_works_for_vectors)  // NOLINT
 template<an_int_test_type Val>
 struct type_which_requires_stronk_none_type_template_param
 {
+    static constexpr an_int_test_type value = Val;
 };
 
-constexpr static auto instantiation_of_a_stronk_non_type_template_param =
-    type_which_requires_stronk_none_type_template_param<an_int_test_type {25}>();
+TEST(none_type_template_parameter, stronk_types_can_be_used_as_none_type_template_parameters)  // NOLINT
+{
+    auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
+    EXPECT_EQ(val.value.unwrap<an_int_test_type>(), 25);
+}
 
 struct MarkIfMovedType
 {
@@ -591,4 +595,35 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)  // NOLINT
         EXPECT_TRUE(marker);
     }
 }
+
+struct a_type_with_a_constructor
+{
+    int val;
+
+    explicit a_type_with_a_constructor(int val)
+        : val(val)
+    {
+    }
+};
+
+struct a_convert_constructible_type
+    : stronk<a_convert_constructible_type, a_type_with_a_constructor, can_forward_constructor_args>
+{
+    using stronk::stronk;
+};
+
+struct a_none_convert_constructible_type : stronk<a_none_convert_constructible_type, a_type_with_a_constructor>
+{
+    using stronk::stronk;
+};
+
+static_assert(std::constructible_from<a_type_with_a_constructor, int>);
+static_assert(!std::constructible_from<a_none_convert_constructible_type, int>);
+
+TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertible_value)  // NOLINT
+{
+    auto val = a_convert_constructible_type(42);  // NOLINT
+    EXPECT_EQ(val.unwrap<a_convert_constructible_type>().val, 42);
+}
+
 }  // namespace twig

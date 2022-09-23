@@ -90,6 +90,7 @@ struct NewUnitType
              can_subtract,
              can_negate,
              default_can_equate_builder<T>::template skill,
+             can_forward_constructor_args,
              unit_type_list_skill_builder<UnitTypeListsT>::template skill>
 {
     using stronk<NewUnitType<T, UnitTypeListsT>,
@@ -99,6 +100,7 @@ struct NewUnitType
                  can_subtract,
                  can_negate,
                  default_can_equate_builder<T>::template skill,
+                 can_forward_constructor_args,
                  unit_type_list_skill_builder<UnitTypeListsT>::template skill>::stronk;
 };
 
