@@ -14,6 +14,17 @@ struct specializer_type_b : stronk_default_unit<specializer_type_b, int32_t>
     using stronk_default_unit::stronk_default_unit;
 };
 
+struct specializer_type_c : stronk_default_unit<specializer_type_c, int32_t>
+{
+    using stronk_default_unit::stronk_default_unit;
+};
+
+struct specializer_type_d
+    : stronk<specializer_type_d, int32_t, multiplied_unit<specializer_type_a, specializer_type_c>::skill>
+{
+    using stronk::stronk;
+};
+
 }  // namespace twig::tests
 
 namespace twig
@@ -42,6 +53,12 @@ struct underlying_divide_operation<tests::specializer_type_a, tests::specializer
     {
         return static_cast<int64_t>(v1) / static_cast<int64_t>(v2) + 1LL;
     }
+};
+
+template<>
+struct unit_multiplied_resulting_unit_type<tests::specializer_type_a, tests::specializer_type_c>
+{
+    using res_type = tests::specializer_type_d;
 };
 
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_a);
@@ -95,5 +112,7 @@ TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
     static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
     EXPECT_EQ(tests::specializer_type_a {120} / tests::specializer_type_b {2}, res_type {60 + 1});
 }
+
+static_assert(std::is_same_v<specializer_type_d, decltype(specializer_type_a {} * specializer_type_c {})>);
 
 }  // namespace twig::tests
