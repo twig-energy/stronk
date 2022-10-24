@@ -113,16 +113,17 @@ jobs:
         os: [macos-12, ubuntu-22.04, windows-2022]
         compiler: []
         include:
-          - os: ubuntu-22.04
-            compiler: gcc-11
-          - os: ubuntu-22.04
-            compiler: gcc-12
-          - os: ubuntu-22.04
-            compiler: clang-13
-          - os: ubuntu-22.04
-            compiler: clang-14
-          - os: macos-12
-            compiler: gcc-11
+          - compiler: gcc-11
+            os: ubuntu-22.04
+            os: macos-12
+          - compiler: gcc-12
+            os: ubuntu-22.04
+          - compiler: clang-13
+            os: ubuntu-22.04
+          - compiler: clang-14
+            os: ubuntu-22.04
+          - compiler: msvc
+            os: windows-2022
 
     runs-on: ${{ matrix.os }}
 
