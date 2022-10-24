@@ -51,11 +51,27 @@
       }
     },
     {
+      "name": "clang-14",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-14",
+        "CC": "clang-14"
+      }
+    },
+    {
       "name": "gcc-11",
       "hidden": true,
       "environment": {
         "CXX": "g++-11",
         "CC": "gcc-11"
+      }
+    },
+    {
+      "name": "gcc-12",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-12",
+        "CC": "gcc-12"
       }
     },
     {
