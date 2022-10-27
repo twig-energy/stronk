@@ -51,11 +51,27 @@
       }
     },
     {
+      "name": "clang-14",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-14",
+        "CC": "clang-14"
+      }
+    },
+    {
       "name": "gcc-11",
       "hidden": true,
       "environment": {
         "CXX": "g++-11",
         "CC": "gcc-11"
+      }
+    },
+    {
+      "name": "gcc-12",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-12",
+        "CC": "gcc-12"
       }
     },
     {
@@ -167,28 +183,6 @@
       ]
     },
     {
-      "name": "ci-ubuntu-gcc-11",
-      "inherits": [
-        "ci-build",
-        "ci-unix",
-        "vcpkg",
-        "dev-mode",
-        "gcc-11"
-      ]
-    },
-    {
-      "name": "ci-ubuntu-clang-13",
-      "inherits": [
-        "ci-build",
-        "ci-unix",
-        "clang-tidy",
-        "vcpkg",
-        "cppcheck",
-        "dev-mode",
-        "clang-13"
-      ]
-    },
-    {
       "name": "ci-windows-msvc",
       "inherits": [
         "ci-build",
@@ -197,6 +191,43 @@
         "vcpkg",
         "vcpkg-win64-static",
         "msvc"
+      ]
+    },
+    {
+      "name": "ci-ubuntu",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "vcpkg",
+        "dev-mode"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-gcc-11",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-11"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-gcc-12",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-12"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-13",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-13"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-14",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-14"
       ]
     },
     {
