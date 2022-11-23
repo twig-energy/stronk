@@ -22,7 +22,7 @@ struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Di
 
 // And then we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::unit_lists_of_dividing<Distance, Time>::unit_description_t, double>
+struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
     using res_type = Speed;
 };

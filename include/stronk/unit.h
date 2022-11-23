@@ -172,24 +172,21 @@ struct unit_lookup<UnitT, UnderlyingT>
 // ==================
 
 template<unit_like A, unit_like B>
-struct unit_lists_of_multiplying
+struct multiplied_unit
 {
     using all_multiplied = typename A::multiplied_part::template concat_sorted_t<typename B::multiplied_part>;
     using all_divided = typename A::divided_part::template concat_sorted_t<typename B::divided_part>;
     using new_multiplied_part = typename all_multiplied::template subtract_t<all_divided>;
     using new_divided_part = typename all_divided::template subtract_t<all_multiplied>;
+
     // This is the result:
     using unit_description_t = UnitTypeLists<new_multiplied_part, new_divided_part>;
-};
 
-// When you want the skill of multiplying two units
-template<unit_like A, unit_like B>
-struct multiplied_unit
-{
+    // This can be used as a skill
     template<typename StronkT>
-    struct skill : unit_lists_of_multiplying<A, B>::unit_description_t  // use this as a stronk skill.
+    struct skill : unit_description_t  // use this as a stronk skill.
     {
-        using unit_description_t = typename unit_lists_of_multiplying<A, B>::unit_description_t;
+        using unit_description_t = unit_description_t;
     };
 };
 
@@ -213,7 +210,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using type_lists = typename unit_lists_of_multiplying<A, B>::unit_description_t;
+    using type_lists = typename multiplied_unit<A, B>::unit_description_t;
     using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::res_type;
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<type_lists, typename resulting_unit::unit_description_t>,
@@ -284,23 +281,19 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 // ==================
 
 template<unit_like A, unit_like B>
-struct unit_lists_of_dividing
+struct divided_unit
 {
     using all_multiplied = typename A::multiplied_part::template concat_sorted_t<typename B::divided_part>;
     using all_divided = typename A::divided_part::template concat_sorted_t<typename B::multiplied_part>;
     using new_multiplied_part = typename all_multiplied::template subtract_t<all_divided>;
     using new_divided_part = typename all_divided::template subtract_t<all_multiplied>;
+
     // This is the result:
     using unit_description_t = UnitTypeLists<new_multiplied_part, new_divided_part>;
-};
-
-template<unit_like A, unit_like B>
-struct divided_unit
-{
     template<typename StronkT>
-    struct skill : unit_lists_of_dividing<A, B>::unit_description_t  // use this as a stronk skill.
+    struct skill : unit_description_t  // use this as a stronk skill.
     {
-        using unit_description_t = typename unit_lists_of_dividing<A, B>::unit_description_t;
+        using unit_description_t = unit_description_t;
     };
 };
 
@@ -324,7 +317,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using type_lists = typename unit_lists_of_dividing<A, B>::unit_description_t;
+    using type_lists = typename divided_unit<A, B>::unit_description_t;
     using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::res_type;
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<type_lists, typename resulting_unit::unit_description_t>,

@@ -56,10 +56,8 @@ struct underlying_divide_operation<tests::specializer_type_a, tests::specializer
 };
 
 template<>
-struct unit_lookup<unit_lists_of_multiplying<tests::specializer_type_a, tests::specializer_type_c>::unit_description_t,
-                   int32_t>
+struct unit_lookup<multiplied_unit<tests::specializer_type_a, tests::specializer_type_c>::unit_description_t, int32_t>
 {
-    using underlying_type = int32_t;
     using res_type = tests::specializer_type_d;
 };
 
@@ -119,7 +117,7 @@ TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
 static_assert(std::is_same_v<specializer_type_d, decltype(specializer_type_a {} * specializer_type_c {})>);
 static_assert(std::is_same_v<unit_lookup<specializer_type_a_divided_by_b::unit_description_t, int64_t>::res_type, specializer_type_a_divided_by_b>);
 static_assert(std::is_same_v<unit_lookup<specializer_type_a_times_b::unit_description_t, int64_t>::res_type, specializer_type_a_times_b>);
-static_assert(std::is_same_v<unit_lookup<unit_lists_of_multiplying<specializer_type_a, specializer_type_c>::unit_description_t, int32_t>::res_type, specializer_type_d>);
+static_assert(std::is_same_v<unit_lookup<multiplied_unit<specializer_type_a, specializer_type_c>::unit_description_t, int32_t>::res_type, specializer_type_d>);
 static_assert(std::is_same_v<unit_lookup<specializer_type_d::unit_description_t, int32_t>::res_type, specializer_type_d>);
 // clang-format on
 

@@ -214,7 +214,7 @@ struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Di
 
 // And then we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::unit_lists_of_dividing<Distance, Time>::unit_description_t, double>
+struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
     using res_type = Speed;
 };
@@ -242,7 +242,7 @@ By default the `underlying_type` is the default result of multiplying or dividin
 
 ```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
 template<>
-struct twig::unit_lookup<twig::unit_lists_of_dividing<Distance, Time>::unit_description_t, double>
+struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
     using res_type = Speed;
 };
