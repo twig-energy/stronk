@@ -2,9 +2,13 @@ cmake_minimum_required(VERSION 3.14)
 
 include(cmake/prelude.cmake)
 
+file(READ "${CMAKE_CURRENT_LIST_DIR}/version.py" version_line)
+string(REGEX MATCH "__version__ = \"(.*)\"" _ ${version_line})
+set(version ${CMAKE_MATCH_1})
+
 project(
   stronk
-  VERSION 0.3.0
+  VERSION ${version}
   DESCRIPTION "An easy to customize strong type library with built in support for unit-like behavior"
   HOMEPAGE_URL "https://github.com/twig-energy/stronk"
   LANGUAGES NONE

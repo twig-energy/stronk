@@ -2,7 +2,6 @@
   "name": "stronk",
   "homepage": "https://github.com/twig-energy/stronk",
   "description": "An easy to customize, strong type library with built in support for unit-like behavior",
-  "version-semver": "0.3.0",
   "license": "MIT",
   "dependencies": [
     {
