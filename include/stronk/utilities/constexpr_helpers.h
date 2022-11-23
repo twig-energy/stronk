@@ -21,12 +21,6 @@ struct first_type_of
 template<typename... Ts>
 using first_type_of_t = typename first_type_of<Ts...>::type;
 
-template<typename T, typename... Ts>
-constexpr auto contains_type() -> bool
-{
-    return (... || std::is_same_v<T, Ts>);
-}
-
 }  // namespace variadic
 
 }  // namespace twig::stronk_details

@@ -8,29 +8,36 @@ namespace twig
 using TypeListExample = TypeList<int32_t, int64_t, int32_t, double, int32_t>;
 
 // ============
-// Add
+// Push back
 // ============
-
-static_assert(std::is_same_v<typename TypeListExample::add_t<int32_t>,
-                             TypeList<int32_t, int64_t, int32_t, double, int32_t, int32_t>>);
+static_assert(std::is_same_v<typename TypeListExample::push_back_t<float>,
+                             TypeList<int32_t, int64_t, int32_t, double, int32_t, float>>);
 
 // ============
-// Remove First
+// Push front
+// ============
+static_assert(std::is_same_v<typename TypeListExample::push_front_t<float>,
+                             TypeList<float, int32_t, int64_t, int32_t, double, int32_t>>);
+
+// ============
+// Erase First
 // ============
 static_assert(
-    std::is_same_v<typename TypeListExample::remove_first_t<int32_t>, TypeList<int64_t, int32_t, double, int32_t>>);
+    std::is_same_v<typename TypeListExample::erase_first_of_t<int32_t>, TypeList<int64_t, int32_t, double, int32_t>>);
 static_assert(
-    std::is_same_v<typename TypeListExample::remove_first_t<double>, TypeList<int32_t, int64_t, int32_t, int32_t>>);
+    std::is_same_v<typename TypeListExample::erase_first_of_t<double>, TypeList<int32_t, int64_t, int32_t, int32_t>>);
 
 // ============
-// Remove All
+// Erase All
 // ============
-static_assert(std::is_same_v<typename TypeListExample::remove_all_t<int32_t>, TypeList<int64_t, double>>);
+static_assert(std::is_same_v<typename TypeListExample::erase_all_of_t<int32_t>, TypeList<int64_t, double>>);
 
 // ============
 // Contains
 // ============
 static_assert(TypeListExample::contains<int32_t>());
+static_assert(TypeListExample::contains<double>());
+static_assert(!TypeListExample::contains<uint32_t>());
 static_assert(!TypeListExample::contains<float>());
 
 // ============

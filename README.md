@@ -241,7 +241,7 @@ struct twig::underlying_multiply_operation<Time, Time>
 ```
 
 # Using Stronk in Your Project
-The project is CMake FetchContent ready and we are working on exposing it on vcpkg.
+The project is CMake FetchContent ready and is available on [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/stronk).
 After retrieving stronk, add the following to your CMakeLists.txt
 
 ```cmake
