@@ -191,7 +191,7 @@ struct TypeList
     template<typename TypeListT>
     using concat_t = decltype(concat(TypeListT()));
 
-    // Concats two sorted typelists into a new sorted type list
+    // Concatenates two sorted typelists into a new sorted type list
     template<typename... OtherTs>
     [[nodiscard]] constexpr static auto concat_sorted(TypeList<OtherTs...>)
     {
