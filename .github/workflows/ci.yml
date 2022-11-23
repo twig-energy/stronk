@@ -3,36 +3,36 @@ name: Continuous Integration
 on:
   push:
     branches:
-    - main
+      - main
 
   pull_request:
     branches:
-    - main
+      - main
 
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
+  VCPKG_COMMIT: "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
 
 jobs:
   lint:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - uses: actions/setup-python@v2
-      with: { python-version: "3.8" }
+      - uses: actions/setup-python@v2
+        with: { python-version: "3.8" }
 
-    - name: Install codespell
-      run: pip3 install codespell
+      - name: Install codespell
+        run: pip3 install codespell
 
-    - name: Lint
-      run: cmake -D FORMAT_COMMAND=clang-format-13 -P cmake/lint.cmake
+      - name: Lint
+        run: cmake -D FORMAT_COMMAND=clang-format-13 -P cmake/lint.cmake
 
-    - name: Spell check
-      if: always()
-      run: cmake -P cmake/spell.cmake
+      - name: Spell check
+        if: always()
+        run: cmake -P cmake/spell.cmake
 
   coverage:
     needs: [lint]
@@ -46,34 +46,38 @@ jobs:
     if: github.repository_owner == 'twig-energy'
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install LCov
-      run: sudo apt-get update -q
-        && sudo apt-get install lcov -q -y
+      - name: Install LCov
+        run: sudo apt-get update -q
+          && sudo apt-get install lcov -q -y
 
-    - name: Install vcpkg
-      uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-coverage-<hash>" }
+      - name: Install vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          {
+            committish: "${{ env.VCPKG_COMMIT }}",
+            cache-key: "vcpkg-coverage-<hash>",
+          }
 
-    - name: Configure
-      env: { CXX: clang++-13 }
-      run: cmake --preset=ci-coverage
+      - name: Configure
+        env: { CXX: clang++-13 }
+        run: cmake --preset=ci-coverage
 
-    - name: Build
-      run: cmake --build build/coverage -j 2
+      - name: Build
+        run: cmake --build build/coverage -j 2
 
-    - name: Test
-      working-directory: build/coverage
-      run: ctest --output-on-failure -j 2
+      - name: Test
+        working-directory: build/coverage
+        run: ctest --output-on-failure -j 2
 
-    - name: Process coverage info
-      run: cmake --build build/coverage -t coverage
+      - name: Process coverage info
+        run: cmake --build build/coverage -t coverage
 
-    - name: Submit to codecov.io
-      uses: codecov/codecov-action@v1
-      with:
-        file: build/coverage/coverage.info
+      - name: Submit to codecov.io
+        uses: codecov/codecov-action@v1
+        with:
+          file: build/coverage/coverage.info
 
   sanitize:
     needs: [lint]
@@ -81,29 +85,33 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install vcpkg
-      uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-sanitize-<hash>" }
+      - name: Install vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          {
+            committish: "${{ env.VCPKG_COMMIT }}",
+            cache-key: "vcpkg-sanitize-<hash>",
+          }
 
-    - name: Configure
-      env: { CXX: clang++-13 }
-      run: cmake --preset=ci-sanitize
+      - name: Configure
+        env: { CXX: clang++-13 }
+        run: cmake --preset=ci-sanitize
 
-    - name: Build
-      run: cmake --build build/sanitize -j 2
+      - name: Build
+        run: cmake --build build/sanitize -j 2
 
-    - name: Test
-      working-directory: build/sanitize
-      env:
-        ASAN_OPTIONS: "strict_string_checks=1:\
-          detect_stack_use_after_return=1:\
-          check_initialization_order=1:\
-          strict_init_order=1:\
-          detect_leaks=1"
-        UBSAN_OPTIONS: print_stacktrace=1
-      run: ctest --output-on-failure -j 2
+      - name: Test
+        working-directory: build/sanitize
+        env:
+          ASAN_OPTIONS: "strict_string_checks=1:\
+            detect_stack_use_after_return=1:\
+            check_initialization_order=1:\
+            strict_init_order=1:\
+            detect_leaks=1"
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: ctest --output-on-failure -j 2
 
   test:
     needs: [lint]
@@ -131,45 +139,44 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install static analyzers
-      if: matrix.os == 'ubuntu-22.04'
-      run: sudo apt-get install clang-tidy-13 cppcheck -y -q
+      - name: Install static analyzers
+        if: matrix.os == 'ubuntu-22.04'
+        run: sudo apt-get install clang-tidy-13 cppcheck -y -q
 
-    - name: Install vcpkg
-      uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}"}
+      - name: Install vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with: { committish: "${{ env.VCPKG_COMMIT }}" }
 
-    - name: Configure
-      shell: pwsh
-      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
+      - name: Configure
+        shell: pwsh
+        run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
 
-    - name: Build
-      run: cmake --build build --config Release -j 2
+      - name: Build
+        run: cmake --build build --config Release -j 2
 
-    - name: Install
-      run: cmake --install build --config Release --prefix prefix
+      - name: Install
+        run: cmake --install build --config Release --prefix prefix
 
-    - name: Test
-      working-directory: build
-      run: ctest --output-on-failure -C Release -j 2
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure -C Release -j 2
 
-    - name: Publish C++ Unit Tests Report
-      uses: mikepenz/action-junit-report@v3
-      with:
-        report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
-        require_tests: true
-        fail_on_failure: true
+      - name: Publish C++ Unit Tests Report
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
+          require_tests: true
+          fail_on_failure: true
 
-    - name: Benchmarks
-      working-directory: build
-      if: matrix.os != 'windows-2022'
-      run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
+      - name: Benchmarks
+        working-directory: build
+        if: matrix.os != 'windows-2022'
+        run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
 
-    - name: Benchmarks-windows
-      working-directory: build
-      if: matrix.os == 'windows-2022'
-      run: |
-        ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
-
+      - name: Benchmarks-windows
+        working-directory: build
+        if: matrix.os == 'windows-2022'
+        run: |
+          ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
