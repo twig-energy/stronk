@@ -143,9 +143,8 @@ struct unit_lookup
 {
     static_assert(!stronk_like<UnitT>,
                   "use my_type::unit_description_t (the unit type lists) instead of the full stronk type");
-    using underlying_type = UnderlyingT;
     using res_type =
-        NewUnitType<underlying_type, UnitTypeLists<typename UnitT::multiplied_part, typename UnitT::divided_part>>;
+        NewUnitType<UnderlyingT, UnitTypeLists<typename UnitT::multiplied_part, typename UnitT::divided_part>>;
 };
 
 template<pure_unit_like UnitT, typename UnderlyingT>
@@ -155,16 +154,12 @@ struct unit_lookup<UnitT, UnderlyingT>
                   "use my_type::unit_description_t (the unit type lists) instead of the full stronk type");
     //  In this case we have a single unit left and we can determine the underlying type and type in general from that
     using res_type = typename UnitT::pure_t;
-    using underlying_type = typename res_type::underlying_type;
-    // static_assert(std::is_same_v<underlying_type, UnderlyingT>,
-    //               "Something went wrong with the type of your underlying result");
 };
 
 template<identity_unit_like UnitT, typename UnderlyingT>
 struct unit_lookup<UnitT, UnderlyingT>
 {
-    using underlying_type = UnderlyingT;
-    using res_type = default_identity_unit<underlying_type>;
+    using res_type = default_identity_unit<UnderlyingT>;
 };
 
 // ==================
