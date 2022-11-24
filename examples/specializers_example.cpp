@@ -46,8 +46,8 @@ struct twig::underlying_multiply_operation<Time, Time>
 
 auto main() -> int
 {
-    using Speed = decltype(Distance {} / Time {});
-    [[maybe_unused]] auto speed_hash = std::hash<Speed> {}(Speed {25.});
+    using SpeedDeduced = decltype(Distance {} / Time {});
+    [[maybe_unused]] auto speed_hash = std::hash<SpeedDeduced> {}(SpeedDeduced {25.});  // Its hash-able
     static_assert((Time {2.} * Time {4.}).unwrap<decltype(Time {} * Time {})>() == 8ULL);
 }
 static_assert(__LINE__ == 53UL, "update readme if this changes");

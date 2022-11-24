@@ -32,8 +32,8 @@ struct stronk : public Skills<Tag>...
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
     STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>)
-        requires(should_be_copy_constructed<T>)
+    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
+        should_be_copy_constructed<T>)
         : _you_should_not_be_using_this_but_rather_unwrap(value)
     {
     }
@@ -46,17 +46,17 @@ struct stronk : public Skills<Tag>...
     }
 
     STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
-        requires(!should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
+    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
+        !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
         : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
     {
     }
 
     template<typename... ConvertConstructibleTs>
-        requires(std::constructible_from<underlying_type, ConvertConstructibleTs...>
-                 && sizeof...(ConvertConstructibleTs) >= 1)
-    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
-        requires(can_forward_constructor_args_like<self_t>)
+        requires(std::constructible_from<underlying_type,
+                                         ConvertConstructibleTs...> && sizeof...(ConvertConstructibleTs) >= 1)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values) requires(
+        can_forward_constructor_args_like<self_t>)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }
@@ -94,11 +94,12 @@ struct stronk : public Skills<Tag>...
 };
 
 template<typename T>
-concept stronk_like = requires(T v) {
-                          {
-                              v.template unwrap<T>()
-                              } -> std::convertible_to<typename T::underlying_type>;
-                      };
+concept stronk_like = requires(T v)
+{
+    {
+        v.template unwrap<T>()
+        } -> std::convertible_to<typename T::underlying_type>;
+};
 
 template<typename StronkT>
 struct can_forward_constructor_args
@@ -184,8 +185,9 @@ struct can_divide
 // it results in an 'A^2' type. Therefore the two systems cannot be mixed. We
 // recommend using units.
 template<typename StronkT>
-concept is_none_unit_behaving = (std::same_as<typename StronkT::can_multiply_with_self, std::true_type>
-                                 || std::same_as<typename StronkT::can_divide_with_self, std::true_type>);
+concept is_none_unit_behaving =
+    (std::same_as<typename StronkT::can_multiply_with_self,
+                  std::true_type> || std::same_as<typename StronkT::can_divide_with_self, std::true_type>);
 
 template<typename StronkT>
 struct can_equate
@@ -338,12 +340,12 @@ struct can_abs
 };
 
 template<typename T>
-concept can_abs_like = requires(T v) {
-                           stronk_like<T>;
-                           {
-                               v.abs()
-                               } -> std::same_as<T>;
-                       };
+concept can_abs_like = stronk_like<T> && requires(T v)
+{
+    {
+        v.abs()
+        } -> std::same_as<T>;
+};
 
 [[nodiscard]] constexpr auto abs(can_abs_like auto elem) noexcept
 {
@@ -361,12 +363,12 @@ struct can_isnan
 };
 
 template<typename T>
-concept can_isnan_like = requires(T v) {
-                             stronk_like<T>;
-                             {
-                                 v.isnan()
-                                 } -> std::same_as<bool>;
-                         };
+concept can_isnan_like = stronk_like<T> && requires(T v)
+{
+    {
+        v.isnan()
+        } -> std::same_as<bool>;
+};
 
 [[nodiscard]] constexpr auto isnan(can_isnan_like auto elem) noexcept -> bool
 {

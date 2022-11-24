@@ -33,7 +33,6 @@ target_link_libraries(
   GTest::gtest_main
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)
-target_compile_options(stronk_test PRIVATE -Wno-implicit-int-float-conversion)
 
 add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_output=xml:")
 
