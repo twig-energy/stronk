@@ -15,7 +15,6 @@ struct Time : twig::stronk<Time, double, twig::unit>
 // Lets introduce our own `Speed` type:
 struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Distance, Time>::skill>
 {
-    // Notice the skill: `divided_unit`
     using stronk::stronk;
 };
 // Notice we are adding the twig::divided_unit skill instead of twig::unit
@@ -50,4 +49,4 @@ auto main() -> int
     [[maybe_unused]] auto speed_hash = std::hash<SpeedDeduced> {}(SpeedDeduced {25.});  // Its hash-able
     static_assert((Time {2.} * Time {4.}).unwrap<decltype(Time {} * Time {})>() == 8ULL);
 }
-static_assert(__LINE__ == 53UL, "update readme if this changes");
+static_assert(__LINE__ == 52UL, "update readme if this changes");

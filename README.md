@@ -189,7 +189,7 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=45
+```cpp :file=./examples/specializers_example.cpp:line_end=44
 #include <stronk/specializers.h>
 
 // Lets consider the following units:
@@ -207,7 +207,6 @@ struct Time : twig::stronk<Time, double, twig::unit>
 // Lets introduce our own `Speed` type:
 struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Distance, Time>::skill>
 {
-    // Notice the skill: `divided_unit`
     using stronk::stronk;
 };
 // Notice we are adding the twig::divided_unit skill instead of twig::unit
@@ -241,12 +240,12 @@ You can also specialize the underlying type of multiplying two units:
 By default the `underlying_type` is the default result of multiplying or dividing the underlying types of the two units themselves.
 
 ```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
-template<>
 struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
     using res_type = Speed;
 };
 
+// The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 ```
 
 # Using Stronk in Your Project
