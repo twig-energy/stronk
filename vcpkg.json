@@ -2,12 +2,11 @@
   "name": "stronk",
   "homepage": "https://github.com/twig-energy/stronk",
   "description": "An easy to customize, strong type library with built in support for unit-like behavior",
-  "version-semver": "0.3.0",
   "license": "MIT",
   "dependencies": [
     {
       "name": "boost-type-index",
-      "version>=": "1.78.0"
+      "version>=": "1.80.0"
     }
   ],
   "default-features": [],
@@ -26,7 +25,7 @@
       "dependencies": [
         {
           "name": "abseil",
-          "version>=": "20211102.1"
+          "version>=": "20220623.1"
         }
       ]
     },
@@ -35,7 +34,7 @@
       "dependencies": [
         {
           "name": "gtest",
-          "version>=": "1.11.0"
+          "version>=": "1.12.1"
         }
       ]
     },
@@ -44,10 +43,10 @@
       "dependencies": [
         {
           "name": "benchmark",
-          "version>=": "1.6.0"
+          "version>=": "1.7.0"
         }
       ]
     }
   },
-  "builtin-baseline": "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
+  "builtin-baseline": "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
 }

@@ -13,14 +13,14 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '44 8 * * 1'
+    - cron: "44 8 * * 1"
 env:
-  VCPKG_COMMIT: "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
+  VCPKG_COMMIT: "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
 
 jobs:
   analyze:
@@ -34,35 +34,39 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'cpp' ]
+        language: ["cpp"]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
 
-        # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+          # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # queries: security-extended,security-and-quality
 
-    - name: Install vcpkg
-      uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: "${{ env.VCPKG_COMMIT }}", cache-key: "vcpkg-codeql-<hash>" }
+      - name: Install vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          {
+            committish: "${{ env.VCPKG_COMMIT }}",
+            cache-key: "vcpkg-codeql-<hash>",
+          }
 
-    - name: Build
-      run: |
-        cmake --preset=ci-codeql
-        cmake --build build --config Release -j 2
-        cmake --install build --prefix bin
+      - name: Build
+        run: |
+          cmake --preset=ci-codeql
+          cmake --build build --config Release -j 2
+          cmake --install build --prefix bin
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
