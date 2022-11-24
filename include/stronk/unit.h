@@ -79,26 +79,8 @@ struct unit : UnitTypeLists<TypeList<StronkT>, TypeList<>>
 };
 
 template<typename T>
-struct default_identity_unit
-    : stronk<default_identity_unit<T>,
-             T,
-             identity_unit,
-             can_order,
-             can_add,
-             can_subtract,
-             can_negate,
-             default_can_equate_builder<T>::template skill,
-             can_forward_constructor_args>
+struct default_identity_unit : stronk<default_identity_unit<T>, T, identity_unit>
 {
-    using stronk<default_identity_unit,
-                 T,
-                 identity_unit,
-                 can_order,
-                 can_add,
-                 can_subtract,
-                 can_negate,
-                 default_can_equate_builder<T>::template skill,
-                 can_forward_constructor_args>::stronk;
 };
 
 template<typename UnitTypeListsT>
@@ -176,13 +158,8 @@ struct multiplied_unit
 
     // This is the result:
     using unit_description_t = UnitTypeLists<new_multiplied_part, new_divided_part>;
-
-    // This can be used as a skill
     template<typename StronkT>
-    struct skill : unit_description_t  // use this as a stronk skill.
-    {
-        using unit_description_t = unit_description_t;
-    };
+    using skill = typename unit_type_list_skill_builder<unit_description_t>::template skill<StronkT>;
 };
 
 // You can specialize this struct if you want another underlying multiply operation
@@ -286,10 +263,7 @@ struct divided_unit
     // This is the result:
     using unit_description_t = UnitTypeLists<new_multiplied_part, new_divided_part>;
     template<typename StronkT>
-    struct skill : unit_description_t  // use this as a stronk skill.
-    {
-        using unit_description_t = unit_description_t;
-    };
+    using skill = typename unit_type_list_skill_builder<unit_description_t>::template skill<StronkT>;
 };
 
 // You can specialize this struct if you want another underlying divide operation

@@ -71,7 +71,7 @@ jobs:
           }
 
       - name: Configure
-        env: { CXX: clang++-13 }
+        env: { CXX: clang++-14 }
         run: cmake --preset=ci-coverage
 
       - name: Build
