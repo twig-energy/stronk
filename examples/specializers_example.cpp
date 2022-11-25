@@ -26,7 +26,7 @@ struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t,
     using type = Speed;
 };
 
-// The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
+// The above of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 
 // Sometimes you might want to specialize the multiply or divide operation for the underlying value
 // Lets specialize `Time^2` to use int64_t as its underlying type.

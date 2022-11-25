@@ -218,7 +218,7 @@ struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t,
     using type = Speed;
 };
 
-// The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
+// The above of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 ```
 
 # Using Stronk in Your Project
