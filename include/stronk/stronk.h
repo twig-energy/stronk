@@ -86,10 +86,7 @@ struct stronk : public Skills<Tag>...
     }
 
   protected:
-    [[nodiscard]] constexpr auto val() noexcept -> T&
-    {
-        return this->_you_should_not_be_using_this_but_rather_unwrap;
-    }
+    [[nodiscard]] constexpr auto val() noexcept -> T& { return this->_you_should_not_be_using_this_but_rather_unwrap; }
     [[nodiscard]] constexpr auto val() const noexcept -> const T&
     {
         return this->_you_should_not_be_using_this_but_rather_unwrap;
@@ -343,9 +340,8 @@ struct can_abs
 };
 
 template<typename T>
-concept can_abs_like = requires(T v)
+concept can_abs_like = stronk_like<T> && requires(T v)
 {
-    stronk_like<T>;
     {
         v.abs()
         } -> std::same_as<T>;
@@ -367,9 +363,8 @@ struct can_isnan
 };
 
 template<typename T>
-concept can_isnan_like = requires(T v)
+concept can_isnan_like = stronk_like<T> && requires(T v)
 {
-    stronk_like<T>;
     {
         v.isnan()
         } -> std::same_as<bool>;
@@ -389,10 +384,7 @@ struct can_be_used_as_flag
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>();
     }
 
-    [[nodiscard]] auto is_off() const noexcept -> bool
-    {
-        return !this->is_on();
-    }
+    [[nodiscard]] auto is_off() const noexcept -> bool { return !this->is_on(); }
 
     [[nodiscard]] static auto on() noexcept -> StronkT
     {
@@ -431,10 +423,7 @@ struct can_size
     {
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>().size();
     }
-    [[nodiscard]] constexpr auto empty() const noexcept -> bool
-    {
-        return this->size() == static_cast<std::size_t>(0);
-    }
+    [[nodiscard]] constexpr auto empty() const noexcept -> bool { return this->size() == static_cast<std::size_t>(0); }
 };
 
 template<typename StronkT>

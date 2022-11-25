@@ -14,6 +14,17 @@ struct specializer_type_b : stronk_default_unit<specializer_type_b, int32_t>
     using stronk_default_unit::stronk_default_unit;
 };
 
+struct specializer_type_c : stronk_default_unit<specializer_type_c, int32_t>
+{
+    using stronk_default_unit::stronk_default_unit;
+};
+
+struct specializer_type_d
+    : stronk<specializer_type_d, int32_t, multiplied_unit<specializer_type_a, specializer_type_c>::skill>
+{
+    using stronk::stronk;
+};
+
 }  // namespace twig::tests
 
 namespace twig
@@ -42,6 +53,12 @@ struct underlying_divide_operation<tests::specializer_type_a, tests::specializer
     {
         return static_cast<int64_t>(v1) / static_cast<int64_t>(v2) + 1LL;
     }
+};
+
+template<>
+struct unit_lookup<multiplied_unit<tests::specializer_type_a, tests::specializer_type_c>::unit_description_t, int32_t>
+{
+    using type = tests::specializer_type_d;
 };
 
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_a);
@@ -95,5 +112,13 @@ TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
     static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
     EXPECT_EQ(tests::specializer_type_a {120} / tests::specializer_type_b {2}, res_type {60 + 1});
 }
+
+// clang-format off
+static_assert(std::is_same_v<specializer_type_d, decltype(specializer_type_a {} * specializer_type_c {})>);
+static_assert(std::is_same_v<unit_lookup<specializer_type_a_divided_by_b::unit_description_t, int64_t>::type, specializer_type_a_divided_by_b>);
+static_assert(std::is_same_v<unit_lookup<specializer_type_a_times_b::unit_description_t, int64_t>::type, specializer_type_a_times_b>);
+static_assert(std::is_same_v<unit_lookup<multiplied_unit<specializer_type_a, specializer_type_c>::unit_description_t, int32_t>::type, specializer_type_d>);
+static_assert(std::is_same_v<unit_lookup<specializer_type_d::unit_description_t, int32_t>::type, specializer_type_d>);
+// clang-format on
 
 }  // namespace twig::tests

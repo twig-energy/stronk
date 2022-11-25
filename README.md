@@ -189,7 +189,7 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=36
+```cpp :file=./examples/specializers_example.cpp:line_end=29
 #include <stronk/specializers.h>
 
 // Lets consider the following units:
@@ -203,45 +203,26 @@ struct Time : twig::stronk<Time, double, twig::unit>
     using stronk::stronk;
 };
 
-// Note: For the specializer macros you need to call them from within the twig namespace:
-namespace twig
+// Lets say you want to use a custom defined stronk type for certain unit combinations.
+// Lets introduce our own `Speed` type:
+struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
-// Lets say we want to have Distance / Time specialized to be hashable.
-// We can use the STRONK_SPECIALIZE_DIVIDE macro to specialize the generated type.
-STRONK_SPECIALIZE_DIVIDE(Distance, Time, can_hash);
-// Now any expression resulting the `Distance{} / Time{}` type will result in a unit type with the can_hash skill
-
-}  // namespace twig
-
-// Lets specialize Time^2 to use int64_t as its underlying type.
-template<>
-struct twig::underlying_multiply_operation<Time, Time>
-{
-    using res_type = int64_t;
-
-    STRONK_FORCEINLINE
-    constexpr static auto multiply(const typename Time::underlying_type& v1,
-                                   const typename Time::underlying_type& v2) noexcept -> res_type
-    {
-        return static_cast<int64_t>(v1 * v2);
-    }
+    using stronk::stronk;
 };
-```
+// Notice we are adding the twig::divided_unit skill instead of twig::unit
 
-You can also specialize the underlying type of multiplying two units:
-By default the `underlying_type` is the default result of multiplying or dividing the underlying types of the two units themselves.
-
-```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
-// Lets specialize Time^2 to use int64_t as its underlying type.
+// To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
-struct twig::underlying_multiply_operation<Time, Time>
+struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
-    using res_type = int64_t;
+    using type = Speed;
+};
 
+// The above of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 ```
 
 # Using Stronk in Your Project
-The project is CMake FetchContent ready and we are working on exposing it on vcpkg.
+The project is CMake FetchContent ready and is available on [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/stronk).
 After retrieving stronk, add the following to your CMakeLists.txt
 
 ```cmake

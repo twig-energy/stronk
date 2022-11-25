@@ -4,6 +4,10 @@ set(CMAKE_INSTALL_LIBDIR lib CACHE PATH "")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+if(PROJECT_IS_TOP_LEVEL)
+    set(CMAKE_INSTALL_INCLUDEDIR "include/stronk-${PROJECT_VERSION}" CACHE PATH "")
+endif()
+
 # find_package(<package>) call for consumers to find this project
 set(package stronk)
 

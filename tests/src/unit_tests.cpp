@@ -57,6 +57,13 @@ using Acceleration = decltype(Speed {} / Time {});
 using TimeSquared = decltype(Time {} * Time {});
 using Force = decltype(Mass {} * Acceleration {});
 
+struct a_regular_type
+{};
+struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
+{};
+struct an_identity_unit_type : stronk<an_identity_unit_type, int32_t, identity_unit>
+{};
+
 // Now we have it all set up
 TEST(stronk_units, example)  // NOLINT
 {
@@ -76,6 +83,20 @@ TEST(stronk_units, example)  // NOLINT
     EXPECT_EQ(distance_moved_over_2_hours_at_speed, thirty_km);
 }
 
+// Testing the concepts
+static_assert(unit_like<Mass>);
+static_assert(!identity_unit_like<Mass>);
+static_assert(unit_like<Speed>);
+static_assert(!identity_unit_like<Speed>);
+static_assert(unit_like<Acceleration>);
+static_assert(!identity_unit_like<Acceleration>);
+static_assert(!unit_like<an_identity_unit_type>);
+static_assert(identity_unit_like<an_identity_unit_type>);
+static_assert(!unit_like<a_regular_stronk_type>);
+static_assert(!identity_unit_like<a_regular_stronk_type>);
+static_assert(!unit_like<a_regular_type>);
+static_assert(!identity_unit_like<a_regular_type>);
+
 // Testing the generated types
 
 // clang-format off
@@ -83,7 +104,6 @@ using example_1 = NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance
 using example_2 = NewUnitType<int32_t, UnitTypeLists<TypeList<Mass, Distance>, TypeList<Time>>>;
 static_assert(Mass::is_single_unit);
 static_assert(!Mass::is_unitless);
-static_assert(std::is_same_v<Mass::is_unit_type, std::true_type>);
 static_assert(std::is_same_v<Mass::pure_t, Mass>);
 static_assert(std::is_same_v<multiply_t<Distance, Time>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Time>, TypeList<>>>>);
 static_assert(std::is_same_v<multiply_t<multiply_t<Distance, Time>, Distance>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Distance, Time>, TypeList<>>>>);
@@ -99,8 +119,8 @@ TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(Mass {i * j}, Mass {i} * j);
-            EXPECT_EQ(Mass {i * j}, j * Mass {i});
+            EXPECT_EQ(Mass {i * j}, Mass {i} * j);  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
+            EXPECT_EQ(Mass {i * j}, j * Mass {i});  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
         }
     }
 }

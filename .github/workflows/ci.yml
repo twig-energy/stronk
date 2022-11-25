@@ -15,6 +15,16 @@ env:
   VCPKG_COMMIT: "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
 
 jobs:
+  version_bump:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Test version bumped
+        run: echo "$(git diff HEAD origin/main version.py)" | grep __version__ -wq
+
   lint:
     runs-on: ubuntu-22.04
 
@@ -28,7 +38,7 @@ jobs:
         run: pip3 install codespell
 
       - name: Lint
-        run: cmake -D FORMAT_COMMAND=clang-format-13 -P cmake/lint.cmake
+        run: cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
 
       - name: Spell check
         if: always()
@@ -61,7 +71,7 @@ jobs:
           }
 
       - name: Configure
-        env: { CXX: clang++-13 }
+        env: { CXX: clang++-14 }
         run: cmake --preset=ci-coverage
 
       - name: Build
@@ -96,7 +106,7 @@ jobs:
           }
 
       - name: Configure
-        env: { CXX: clang++-13 }
+        env: { CXX: clang++-14 }
         run: cmake --preset=ci-sanitize
 
       - name: Build
@@ -143,7 +153,7 @@ jobs:
 
       - name: Install static analyzers
         if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install clang-tidy-13 cppcheck -y -q
+        run: sudo apt-get install clang-tidy-14 cppcheck -y -q
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
