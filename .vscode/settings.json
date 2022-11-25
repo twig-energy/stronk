@@ -1,6 +1,5 @@
 {
     "clang-format.executable": "clang-format-14",
-    "cpplint.cpplintPath": "/home/anderswind/miniconda3/bin/cpplint",
     "cpplint.filters": [
         "-build/c++11",
         "-build/include_order",

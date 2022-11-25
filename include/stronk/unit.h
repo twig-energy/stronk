@@ -7,19 +7,23 @@
 namespace twig
 {
 
+namespace details
+{
 struct is_unit_tag
 {};
 struct is_identity_unit_tag
 {};
+}  // namespace details
 
 template<typename T>
 concept unit_list_like = std::same_as<typename T::has_unit_lists, std::true_type>;
 
 template<typename T>
-concept identity_unit_like = unit_list_like<T> && std::same_as<typename T::unit_like_tag, is_identity_unit_tag>;
+concept identity_unit_like =
+    unit_list_like<T> && std::same_as<typename T::unit_like_tag, details::is_identity_unit_tag>;
 
 template<typename T>
-concept unit_like = unit_list_like<T> && std::same_as<typename T::unit_like_tag, is_unit_tag>;
+concept unit_like = unit_list_like<T> && std::same_as<typename T::unit_like_tag, details::is_unit_tag>;
 
 template<typename T>
 concept pure_unit_like = unit_like<T> && !std::same_as<typename T::pure_t, void>;
@@ -47,7 +51,7 @@ struct UnitTypeLists
     static constexpr bool is_unitless = multiplied_part::empty() && divided_part::empty();
     static constexpr bool is_single_unit = multiplied_part::size() == 1 && divided_part::empty();
     using pure_t = std::conditional_t<is_single_unit, typename multiplied_part::first_t, void>;
-    using unit_like_tag = std::conditional_t<is_unitless, is_identity_unit_tag, is_unit_tag>;
+    using unit_like_tag = std::conditional_t<is_unitless, details::is_identity_unit_tag, details::is_unit_tag>;
 };
 
 using IdentityUnitTypeList = UnitTypeLists<TypeList<>, TypeList<>>;
@@ -76,11 +80,6 @@ struct unit : UnitTypeLists<TypeList<StronkT>, TypeList<>>
     template<ratio_with_base_unit_like RatioT>
         requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
     [[nodiscard]] auto unwrap_as() const noexcept;
-};
-
-template<typename T>
-struct default_identity_unit : stronk<default_identity_unit<T>, T, identity_unit>
-{
 };
 
 template<typename UnitTypeListsT>
@@ -125,8 +124,7 @@ struct unit_lookup
 {
     static_assert(!stronk_like<UnitT>,
                   "use my_type::unit_description_t (the unit type lists) instead of the full stronk type");
-    using res_type =
-        NewUnitType<UnderlyingT, UnitTypeLists<typename UnitT::multiplied_part, typename UnitT::divided_part>>;
+    using type = NewUnitType<UnderlyingT, UnitTypeLists<typename UnitT::multiplied_part, typename UnitT::divided_part>>;
 };
 
 template<pure_unit_like UnitT, typename UnderlyingT>
@@ -135,13 +133,21 @@ struct unit_lookup<UnitT, UnderlyingT>
     static_assert(!stronk_like<UnitT>,
                   "use my_type::unit_description_t (the unit type lists) instead of the full stronk type");
     //  In this case we have a single unit left and we can determine the underlying type and type in general from that
-    using res_type = typename UnitT::pure_t;
+    using type = typename UnitT::pure_t;
 };
 
 template<identity_unit_like UnitT, typename UnderlyingT>
 struct unit_lookup<UnitT, UnderlyingT>
 {
-    using res_type = default_identity_unit<UnderlyingT>;
+    static_assert(!stronk_like<UnitT>,
+                  "use my_type::unit_description_t (the unit type lists) instead of the full stronk type");
+    // we need to return a class which we can check the unit-ness of. Later it will be discarded
+    template<typename T>
+    struct default_identity_unit : stronk<default_identity_unit<UnderlyingT>, UnderlyingT, identity_unit>
+    {
+    };
+
+    using type = default_identity_unit<UnderlyingT>;
 };
 
 // ==================
@@ -183,7 +189,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
     using type_lists = typename multiplied_unit<A, B>::unit_description_t;
-    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::res_type;
+    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::type;
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<type_lists, typename resulting_unit::unit_description_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
@@ -287,7 +293,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
     using type_lists = typename divided_unit<A, B>::unit_description_t;
-    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::res_type;
+    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::type;
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<type_lists, typename resulting_unit::unit_description_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "

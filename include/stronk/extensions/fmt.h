@@ -24,9 +24,8 @@ struct can_fmt_format
 };
 
 template<typename T>
-concept can_fmt_format_like = requires(T v)
+concept can_fmt_format_like = stronk_like<T> && requires(T v)
 {
-    stronk_like<T>;
     {
         T::fmt_string.value
         } -> std::convertible_to<std::string_view>;

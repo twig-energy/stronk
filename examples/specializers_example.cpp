@@ -13,17 +13,17 @@ struct Time : twig::stronk<Time, double, twig::unit>
 
 // Lets say you want to use a custom defined stronk type for certain unit combinations.
 // Lets introduce our own `Speed` type:
-struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Distance, Time>::skill>
+struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
     using stronk::stronk;
 };
 // Notice we are adding the twig::divided_unit skill instead of twig::unit
 
-// And then we need to specialize `unit_lookup`:
+// To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
 struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
-    using res_type = Speed;
+    using type = Speed;
 };
 
 // The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
@@ -46,7 +46,6 @@ struct twig::underlying_multiply_operation<Time, Time>
 auto main() -> int
 {
     using SpeedDeduced = decltype(Distance {} / Time {});
-    [[maybe_unused]] auto speed_hash = std::hash<SpeedDeduced> {}(SpeedDeduced {25.});  // Its hash-able
-    static_assert((Time {2.} * Time {4.}).unwrap<decltype(Time {} * Time {})>() == 8ULL);
+    static_assert(std::is_same_v<SpeedDeduced, Speed>);
 }
-static_assert(__LINE__ == 52UL, "update readme if this changes");
+static_assert(__LINE__ == 51UL, "update readme if this changes");

@@ -189,7 +189,7 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=44
+```cpp :file=./examples/specializers_example.cpp:line_end=29
 #include <stronk/specializers.h>
 
 // Lets consider the following units:
@@ -205,44 +205,17 @@ struct Time : twig::stronk<Time, double, twig::unit>
 
 // Lets say you want to use a custom defined stronk type for certain unit combinations.
 // Lets introduce our own `Speed` type:
-struct Speed : twig::stronk<Speed, double, twig::can_hash, twig::divided_unit<Distance, Time>::skill>
+struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
     using stronk::stronk;
 };
 // Notice we are adding the twig::divided_unit skill instead of twig::unit
 
-// And then we need to specialize `unit_lookup`:
+// To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
 struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
 {
-    using res_type = Speed;
-};
-
-// The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
-
-// Sometimes you might want to specialize the multiply or divide operation for the underlying value
-// Lets specialize `Time^2` to use int64_t as its underlying type.
-template<>
-struct twig::underlying_multiply_operation<Time, Time>
-{
-    using res_type = int64_t;
-
-    constexpr static auto multiply(const typename Time::underlying_type& v1,
-                                   const typename Time::underlying_type& v2) noexcept -> res_type
-    {
-        return static_cast<int64_t>(v1 * v2);
-    }
-};
-// Now the automatically generated stronk unit for Time^2 will have int64_t as the underlying type.
-```
-
-You can also specialize the underlying type of multiplying two units:
-By default the `underlying_type` is the default result of multiplying or dividing the underlying types of the two units themselves.
-
-```cpp :file=./examples/specializers_example.cpp:line_start=23:line_end=29
-struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
-{
-    using res_type = Speed;
+    using type = Speed;
 };
 
 // The following of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
