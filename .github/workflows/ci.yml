@@ -1,5 +1,9 @@
 name: Continuous Integration
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 on:
   push:
     branches:
@@ -43,6 +47,37 @@ jobs:
       - name: Spell check
         if: always()
         run: cmake -P cmake/spell.cmake
+
+  sonarcloud:
+    needs: [lint]
+    runs-on: ubuntu-22.04
+    env:
+      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install sonar-scanner and build-wrapper
+        uses: SonarSource/sonarcloud-github-c-cpp@v1
+
+      - name: Install vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          {
+            committish: "${{ env.VCPKG_COMMIT }}",
+            cache-key: "vcpkg-sonarcloud-<hash>",
+          }
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cmake --preset=ci-sonarcloud
+
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build --config Release
+
+          sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
 
   coverage:
     needs: [lint]
