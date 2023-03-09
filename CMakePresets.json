@@ -239,6 +239,16 @@
         "dev-mode",
         "gcc-11"
       ]
+    },
+    {
+      "name": "ci-sonarcloud",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "vcpkg",
+        "dev-mode",
+        "gcc-11"
+      ]
     }
   ]
 }
