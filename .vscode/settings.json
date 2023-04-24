@@ -108,5 +108,9 @@
         "structs",
         "VCPKG"
     ],
-    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/dev/compile_commands.json"
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/dev/compile_commands.json",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "twig-energy",
+        "projectKey": "twig-energy_stronk"
+    }
 }
