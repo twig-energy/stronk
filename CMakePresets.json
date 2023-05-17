@@ -95,6 +95,14 @@
       }
     },
     {
+      "name": "gcc-13",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-13",
+        "CC": "gcc-13"
+      }
+    },
+    {
       "name": "msvc",
       "hidden": true
     },
@@ -234,6 +242,13 @@
       "inherits": [
         "ci-ubuntu",
         "gcc-12"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-gcc-13",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-13"
       ]
     },
     {
