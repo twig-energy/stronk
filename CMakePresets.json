@@ -11,7 +11,7 @@
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;benchmark"
+        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;nlohmann-json;benchmark"
       }
     },
     {
