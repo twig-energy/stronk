@@ -18,6 +18,7 @@ Checks: "*,\
   -llvm-header-guard,\
   -llvm-include-order,\
   -llvmlibc-*,\
+  -readability-identifier-length,\
   -readability-identifier-naming,\
   -readability-magic-numbers,\
   -readability-named-parameter,\

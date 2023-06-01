@@ -50,6 +50,7 @@ jobs:
         run: cmake -P cmake/spell.cmake
 
   sonarcloud:
+    if: false  # See https://github.com/twig-energy/stronk/issues/37
     needs: [lint]
     runs-on: ubuntu-22.04
     env:

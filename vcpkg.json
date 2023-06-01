@@ -29,6 +29,12 @@
         }
       ]
     },
+    "nlohmann-json": {
+      "description": "Dependencies for nlohmann::json extension",
+      "dependencies": [
+        "nlohmann-json"
+      ]
+    },
     "test": {
       "description": "Dependencies for testing",
       "dependencies": [

@@ -2,6 +2,7 @@
 #include <stronk/extensions/absl.h>
 #include <stronk/extensions/fmt.h>
 #include <stronk/extensions/gtest.h>
+#include <stronk/extensions/nlohmann_json.h>
 #include <stronk/stronk.h>
 
 namespace twig
@@ -53,6 +54,34 @@ TEST(can_gtest_print, streaming_to_ostream_prints_the_value)  // NOLINT
     PrintTo(val, &sstream);
 
     EXPECT_EQ(sstream.str(), "5");
+}
+
+struct a_can_nlohmann_json : stronk<a_can_nlohmann_json, int, can_nlohmann_json, can_equate>
+{
+    using stronk::stronk;
+};
+
+TEST(can_nlohmann_json, when_serializing_stronk_integer_then_can_deserialize_to_same_value)
+{
+    const auto val = a_can_nlohmann_json {42};
+    auto json_val = nlohmann::json {};
+    json_val["number"] = val;
+    EXPECT_EQ(R"({"number":42})", json_val.dump());
+    EXPECT_EQ(val, json_val.at("number").get<a_can_nlohmann_json>());
+}
+
+struct a_string_can_nlohmann_json : stronk<a_string_can_nlohmann_json, std::string, can_nlohmann_json, can_equate>
+{
+    using stronk::stronk;
+};
+
+TEST(can_nlohmann_json, when_serializing_stronk_string_then_can_deserialize_to_same_value)
+{
+    const auto val = a_string_can_nlohmann_json {"hello"};
+    auto json_val = nlohmann::json {};
+    json_val["string"] = val;
+    EXPECT_EQ(R"({"string":"hello"})", json_val.dump());
+    EXPECT_EQ(val, json_val.at("string").get<a_string_can_nlohmann_json>());
 }
 
 }  // namespace twig
