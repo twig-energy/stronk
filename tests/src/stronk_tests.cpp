@@ -397,6 +397,11 @@ struct a_flag_type : stronk_flag<a_flag_type>
     using stronk_flag::stronk_flag;
 };
 
+static_assert(a_flag_type::on().is_on());
+static_assert(!a_flag_type::on().is_off());
+static_assert(!a_flag_type::off().is_on());
+static_assert(a_flag_type::off().is_off());
+
 TEST(flag, flag_values_corrosponds_to_bool_values)  // NOLINT
 {
     EXPECT_FALSE(a_flag_type {false}.is_on());
@@ -625,5 +630,7 @@ TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertibl
     auto val = a_convert_constructible_type(42);  // NOLINT
     EXPECT_EQ(val.unwrap<a_convert_constructible_type>().val, 42);
 }
+
+
 
 }  // namespace twig

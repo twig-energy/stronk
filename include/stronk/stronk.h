@@ -378,21 +378,21 @@ concept can_isnan_like = stronk_like<T> && requires(T v)
 template<typename StronkT>
 struct can_be_used_as_flag
 {
-    [[nodiscard]] auto is_on() const noexcept -> bool
+    [[nodiscard]] constexpr auto is_on() const noexcept -> bool
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>();
     }
 
-    [[nodiscard]] auto is_off() const noexcept -> bool { return !this->is_on(); }
+    [[nodiscard]] constexpr auto is_off() const noexcept -> bool { return !this->is_on(); }
 
-    [[nodiscard]] static auto on() noexcept -> StronkT
+    [[nodiscard]] static constexpr auto on() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
         return StronkT(true);
     }
 
-    [[nodiscard]] static auto off() noexcept -> StronkT
+    [[nodiscard]] static constexpr auto off() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
         return StronkT(false);
