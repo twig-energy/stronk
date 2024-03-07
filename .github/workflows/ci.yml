@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
+  VCPKG_COMMIT: "c8696863d371ab7f46e213d8f5ca923c4aef2a00"
 
 jobs:
   version_bump:
