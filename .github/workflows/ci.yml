@@ -42,6 +42,15 @@ jobs:
       - name: Install codespell
         run: pip3 install codespell
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+
+      - name: Fix clang-format
+        run: |
+          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+
       - name: Lint
         run: cmake -D FORMAT_COMMAND=clang-format-17 -P cmake/lint.cmake
 
@@ -99,6 +108,11 @@ jobs:
         run: sudo apt-get update -q
           && sudo apt-get install lcov -q -y
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
@@ -134,6 +148,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+          
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
@@ -198,7 +217,12 @@ jobs:
 
       - name: Install static analyzers
         if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install cppcheck clang-17 -y -q
+        run: sudo apt-get install cppcheck -y -q
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
