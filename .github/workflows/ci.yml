@@ -151,7 +151,11 @@ jobs:
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "17.0"
-          
+
+      - name: Fix clang++
+        run: |
+          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
@@ -223,6 +227,13 @@ jobs:
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "17.0"
+      
+      - name: Fix clang installations
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+          cp ./llvm/bin/clang-tidy ./llvm/bin/clang-tidy-17
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
