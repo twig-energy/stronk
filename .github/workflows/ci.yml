@@ -220,6 +220,7 @@ jobs:
         run: sudo apt-get install cppcheck -y -q
 
       - name: Install LLVM and Clang
+        if: matrix.os == 'ubuntu-22.04'
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "17.0"
