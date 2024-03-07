@@ -1,6 +1,6 @@
 {
     "clangd.path": "clangd-17",
-    "clang-format.executable": "clang-format-14",
+    "clang-format.executable": "clang-format-17",
     "cpplint.filters": [
         "-build/c++11",
         "-build/include_order",
