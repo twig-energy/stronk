@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v2
         with: { python-version: "3.8" }
@@ -65,10 +65,10 @@ jobs:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v1
+        uses: SonarSource/sonarcloud-github-c-cpp@v2
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -101,7 +101,7 @@ jobs:
     if: github.repository_owner == 'twig-energy'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install LCov
         run: sudo apt-get update -q
@@ -135,7 +135,7 @@ jobs:
         run: cmake --build build/coverage -t coverage
 
       - name: Submit to codecov.io
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         with:
           file: build/coverage/coverage.info
 
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
@@ -212,7 +212,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install static analyzers
         if: matrix.os == 'ubuntu-22.04'
