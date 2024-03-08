@@ -10,7 +10,7 @@ set(FORMAT_PATTERNS
 )
 
 set(FORMAT_COMMAND
-    clang-format-14
+    clang-format-17
     CACHE STRING "Formatter to use"
 )
 

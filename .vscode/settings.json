@@ -1,5 +1,6 @@
 {
-    "clang-format.executable": "clang-format-14",
+    "clangd.path": "clangd-17",
+    "clang-format.executable": "clang-format-17",
     "cpplint.filters": [
         "-build/c++11",
         "-build/include_order",
@@ -108,5 +109,9 @@
         "structs",
         "VCPKG"
     ],
-    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/dev/compile_commands.json"
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/dev/compile_commands.json",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "twig-energy",
+        "projectKey": "twig-energy_stronk"
+    }
 }

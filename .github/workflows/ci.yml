@@ -16,13 +16,13 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: "6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2"
+  VCPKG_COMMIT: "c8696863d371ab7f46e213d8f5ca923c4aef2a00"
 
 jobs:
   version_bump:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -34,33 +34,41 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with: { python-version: "3.8" }
 
       - name: Install codespell
         run: pip3 install codespell
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+
+      - name: Fix clang-format
+        run: |
+          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+
       - name: Lint
-        run: cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
+        run: cmake -D FORMAT_COMMAND=clang-format-17 -P cmake/lint.cmake
 
       - name: Spell check
         if: always()
         run: cmake -P cmake/spell.cmake
 
   sonarcloud:
-    if: false  # See https://github.com/twig-energy/stronk/issues/37
     needs: [lint]
     runs-on: ubuntu-22.04
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v1
+        uses: SonarSource/sonarcloud-github-c-cpp@v2
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -93,11 +101,16 @@ jobs:
     if: github.repository_owner == 'twig-energy'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install LCov
         run: sudo apt-get update -q
           && sudo apt-get install lcov -q -y
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -108,7 +121,7 @@ jobs:
           }
 
       - name: Configure
-        env: { CXX: clang++-14 }
+        env: { CXX: clang++-17 }
         run: cmake --preset=ci-coverage
 
       - name: Build
@@ -122,7 +135,7 @@ jobs:
         run: cmake --build build/coverage -t coverage
 
       - name: Submit to codecov.io
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         with:
           file: build/coverage/coverage.info
 
@@ -132,7 +145,16 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+
+      - name: Fix clang++
+        run: |
+          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -143,7 +165,7 @@ jobs:
           }
 
       - name: Configure
-        env: { CXX: clang++-14 }
+        env: { CXX: clang++-17 }
         run: cmake --preset=ci-sanitize
 
       - name: Build
@@ -166,12 +188,16 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, ubuntu-22.04, windows-2022]
-        compiler: [gcc-11, clang-13, clang-14, msvc]
+        compiler: [gcc-11, clang-13, clang-14, clang-15, clang-17, msvc]
         exclude:
           - os: windows-2022
             compiler: clang-13
           - os: windows-2022
             compiler: clang-14
+          - os: windows-2022
+            compiler: clang-15
+          - os: windows-2022
+            compiler: clang-17
           - os: windows-2022
             compiler: gcc-11
           - os: ubuntu-22.04
@@ -182,15 +208,32 @@ jobs:
             compiler: clang-13
           - os: macos-12
             compiler: clang-14
+          - os: macos-12
+            compiler: clang-15
+          - os: macos-12
+            compiler: clang-17
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install static analyzers
         if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install clang-tidy-14 cppcheck -y -q
+        run: sudo apt-get install cppcheck -y -q
+
+      - name: Install LLVM and Clang
+        if: matrix.os == 'ubuntu-22.04'
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "17.0"
+      
+      - name: Fix clang installations
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+          cp ./llvm/bin/clang-tidy ./llvm/bin/clang-tidy-17
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1

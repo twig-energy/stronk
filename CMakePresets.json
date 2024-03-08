@@ -39,7 +39,7 @@
       "name": "clang-tidy",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy-13;--header-filter=${sourceDir}/*"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy-17;--header-filter=${sourceDir}/*"
       }
     },
     {
@@ -47,7 +47,8 @@
       "hidden": true,
       "environment": {
         "CXX": "clang++-13",
-        "CC": "clang-13"
+        "CC": "clang-13",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-13"
       }
     },
     {
@@ -55,7 +56,26 @@
       "hidden": true,
       "environment": {
         "CXX": "clang++-14",
-        "CC": "clang-14"
+        "CC": "clang-14",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-14"
+      }
+    },
+    {
+      "name": "clang-15",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-15",
+        "CC": "clang-15",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-15"
+      }
+    },
+    {
+      "name": "clang-17",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-17",
+        "CC": "clang-17",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-17"
       }
     },
     {
@@ -72,6 +92,14 @@
       "environment": {
         "CXX": "g++-12",
         "CC": "gcc-12"
+      }
+    },
+    {
+      "name": "gcc-13",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-13",
+        "CC": "gcc-13"
       }
     },
     {
@@ -159,7 +187,8 @@
       "inherits": [
         "ci-unix",
         "dev-mode",
-        "vcpkg"
+        "vcpkg",
+        "clang-17"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize",
@@ -217,6 +246,13 @@
       ]
     },
     {
+      "name": "ci-ubuntu-gcc-13",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-13"
+      ]
+    },
+    {
       "name": "ci-ubuntu-clang-13",
       "inherits": [
         "ci-ubuntu",
@@ -228,6 +264,20 @@
       "inherits": [
         "ci-ubuntu",
         "clang-14"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-15",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-15"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-17",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-17"
       ]
     },
     {

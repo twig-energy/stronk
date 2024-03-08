@@ -1,7 +1,4 @@
-#include <chrono>
-#include <cstdint>
-#include <string>
-
+#include <array>
 #include <benchmark/benchmark.h>
 #include <fmt/core.h>
 
