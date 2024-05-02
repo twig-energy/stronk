@@ -19,6 +19,10 @@ find_package(absl CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(
     stronk_test
+    src/can_decrement_tests.cpp
+    src/can_increment_tests.cpp
+    src/can_pow_tests.cpp
+    src/can_sqrt_tests.cpp
     src/extensions_tests.cpp
     src/specializers_tests.cpp
     src/stronk_tests.cpp
