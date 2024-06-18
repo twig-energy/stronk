@@ -631,6 +631,20 @@ TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertibl
     EXPECT_EQ(val.unwrap<a_convert_constructible_type>().val, 42);
 }
 
+struct a_string_type : stronk<a_string_type, std::string>
+{
+    using stronk::stronk;
+};
 
+TEST(constructor, can_construct_from_both_rvalue_and_lvalues)
+{
+    auto str = std::string {"yoyo"};
+    auto stronked_copy = a_string_type {str};
+    EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
+
+    auto stronked_moved = a_string_type {std::string {"lolo"}};
+
+    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
+}
 
 }  // namespace twig
