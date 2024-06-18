@@ -1,5 +1,6 @@
 #pragma once
 #include <fmt/compile.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <stronk/stronk.h>
 #include <stronk/utilities/strings.h>
