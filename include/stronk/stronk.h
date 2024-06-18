@@ -15,8 +15,6 @@ namespace twig
 template<typename T>
 concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
 
-static_assert(!should_be_copy_constructed<std::string>);
-
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
