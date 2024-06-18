@@ -12,9 +12,6 @@
 namespace twig
 {
 
-template<typename T>
-concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
-
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
