@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <numeric>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include <stronk/extensions/fmt.h>

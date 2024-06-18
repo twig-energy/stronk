@@ -1,11 +1,16 @@
 #include <array>
+#include <cstdint>
+#include <vector>
+
 #include <benchmark/benchmark.h>
 #include <fmt/core.h>
 
 #include "./benchmark_helpers.h"
 
+namespace
+{
 template<typename T>
-static void benchmark_add_units(benchmark::State& state)
+void benchmark_add_units(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
@@ -23,7 +28,7 @@ static void benchmark_add_units(benchmark::State& state)
 }
 
 template<typename T, size_t WidthV>
-static void benchmark_add_units_simd(benchmark::State& state)
+void benchmark_add_units_simd(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
@@ -42,6 +47,7 @@ static void benchmark_add_units_simd(benchmark::State& state)
         }
     }
 }
+}  // namespace
 
 // // benchmark_add_units
 BENCHMARK_TEMPLATE(benchmark_add_units, int8_t)->Arg(8192);
@@ -63,8 +69,10 @@ BENCHMARK_TEMPLATE(benchmark_add_units_simd, int64_t_wrapping_type, 32)->Arg(819
 BENCHMARK_TEMPLATE(benchmark_add_units_simd, double, 32)->Arg(8192 / 32);
 BENCHMARK_TEMPLATE(benchmark_add_units_simd, double_wrapping_type, 32)->Arg(8192 / 32);
 
+namespace
+{
 template<typename T>
-static void benchmark_subtract_units(benchmark::State& state)
+void benchmark_subtract_units(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
@@ -82,7 +90,7 @@ static void benchmark_subtract_units(benchmark::State& state)
 }
 
 template<typename T, size_t WidthV>
-static void benchmark_subtract_units_simd(benchmark::State& state)
+void benchmark_subtract_units_simd(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
@@ -101,6 +109,7 @@ static void benchmark_subtract_units_simd(benchmark::State& state)
         }
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_subtract_units, int8_t)->Arg(8192);
 BENCHMARK_TEMPLATE(benchmark_subtract_units, int8_t_wrapping_type)->Arg(8192);
@@ -121,8 +130,10 @@ BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, int64_t_wrapping_type, 32)->Ar
 BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, double, 32)->Arg(8192 / 32);
 BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, double_wrapping_type, 32)->Arg(8192 / 32);
 
+namespace
+{
 template<typename T, typename O>
-static void benchmark_multiply_units(benchmark::State& state)
+void benchmark_multiply_units(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
@@ -141,7 +152,7 @@ static void benchmark_multiply_units(benchmark::State& state)
 }
 
 template<typename T, typename O, size_t WidthV>
-static void benchmark_multiply_units_simd(benchmark::State& state)
+void benchmark_multiply_units_simd(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
@@ -161,6 +172,7 @@ static void benchmark_multiply_units_simd(benchmark::State& state)
         }
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_multiply_units, int8_t, int8_t)->Arg(8192);
 BENCHMARK_TEMPLATE(benchmark_multiply_units, int8_t_wrapping_type, int8_t_wrapping_type)->Arg(8192);
@@ -192,8 +204,10 @@ BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int64_t_wrapping_type, double_
 BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double, int64_t, 32)->Arg(8192 / 32);
 BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double_wrapping_type, int64_t_wrapping_type, 32)->Arg(8192 / 32);
 
+namespace
+{
 template<typename T, typename O>
-static void benchmark_divide_units(benchmark::State& state)
+void benchmark_divide_units(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
@@ -212,7 +226,7 @@ static void benchmark_divide_units(benchmark::State& state)
 }
 
 template<typename T, typename O, size_t WidthV>
-static void benchmark_divide_units_simd(benchmark::State& state)
+void benchmark_divide_units_simd(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
@@ -232,6 +246,7 @@ static void benchmark_divide_units_simd(benchmark::State& state)
         }
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_divide_units, int8_t, int8_t)->Arg(8192);
 BENCHMARK_TEMPLATE(benchmark_divide_units, int8_t_wrapping_type, int8_t_wrapping_type)->Arg(8192);
