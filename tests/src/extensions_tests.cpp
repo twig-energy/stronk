@@ -1,5 +1,9 @@
+#include <sstream>
+#include <string>
+
 #include <fmt/core.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 #include <stronk/extensions/absl.h>
 #include <stronk/extensions/fmt.h>
 #include <stronk/extensions/gtest.h>
