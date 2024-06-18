@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <array>
 #include <numeric>
+#include <string>
+#include <utility>
 
 #include <gtest/gtest.h>
 #include <stronk/extensions/fmt.h>
@@ -611,40 +613,22 @@ struct a_type_with_a_constructor
     }
 };
 
-struct a_convert_constructible_type
-    : stronk<a_convert_constructible_type, a_type_with_a_constructor, can_forward_constructor_args>
-{
-    using stronk::stronk;
-};
-
-struct a_none_convert_constructible_type : stronk<a_none_convert_constructible_type, a_type_with_a_constructor>
-{
-    using stronk::stronk;
-};
-
-static_assert(std::constructible_from<a_type_with_a_constructor, int>);
-static_assert(!std::constructible_from<a_none_convert_constructible_type, int>);
-
-TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertible_value)  // NOLINT
-{
-    auto val = a_convert_constructible_type(42);  // NOLINT
-    EXPECT_EQ(val.unwrap<a_convert_constructible_type>().val, 42);
-}
-
 struct a_string_type : stronk<a_string_type, std::string>
 {
     using stronk::stronk;
 };
 
-TEST(constructor, can_construct_from_both_rvalue_and_lvalues)
+TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
 {
     auto str = std::string {"yoyo"};
     auto stronked_copy = a_string_type {str};
     EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
 
     auto stronked_moved = a_string_type {std::string {"lolo"}};
-
     EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
+
+    auto stronked_forward = a_string_type {"soso"};
+    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "soso");
 }
 
 }  // namespace twig

@@ -17,9 +17,6 @@ concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T
 
 static_assert(!should_be_copy_constructed<std::string>);
 
-template<typename StronkT>
-concept can_forward_constructor_args_like = std::same_as<typename StronkT::can_copy_construct, std::true_type>;
-
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
 {
@@ -33,32 +30,10 @@ struct stronk : public Skills<Tag>...
 
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>)
-        requires(should_be_copy_constructed<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(value)
-    {
-    }
-
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>)  // NOLINT
-        requires(!should_be_copy_constructed<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
-    {
-    }
-
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
-        requires(!should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
-    {
-    }
-
     template<typename... ConvertConstructibleTs>
         requires(std::constructible_from<underlying_type, ConvertConstructibleTs...>
                  && sizeof...(ConvertConstructibleTs) >= 1)
     STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
-        requires(can_forward_constructor_args_like<self_t>)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }
@@ -100,12 +75,6 @@ concept stronk_like = requires(T v) {
     {
         v.template unwrap<T>()
     } -> std::convertible_to<typename T::underlying_type>;
-};
-
-template<typename StronkT>
-struct can_forward_constructor_args
-{
-    using can_copy_construct = std::true_type;
 };
 
 template<typename StronkT>
