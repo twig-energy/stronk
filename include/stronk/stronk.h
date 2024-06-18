@@ -24,10 +24,18 @@ struct stronk : public Skills<Tag>...
 
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
+    template<typename ConvertConstructibleT>
+        requires(std::constructible_from<underlying_type, ConvertConstructibleT>
+                 && !std::same_as<ConvertConstructibleT, self_t>)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleT&& value)
+        : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleT>(value))
+    {
+    }
+
     template<typename... ConvertConstructibleTs>
         requires(std::constructible_from<underlying_type, ConvertConstructibleTs...>
-                 && sizeof...(ConvertConstructibleTs) >= 1)
-    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
+                 && sizeof...(ConvertConstructibleTs) >= 2)
+    STRONK_FORCEINLINE constexpr stronk(ConvertConstructibleTs&&... values)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }

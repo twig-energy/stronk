@@ -1,6 +1,7 @@
 #include <ratio>
 
 #include <stronk/prefabs.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
@@ -70,4 +71,4 @@ auto main() -> int
     watt_hours_and_generating_new_units();
     introducing_another_type();
 }
-static_assert(__LINE__ == 73UL, "update readme if this changes");
+static_assert(__LINE__ == 74UL, "update readme if this changes");

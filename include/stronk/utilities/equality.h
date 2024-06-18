@@ -7,22 +7,24 @@ namespace twig::stronk_details
 {
 
 template<std::floating_point T>
-inline constexpr auto default_abs_tol = []() -> T {
+inline constexpr auto default_abs_tol = []() -> T
+{
     if constexpr (std::is_same_v<T, float>) {
-        return T(1e-5);
+        return T {1e-5F};
     } else if constexpr (std::is_same_v<T, double>) {
-        return T(1e-8);
+        return T {1e-8};
     } else {
         static_assert(not_implemented_type<T>());
     }
 };
 
 template<std::floating_point T>
-inline constexpr auto default_rel_tol = []() -> T {
+inline constexpr auto default_rel_tol = []() -> T
+{
     if constexpr (std::is_same_v<T, float>) {
-        return T(1e-3);
+        return T {1e-3F};
     } else if constexpr (std::is_same_v<T, double>) {
-        return T(1e-5);
+        return T {1e-5};
     } else {
         static_assert(not_implemented_type<T>());
     }

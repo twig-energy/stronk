@@ -1,6 +1,10 @@
+#include <cstdint>
+#include <type_traits>
+
 #include <gtest/gtest.h>
 #include <stronk/can_stream.h>
 #include <stronk/specializers.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 namespace twig::tests

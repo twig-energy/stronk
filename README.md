@@ -57,10 +57,11 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=23
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=24
 #include <ratio>
 
 #include <stronk/prefabs.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
@@ -85,7 +86,7 @@ void watts_and_identity_units()
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=24:line_end=45
+```cpp :file=./examples/unit_energy_example.cpp:line_start=25:line_end=46
 // Lets introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
@@ -111,7 +112,7 @@ void watt_hours_and_generating_new_units()
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=46:line_end=65
+```cpp :file=./examples/unit_energy_example.cpp:line_start=47:line_end=66
 // Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
@@ -191,8 +192,12 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=29
-#include <stronk/specializers.h>
+```cpp :file=./examples/specializers_example.cpp:line_end=33
+#include <cstdint>
+#include <type_traits>
+
+#include <stronk/stronk.h>
+#include <stronk/unit.h>
 
 // Lets consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>

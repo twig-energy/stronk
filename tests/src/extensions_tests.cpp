@@ -1,9 +1,11 @@
 #include <sstream>
 #include <string>
 
+#include <absl/hash/hash.h>
 #include <fmt/core.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <stronk/extensions/absl.h>
 #include <stronk/extensions/fmt.h>
 #include <stronk/extensions/gtest.h>
