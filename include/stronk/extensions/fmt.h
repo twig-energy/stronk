@@ -1,9 +1,8 @@
 #pragma once
-#include <string>
-
 #include <fmt/compile.h>
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <stronk/stronk.h>
+#include <stronk/utilities/strings.h>
 
 namespace twig
 {
@@ -24,11 +23,10 @@ struct can_fmt_format
 };
 
 template<typename T>
-concept can_fmt_format_like = stronk_like<T> && requires(T v)
-{
+concept can_fmt_format_like = stronk_like<T> && requires(T v) {
     {
         T::fmt_string.value
-        } -> std::convertible_to<std::string_view>;
+    } -> std::convertible_to<std::string_view>;
 };
 
 }  // namespace twig

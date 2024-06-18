@@ -1,5 +1,8 @@
 {
     "clangd.path": "clangd-17",
+    "clangd.arguments": [
+        "-compile-commands-dir=${workspaceFolder}/build/dev"
+    ],
     "clang-format.executable": "clang-format-17",
     "cpplint.filters": [
         "-build/c++11",
