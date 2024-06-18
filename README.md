@@ -149,7 +149,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_divide`: binary `operator/` and `operator=/` (not compatible with units, we encourage you to use units instead)
 - `can_abs`: overloads `twig::abs`
 - `can_isnan`: overloads `twig::isnan`
-- `can_stream`: overloads `operator<<(std::ostream)`, stream the underlying value to the stream.
+- `can_stream`: overloads `operator<<(std::ostream)` and `operator<<(std::istream)`, stream the underlying value to the stream, or create from stream. For only `ostream` or `istream` functionality, use `can_ostream` or `can_istream` respectively.
 - `can_order`: `operator<=>`, note you probably also want to add `can_equate`, since the compiler cannot generate equality with the `operator<=>` for stronk types.
 - `can_equate`: `operator==` with regular equality
 - `can_equate_with_is_close`: `operator==` but with numpy's `is_close` definition of equal
