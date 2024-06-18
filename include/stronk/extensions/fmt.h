@@ -1,4 +1,6 @@
 #pragma once
+#include <string_view>
+
 #include <fmt/compile.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -33,7 +35,7 @@ concept can_fmt_format_like = stronk_like<T> && requires(T v) {
 }  // namespace twig
 
 template<twig::can_fmt_format_like T>
-struct fmt::formatter<T> : formatter<string_view>
+struct fmt::formatter<T> : fmt::formatter<fmt::string_view>
 {
     template<typename FormatContext>
     auto format(const T& val, FormatContext& ctx) const
