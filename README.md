@@ -88,6 +88,7 @@ void watts_and_identity_units()
 Different units can be combined by multiplying or dividing them:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=25:line_end=46
+
 // Lets introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
@@ -108,12 +109,12 @@ void watt_hours_and_generating_new_units()
     // We can get back to Hours or Watt by dividing the opposite out.
     Hours hours = watt_hours / Watt {25.};
     Watt watt = watt_hours / Hours {3.};
-}
 ```
 
 These new generated types are also units which can be used to generate new units:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=47:line_end=66
+
 // Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
@@ -132,7 +133,6 @@ void introducing_another_type()
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
     WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
-}
 ```
 
 Units are a great way of using the type system to validate your code.
