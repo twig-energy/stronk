@@ -3,9 +3,11 @@
 
 #include <gtest/gtest.h>
 #include <stronk/can_stream.h>
+#include <stronk/prefabs.h>
 #include <stronk/specializers.h>
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
+#include <stronk/utilities/macros.h>
 
 namespace twig::tests
 {

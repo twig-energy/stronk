@@ -4,6 +4,7 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 #include <stronk/prefabs.h>
 #include <stronk/stronk.h>
@@ -35,7 +36,7 @@ template<typename T>
 auto default_max_for_random() -> T
 {
     if constexpr (std::is_floating_point_v<T>) {
-        return T(1.0);
+        return T {1.0};
     } else {
         return std::numeric_limits<T>::max();
     }
@@ -70,7 +71,7 @@ auto rand(T mi, T ma) -> T
 template<typename T>
 auto rand() -> T
 {
-    return rand<T>(T(0), default_max_for_random<T>());
+    return rand<T>(T {0}, default_max_for_random<T>());
 }
 
 }  // namespace details
@@ -78,10 +79,7 @@ auto rand() -> T
 template<typename T>
 struct generate_randomish
 {
-    auto operator()() const -> T
-    {
-        return details::rand<T>();
-    }
+    auto operator()() const -> T { return details::rand<T>(); }
 };
 template<>
 struct generate_randomish<std::string>
@@ -99,10 +97,7 @@ struct generate_randomish<std::string>
 template<twig::stronk_like T>
 struct generate_randomish<T>
 {
-    auto operator()() const -> T
-    {
-        return T {generate_randomish<typename T::underlying_type> {}()};
-    }
+    auto operator()() const -> T { return T {generate_randomish<typename T::underlying_type> {}()}; }
 };
 
 template<typename T>

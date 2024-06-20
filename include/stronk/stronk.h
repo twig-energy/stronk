@@ -1,12 +1,11 @@
 #pragma once
 #include <algorithm>
-#include <concepts>
+#include <cstddef>
 #include <type_traits>
 #include <utility>
 
 #include <stronk/utilities/equality.h>
 #include <stronk/utilities/macros.h>
-#include <stronk/utilities/strings.h>
 
 namespace twig
 {
@@ -35,7 +34,7 @@ struct stronk : public Skills<Tag>...
     template<typename... ConvertConstructibleTs>
         requires(std::constructible_from<underlying_type, ConvertConstructibleTs...>
                  && sizeof...(ConvertConstructibleTs) >= 2)
-    STRONK_FORCEINLINE constexpr stronk(ConvertConstructibleTs&&... values)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }
@@ -240,7 +239,7 @@ struct is_close_using_abs_tol_only_params
     template<typename T>
     static constexpr auto rel_tol() -> T
     {
-        return T(0);
+        return T {0};
     }
     static constexpr bool nan_equals = false;
 };

@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include <gtest/gtest.h>
 #include <stronk/can_stream.h>
 #include <stronk/stronk.h>

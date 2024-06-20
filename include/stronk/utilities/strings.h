@@ -1,6 +1,6 @@
 #pragma once
 #include <algorithm>
-#include <cstdint>
+#include <cstddef>
 
 namespace twig::stronk_details::str
 {

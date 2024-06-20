@@ -1,9 +1,10 @@
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include <benchmark/benchmark.h>
-#include <fmt/core.h>
 
 #include "./benchmark_helpers.h"
 
@@ -14,8 +15,8 @@ void benchmark_add_units(benchmark::State& state)
 {
     auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
     auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_b, []() { return generate_randomish<T> {}(); });
 
     for (auto _ : state) {
         for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {

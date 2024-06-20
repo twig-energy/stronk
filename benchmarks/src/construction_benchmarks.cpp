@@ -1,5 +1,7 @@
+#include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include <benchmark/benchmark.h>
 

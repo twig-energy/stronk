@@ -57,8 +57,9 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=24
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=25
 #include <ratio>
+#include <type_traits>
 
 #include <stronk/prefabs.h>
 #include <stronk/stronk.h>

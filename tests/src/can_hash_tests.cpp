@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <functional>
 
 #include <gtest/gtest.h>
 #include <stronk/can_hash.h>
