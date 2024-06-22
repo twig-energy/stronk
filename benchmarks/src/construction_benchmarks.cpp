@@ -1,12 +1,16 @@
+#include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include <benchmark/benchmark.h>
 
 #include "./benchmark_helpers.h"
 
+namespace
+{
 template<typename T>
-static void benchmark_default_onto_reserved_vector(benchmark::State& state)
+void benchmark_default_onto_reserved_vector(benchmark::State& state)
 {
     auto vec = std::vector<T>(static_cast<size_t>(state.range(0)));
     benchmark::DoNotOptimize(vec.data());
@@ -17,6 +21,7 @@ static void benchmark_default_onto_reserved_vector(benchmark::State& state)
         benchmark::ClobberMemory();
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_default_onto_reserved_vector, int8_t)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_default_onto_reserved_vector, int8_t_wrapping_type)->Range(32ULL, 8ULL << 10ULL);
@@ -27,8 +32,10 @@ BENCHMARK_TEMPLATE(benchmark_default_onto_reserved_vector, int64_t_wrapping_type
 BENCHMARK_TEMPLATE(benchmark_default_onto_reserved_vector, std::string)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_default_onto_reserved_vector, string_wrapping_type)->Range(32ULL, 8ULL << 10ULL);
 
+namespace
+{
 template<typename T>
-static void benchmark_rand_onto_reserved_vector(benchmark::State& state)
+void benchmark_rand_onto_reserved_vector(benchmark::State& state)
 {
     auto vec = std::vector<T>(static_cast<size_t>(state.range(0)));
     benchmark::DoNotOptimize(vec.data());
@@ -39,6 +46,7 @@ static void benchmark_rand_onto_reserved_vector(benchmark::State& state)
         benchmark::ClobberMemory();
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_rand_onto_reserved_vector, int8_t)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_rand_onto_reserved_vector, int8_t_wrapping_type)->Range(32ULL, 8ULL << 10ULL);
@@ -49,8 +57,10 @@ BENCHMARK_TEMPLATE(benchmark_rand_onto_reserved_vector, int64_t_wrapping_type)->
 BENCHMARK_TEMPLATE(benchmark_rand_onto_reserved_vector, std::string)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_rand_onto_reserved_vector, string_wrapping_type)->Range(32ULL, 8ULL << 10ULL);
 
+namespace
+{
 template<typename T>
-static void benchmark_copy_vector_of(benchmark::State& state)
+void benchmark_copy_vector_of(benchmark::State& state)
 {
     auto vec = std::vector<T>(static_cast<size_t>(state.range(0)));
     std::generate(vec.begin(), vec.end(), []() { return generate_randomish<T> {}(); });
@@ -61,6 +71,7 @@ static void benchmark_copy_vector_of(benchmark::State& state)
         benchmark::ClobberMemory();
     }
 }
+}  // namespace
 
 BENCHMARK_TEMPLATE(benchmark_copy_vector_of, int8_t)->Range(32ULL, 8ULL << 10ULL);
 BENCHMARK_TEMPLATE(benchmark_copy_vector_of, int8_t_wrapping_type)->Range(32ULL, 8ULL << 10ULL);

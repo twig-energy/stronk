@@ -28,9 +28,10 @@
 #include <iostream>
 #include <string>
 
+#include <stronk/can_stream.h>
 #include <stronk/stronk.h>
 
-struct FirstName : twig::stronk<FirstName, std::string, twig::can_stream>
+struct FirstName : twig::stronk<FirstName, std::string, twig::can_ostream>
 {
     using stronk::stronk;
 };
@@ -42,7 +43,7 @@ struct LastName : twig::stronk<LastName, std::string>
 // Strong types protects you from accidentally passing the wrong argument to the wrong parameter.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
-    // The twig::can_stream skill overloads the `operator<<(ostream&)` for your type.
+    // The twig::can_ostream skill overloads the `operator<<(ostream&)` for your type.
     std::cout << firstname << " ";
     // You can also access the underlying type by using the .unwrap<Type>() function.
     std::cout << lastname.unwrap<LastName>() << std::endl;
@@ -56,10 +57,12 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=23
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=25
 #include <ratio>
+#include <type_traits>
 
 #include <stronk/prefabs.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
@@ -84,7 +87,7 @@ void watts_and_identity_units()
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=24:line_end=45
+```cpp :file=./examples/unit_energy_example.cpp:line_start=26:line_end=47
 // Lets introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
@@ -110,7 +113,7 @@ void watt_hours_and_generating_new_units()
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=46:line_end=65
+```cpp :file=./examples/unit_energy_example.cpp:line_start=48:line_end=67
 // Lets introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
@@ -147,7 +150,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_divide`: binary `operator/` and `operator=/` (not compatible with units, we encourage you to use units instead)
 - `can_abs`: overloads `twig::abs`
 - `can_isnan`: overloads `twig::isnan`
-- `can_stream`: overloads `operator<<(std::ostream)`, stream the underlying value to the stream.
+- `can_stream`: overloads `operator<<(std::ostream)` and `operator<<(std::istream)`, stream the underlying value to the stream, or create from stream. For only `ostream` or `istream` functionality, use `can_ostream` or `can_istream` respectively.
 - `can_order`: `operator<=>`, note you probably also want to add `can_equate`, since the compiler cannot generate equality with the `operator<=>` for stronk types.
 - `can_equate`: `operator==` with regular equality
 - `can_equate_with_is_close`: `operator==` but with numpy's `is_close` definition of equal
@@ -162,7 +165,8 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_iterate` adds the `can_const_iterate` as well implementing `begin()`, `end()`.
 - `can_const_index` implements `operator[](const auto&) const` and `at(const auto&) const`
 - `can_index` adds the `can_const_index` as well implementing `operator[](const auto&)` and `at(const auto&)`.
-- `can_forward_constructor_args` adds a constructor which forwards arguments to the inner class.
+- `can_increment` adds both `operator++` operators.
+- `can_decrement` adds both `operator--` operators.
 
 ### Units
 - `unit`: enables unit behavior for multiplication and division.
@@ -189,8 +193,12 @@ In case you want to specialize the resulting type of unit multiplication and div
 
 By default the units are generated with the `stronk_default_prefab` type.
 
-```cpp :file=./examples/specializers_example.cpp:line_end=29
-#include <stronk/specializers.h>
+```cpp :file=./examples/specializers_example.cpp:line_end=33
+#include <cstdint>
+#include <type_traits>
+
+#include <stronk/stronk.h>
+#include <stronk/unit.h>
 
 // Lets consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>

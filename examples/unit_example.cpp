@@ -1,6 +1,8 @@
+#include <cstdint>
 #include <iostream>
 #include <ratio>
 
+#include <stronk/can_stream.h>
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
 
@@ -8,17 +10,17 @@ namespace twig
 {
 
 // First we define our stronk types:
-struct Distance : stronk<Distance, double, unit, can_equate_with_is_close, can_stream>
+struct Distance : stronk<Distance, double, unit, can_equate_with_is_close, can_ostream>
 {
     using stronk::stronk;
 };
 
-struct Time : stronk<Time, int64_t, unit, can_equate, can_stream>
+struct Time : stronk<Time, int64_t, unit, can_equate, can_ostream>
 {
     using stronk::stronk;
 };
 
-struct Mass : stronk<Mass, int64_t, unit, can_equate, can_stream>
+struct Mass : stronk<Mass, int64_t, unit, can_equate, can_ostream>
 {
     using stronk::stronk;
 };

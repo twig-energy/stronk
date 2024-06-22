@@ -1,6 +1,13 @@
+#include <cstdint>
+#include <type_traits>
+
 #include <gtest/gtest.h>
+#include <stronk/can_stream.h>
+#include <stronk/prefabs.h>
 #include <stronk/specializers.h>
+#include <stronk/stronk.h>
 #include <stronk/unit.h>
+#include <stronk/utilities/macros.h>
 
 namespace twig::tests
 {
@@ -63,7 +70,7 @@ struct unit_lookup<multiplied_unit<tests::specializer_type_a, tests::specializer
 
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_a);
 STRONK_SPECIALIZE_MULTIPLY(tests::specializer_type_a, tests::specializer_type_b, can_equate);
-STRONK_SPECIALIZE_DIVIDE(tests::specializer_type_a, tests::specializer_type_b, can_equate, can_stream);
+STRONK_SPECIALIZE_DIVIDE(tests::specializer_type_a, tests::specializer_type_b, can_equate, can_ostream);
 
 using specializer_type_a_squared = decltype(tests::specializer_type_a {} * tests::specializer_type_a {});
 using specializer_type_a_times_b = decltype(tests::specializer_type_a {} * tests::specializer_type_b {});

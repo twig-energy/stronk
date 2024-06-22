@@ -15,7 +15,6 @@ struct stronk_default_unit
              can_negate,
              can_order,
              default_can_equate_builder<T>::template skill,
-             can_forward_constructor_args,
              Skills...>
 {
     using stronk<Tag,
@@ -26,7 +25,6 @@ struct stronk_default_unit
                  can_negate,
                  can_order,
                  default_can_equate_builder<T>::template skill,
-                 can_forward_constructor_args,
                  Skills...>::stronk;
 };
 

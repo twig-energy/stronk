@@ -6,15 +6,11 @@
     ```
 """
 
-from asyncore import file_dispatcher
 from dataclasses import dataclass
 from io import TextIOWrapper
-import itertools
-from nis import cat
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
-import json
 
 
 def remove_leading_spaces(code_string: str) -> str:
@@ -31,9 +27,7 @@ def remove_leading_spaces(code_string: str) -> str:
     return result
 
 
-def parse_code_file(file_handle: TextIOWrapper,
-                    line_start=0,
-                    line_end=None) -> str:
+def parse_code_file(file_handle: TextIOWrapper, line_start=0, line_end=None) -> str:
     code = ""
     for line in file_handle.readlines()[line_start:line_end]:
         code += line
@@ -55,18 +49,15 @@ class Section:
     @staticmethod
     def is_valid_section(code_section_start_line: str):
         stripped = code_section_start_line.strip()
-        stripped = stripped[stripped.find("```") + 3:]
+        stripped = stripped[stripped.find("```") + 3 :]
         return len(stripped.split(":")) >= 2 and "file=" in stripped
 
     @staticmethod
     def parse_section(code_section_start_line: str):
         stripped = code_section_start_line.strip()
-        stripped = stripped[stripped.find("```") + 3:]
+        stripped = stripped[stripped.find("```") + 3 :]
         properties = stripped.split(":")
-        keyword_properties = {
-            x.split("=")[0]: x.split("=")[1]
-            for x in properties[1:]
-        }
+        keyword_properties = {x.split("=")[0]: x.split("=")[1] for x in properties[1:]}
         return Section(language=properties[0], **keyword_properties)
 
 
@@ -90,7 +81,8 @@ def parse_markdown(file: Path) -> List[Section]:
 
     for section_start, _ in sections:
         section = Section.parse_section(lines[section_start])
-        assert section.file.exists(
+        assert (
+            section.file.exists()
         ), f"Failed to parse section: {lines[section_start]}: '{section.file.absolute()}' did not exist"
         res.append(section)
     return res
@@ -100,20 +92,20 @@ def load_code_sections(snippets: List[Section]) -> Dict[Section, str]:
     res = {}
     for snippet in snippets:
         with open(snippet.file) as fp:
-            res[snippet] = parse_code_file(fp, snippet.line_start,
-                                           snippet.line_end)
+            res[snippet] = parse_code_file(fp, snippet.line_start, snippet.line_end)
     return res
 
 
-def embed_data_in_docs(files_to_embed_into: Path,
-                       files_to_code: Dict[Section, str]) -> str:
+def embed_data_in_docs(
+    files_to_embed_into: Path, files_to_code: Dict[Section, str]
+) -> str:
     with open(files_to_embed_into) as fp:
         lines = fp.readlines()
 
     res = ""
     last_index = 0
     for section_start, section_end in find_code_sections(lines):
-        for line in lines[last_index:section_start + 1]:
+        for line in lines[last_index : section_start + 1]:
             res += line
         section = Section.parse_section(lines[section_start])
         assert section in files_to_code, files_to_code
@@ -129,7 +121,7 @@ def embed_data_in_docs(files_to_embed_into: Path,
 
 def output_result(file_to_embed_into: Path, result_str: str, inline: bool):
     if inline:
-        with open(file_to_embed_into, 'w') as fp:
+        with open(file_to_embed_into, "w") as fp:
             fp.write(result_str)
     else:
         print(result_str)
@@ -137,9 +129,10 @@ def output_result(file_to_embed_into: Path, result_str: str, inline: bool):
 
 def parse_arguments():
     import argparse
-    parser = argparse.ArgumentParser(description='Embed code into readme')
+
+    parser = argparse.ArgumentParser(description="Embed code into readme")
     parser.add_argument("-f", "--file", type=Path)
-    parser.add_argument('-i', '--inline', action='store_true')
+    parser.add_argument("-i", "--inline", action="store_true")
     return parser.parse_args()
 
 

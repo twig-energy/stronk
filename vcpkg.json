@@ -4,29 +4,20 @@
   "description": "An easy to customize, strong type library with built in support for unit-like behavior",
   "license": "MIT",
   "dependencies": [
-    {
-      "name": "boost-type-index",
-      "version>=": "1.80.0"
-    }
+    "boost-type-index"
   ],
   "default-features": [],
   "features": {
     "fmt": {
       "description": "Dependencies for fmt extension",
       "dependencies": [
-        {
-          "name": "fmt",
-          "version>=": "9.0.0"
-        }
+        "fmt"
       ]
     },
     "abseil": {
       "description": "Dependencies for abseil extension",
       "dependencies": [
-        {
-          "name": "abseil",
-          "version>=": "20230802.1"
-        }
+        "abseil"
       ]
     },
     "nlohmann-json": {
@@ -38,21 +29,15 @@
     "test": {
       "description": "Dependencies for testing",
       "dependencies": [
-        {
-          "name": "gtest",
-          "version>=": "1.12.1"
-        }
+        "gtest"
       ]
     },
     "benchmark": {
       "description": "Dependencies for benchmarking",
       "dependencies": [
-        {
-          "name": "benchmark",
-          "version>=": "1.7.0"
-        }
+        "benchmark"
       ]
     }
   },
-  "builtin-baseline": "c8696863d371ab7f46e213d8f5ca923c4aef2a00"
+  "builtin-baseline": "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
 }

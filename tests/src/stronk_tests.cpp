@@ -1,9 +1,15 @@
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <limits>
 #include <numeric>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
-#include <stronk/extensions/fmt.h>
 #include <stronk/prefabs.h>
 #include <stronk/stronk.h>
 
@@ -298,20 +304,6 @@ TEST(can_divide, dividing_behaves_similar_to_integers)  // NOLINT
     }
 }
 
-struct a_streamable_type : stronk<a_streamable_type, int, can_stream>
-{
-    using stronk::stronk;
-};
-
-TEST(can_stream, streaming_to_ostream_prints_the_value)  // NOLINT
-{
-    auto formattable = a_streamable_type {5};
-    auto sstream = std::stringstream();
-    sstream << formattable;
-
-    EXPECT_EQ(sstream.str(), "5");
-}
-
 struct a_fuzzy_equal_float_type : stronk<a_fuzzy_equal_float_type, double, can_equate_with_is_close_abs_tol_only>
 {
     using stronk::stronk;
@@ -414,20 +406,6 @@ TEST(flag, flag_values_corrosponds_to_bool_values)  // NOLINT
 
     EXPECT_TRUE(a_flag_type::on().is_on());
     EXPECT_FALSE(a_flag_type::on().is_off());
-}
-
-struct a_hashable_type : stronk<a_hashable_type, int64_t, can_hash>
-{
-    using stronk::stronk;
-};
-
-TEST(can_hash, can_hash_overloads_std_hash)  // NOLINT
-{
-    for (auto i = -10; i < 10; i++) {
-        auto hash = std::hash<a_hashable_type> {}(a_hashable_type {i});
-        auto expected_val = std::hash<int64_t> {}(i);
-        EXPECT_EQ(hash, expected_val);
-    }
 }
 
 struct a_size_string_type : stronk<a_size_string_type, std::string, can_size>
@@ -611,26 +589,22 @@ struct a_type_with_a_constructor
     }
 };
 
-struct a_convert_constructible_type
-    : stronk<a_convert_constructible_type, a_type_with_a_constructor, can_forward_constructor_args>
+struct a_string_type : stronk<a_string_type, std::string>
 {
     using stronk::stronk;
 };
 
-struct a_none_convert_constructible_type : stronk<a_none_convert_constructible_type, a_type_with_a_constructor>
+TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
 {
-    using stronk::stronk;
-};
+    auto str = std::string {"yoyo"};
+    auto stronked_copy = a_string_type {str};
+    EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
 
-static_assert(std::constructible_from<a_type_with_a_constructor, int>);
-static_assert(!std::constructible_from<a_none_convert_constructible_type, int>);
+    auto stronked_moved = a_string_type {std::string {"lolo"}};
+    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
 
-TEST(convert_constructible, its_possible_to_construct_inner_value_via_convertible_value)  // NOLINT
-{
-    auto val = a_convert_constructible_type(42);  // NOLINT
-    EXPECT_EQ(val.unwrap<a_convert_constructible_type>().val, 42);
+    auto stronked_forward = a_string_type {"soso"};
+    EXPECT_EQ(stronked_forward.unwrap<a_string_type>(), "soso");
 }
-
-
 
 }  // namespace twig

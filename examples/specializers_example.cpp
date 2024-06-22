@@ -1,4 +1,8 @@
-#include <stronk/specializers.h>
+#include <cstdint>
+#include <type_traits>
+
+#include <stronk/stronk.h>
+#include <stronk/unit.h>
 
 // Lets consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>
@@ -48,4 +52,4 @@ auto main() -> int
     using SpeedDeduced = decltype(Distance {} / Time {});
     static_assert(std::is_same_v<SpeedDeduced, Speed>);
 }
-static_assert(__LINE__ == 51UL, "update readme if this changes");
+static_assert(__LINE__ == 55UL, "update readme if this changes");

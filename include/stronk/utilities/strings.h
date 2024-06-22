@@ -1,11 +1,12 @@
 #pragma once
-#include <cstdint>
+#include <algorithm>
+#include <cstddef>
 
 namespace twig::stronk_details::str
 {
 
 // A string literal, useful for templating on compile time known strings.
-template<size_t N>
+template<std::size_t N>
 struct StringLiteral
 {
     consteval explicit(false) StringLiteral(const char (&str)[N])  // NOLINT

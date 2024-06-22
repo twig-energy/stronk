@@ -1,7 +1,9 @@
 #pragma once
+#include <type_traits>
 #include <utility>
 
 #include <stronk/stronk.h>
+#include <stronk/utilities/macros.h>
 #include <stronk/utilities/type_list.h>
 
 namespace twig
@@ -29,17 +31,13 @@ template<typename T>
 concept pure_unit_like = unit_like<T> && !std::same_as<typename T::pure_t, void>;
 
 template<typename T>
-concept ratio_like = requires(T v)
-{
+concept ratio_like = requires(T v) {
     T::num;
     T::den;
 };
 
 template<typename T>
-concept ratio_with_base_unit_like = ratio_like<T> && requires(T v)
-{
-    typename T::base_unit_t;
-};
+concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T::base_unit_t; };
 
 template<typename MultipliedUnitsTypeList, typename DividedUnitsTypeList>
 struct UnitTypeLists
@@ -102,7 +100,6 @@ struct NewUnitType
              can_subtract,
              can_negate,
              default_can_equate_builder<T>::template skill,
-             can_forward_constructor_args,
              unit_type_list_skill_builder<UnitTypeListsT>::template skill>
 {
     using stronk<NewUnitType<T, UnitTypeListsT>,
@@ -112,7 +109,6 @@ struct NewUnitType
                  can_subtract,
                  can_negate,
                  default_can_equate_builder<T>::template skill,
-                 can_forward_constructor_args,
                  unit_type_list_skill_builder<UnitTypeListsT>::template skill>::stronk;
 };
 
@@ -144,8 +140,7 @@ struct unit_lookup<UnitT, UnderlyingT>
     // we need to return a class which we can check the unit-ness of. Later it will be discarded
     template<typename T>
     struct default_identity_unit : stronk<default_identity_unit<UnderlyingT>, UnderlyingT, identity_unit>
-    {
-    };
+    {};
 
     using type = default_identity_unit<UnderlyingT>;
 };
@@ -362,7 +357,7 @@ constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 }
 
 template<ratio_like RatioT, typename T, typename Arg>
-    requires(stronk_like<T>&& unit_like<T>&& std::convertible_to<Arg, typename T::underlying_type>)
+    requires(stronk_like<T> && unit_like<T> && std::convertible_to<Arg, typename T::underlying_type>)
 auto make(Arg&& args) -> T
 {
     // RatioT from <ratio> (includes std::kilo, std::centi etc)

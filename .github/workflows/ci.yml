@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: "c8696863d371ab7f46e213d8f5ca923c4aef2a00"
+  VCPKG_COMMIT: "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
 
 jobs:
   version_bump:
@@ -227,7 +227,7 @@ jobs:
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "17.0"
-      
+
       - name: Fix clang installations
         if: matrix.os == 'ubuntu-22.04'
         run: |

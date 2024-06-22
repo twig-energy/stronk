@@ -1,22 +1,14 @@
 #pragma once
 #include <algorithm>
-#include <concepts>
-#include <ostream>
+#include <cstddef>
 #include <type_traits>
 #include <utility>
 
 #include <stronk/utilities/equality.h>
 #include <stronk/utilities/macros.h>
-#include <stronk/utilities/strings.h>
 
 namespace twig
 {
-
-template<typename T>
-concept should_be_copy_constructed = std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(T*);
-
-template<typename StronkT>
-concept can_forward_constructor_args_like = std::same_as<typename StronkT::can_copy_construct, std::true_type>;
 
 template<typename Tag, typename T, template<typename> typename... Skills>
 struct stronk : public Skills<Tag>...
@@ -31,32 +23,18 @@ struct stronk : public Skills<Tag>...
 
     constexpr stronk() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
 
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type value) noexcept(std::is_nothrow_copy_constructible_v<T>) requires(
-        should_be_copy_constructed<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(value)
-    {
-    }
-
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(const underlying_type& value) noexcept(std::is_nothrow_copy_constructible_v<T>)  // NOLINT
-        requires(!should_be_copy_constructed<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(value)
-    {
-    }
-
-    STRONK_FORCEINLINE
-    constexpr explicit stronk(underlying_type&& value) noexcept(std::is_nothrow_move_constructible_v<T>) requires(
-        !should_be_copy_constructed<T> && std::is_move_constructible_v<T>)
-        : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
+    template<typename ConvertConstructibleT>
+        requires(std::constructible_from<underlying_type, ConvertConstructibleT>
+                 && !std::same_as<ConvertConstructibleT, self_t>)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleT&& value)
+        : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleT>(value))
     {
     }
 
     template<typename... ConvertConstructibleTs>
-        requires(std::constructible_from<underlying_type,
-                                         ConvertConstructibleTs...> && sizeof...(ConvertConstructibleTs) >= 1)
-    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values) requires(
-        can_forward_constructor_args_like<self_t>)
+        requires(std::constructible_from<underlying_type, ConvertConstructibleTs...>
+                 && sizeof...(ConvertConstructibleTs) >= 2)
+    STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
     {
     }
@@ -94,17 +72,10 @@ struct stronk : public Skills<Tag>...
 };
 
 template<typename T>
-concept stronk_like = requires(T v)
-{
+concept stronk_like = requires(T v) {
     {
         v.template unwrap<T>()
-        } -> std::convertible_to<typename T::underlying_type>;
-};
-
-template<typename StronkT>
-struct can_forward_constructor_args
-{
-    using can_copy_construct = std::true_type;
+    } -> std::convertible_to<typename T::underlying_type>;
 };
 
 template<typename StronkT>
@@ -185,9 +156,8 @@ struct can_divide
 // it results in an 'A^2' type. Therefore the two systems cannot be mixed. We
 // recommend using units.
 template<typename StronkT>
-concept is_none_unit_behaving =
-    (std::same_as<typename StronkT::can_multiply_with_self,
-                  std::true_type> || std::same_as<typename StronkT::can_divide_with_self, std::true_type>);
+concept is_none_unit_behaving = (std::same_as<typename StronkT::can_multiply_with_self, std::true_type>
+                                 || std::same_as<typename StronkT::can_divide_with_self, std::true_type>);
 
 template<typename StronkT>
 struct can_equate
@@ -269,7 +239,7 @@ struct is_close_using_abs_tol_only_params
     template<typename T>
     static constexpr auto rel_tol() -> T
     {
-        return T(0);
+        return T {0};
     }
     static constexpr bool nan_equals = false;
 };
@@ -305,8 +275,7 @@ struct default_can_equate_builder
 {
     template<typename StronkT>
     struct skill : can_equate<StronkT>
-    {
-    };
+    {};
 };
 
 template<std::floating_point T>
@@ -314,8 +283,7 @@ struct default_can_equate_builder<T>
 {
     template<typename StronkT>
     struct skill : can_equate_with_is_close_abs_tol_only<StronkT>
-    {
-    };
+    {};
 };
 
 template<typename StronkT>
@@ -340,11 +308,10 @@ struct can_abs
 };
 
 template<typename T>
-concept can_abs_like = stronk_like<T> && requires(T v)
-{
+concept can_abs_like = stronk_like<T> && requires(T v) {
     {
         v.abs()
-        } -> std::same_as<T>;
+    } -> std::same_as<T>;
 };
 
 [[nodiscard]] constexpr auto abs(can_abs_like auto elem) noexcept
@@ -363,11 +330,10 @@ struct can_isnan
 };
 
 template<typename T>
-concept can_isnan_like = stronk_like<T> && requires(T v)
-{
+concept can_isnan_like = stronk_like<T> && requires(T v) {
     {
         v.isnan()
-        } -> std::same_as<bool>;
+    } -> std::same_as<bool>;
 };
 
 [[nodiscard]] constexpr auto isnan(can_isnan_like auto elem) noexcept -> bool
@@ -398,23 +364,6 @@ struct can_be_used_as_flag
         return StronkT(false);
     }
 };
-
-template<typename StronkT>
-struct can_stream
-{
-    friend auto operator<<(std::ostream& os, const StronkT& elem) -> std::ostream&
-    {
-        return os << elem.template unwrap<StronkT>();
-    }
-};
-
-template<typename StronkT>
-struct can_hash
-{
-    using can_hash_indicator = std::true_type;
-};
-template<typename StronkT>
-concept can_hash_like = std::same_as<typename StronkT::can_hash_indicator, std::true_type>;
 
 template<typename StronkT>
 struct can_size
@@ -518,12 +467,3 @@ struct can_index
 };
 
 }  // namespace twig
-
-template<twig::can_hash_like T>
-struct std::hash<T>
-{
-    [[nodiscard]] auto operator()(T const& s) const noexcept -> std::size_t
-    {
-        return std::hash<typename T::underlying_type> {}(s.template unwrap<T>());
-    }
-};
