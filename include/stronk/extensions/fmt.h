@@ -35,13 +35,21 @@ concept can_fmt_format_like = stronk_like<T> && requires(T v) {
 }  // namespace twig
 
 template<twig::can_fmt_format_like T>
-struct fmt::formatter<T> : formatter<string_view>
+struct fmt::formatter<T>
+    : std::conditional_t<std::string_view(T::fmt_string.value) == "{}",
+                         formatter<typename T::underlying_type>,
+                         formatter<fmt::string_view>>
 {
     constexpr static auto fmt_string = std::string_view(T::fmt_string.value);
 
     template<typename FormatContext>
     auto format(const T& val, FormatContext& ctx) const
     {
-        return fmt::format_to(ctx.out(), FMT_COMPILE(fmt::formatter<T>::fmt_string), val.template unwrap<T>());
+        if constexpr (fmt_string == "{}") {
+            return formatter<typename T::underlying_type>::format(val.template unwrap<T>(), ctx);
+        } else {
+            return formatter<fmt::string_view>::format(fmt::format(FMT_COMPILE(fmt_string), val.template unwrap<T>()),
+                                                       ctx);
+        }
     }
 };
