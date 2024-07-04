@@ -23,7 +23,10 @@ add_executable(
     src/can_hash_tests.cpp
     src/can_increment_tests.cpp
     src/can_stream_tests.cpp
-    src/extensions_tests.cpp
+    src/extensions/absl_tests.cpp
+    src/extensions/fmt_tests.cpp
+    src/extensions/gtest_tests.cpp
+    src/extensions/nlohmann_json_tests.cpp
     src/specializers_tests.cpp
     src/stronk_tests.cpp
     src/unit_tests.cpp
