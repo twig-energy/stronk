@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cstddef>
+#include <limits>
 #include <type_traits>
 #include <utility>
 
@@ -326,6 +327,18 @@ struct can_isnan
     {
         static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
         return std::isnan(static_cast<const StronkT&>(*this).template unwrap<StronkT>());
+    }
+
+    [[nodiscard]] constexpr static auto quiet_NaN() -> StronkT
+    {
+        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
+        return StronkT {std::numeric_limits<typename StronkT::underlying_type>::quiet_NaN()};
+    }
+
+    [[nodiscard]] constexpr static auto signaling_NaN() -> StronkT
+    {
+        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
+        return StronkT {std::numeric_limits<typename StronkT::underlying_type>::signaling_NaN()};
     }
 };
 

@@ -355,6 +355,16 @@ TEST(can_isnan, isnan_works)  // NOLINT
     EXPECT_TRUE(twig::isnan(an_isnan_type {-std::numeric_limits<float>::signaling_NaN()}));
 }
 
+TEST(can_isnan, quiet_NaN_isnan)
+{
+    EXPECT_TRUE(twig::isnan(an_isnan_type::quiet_NaN()));
+}
+
+TEST(can_isnan, signaling_NaN_isnan)
+{
+    EXPECT_TRUE(twig::isnan(an_isnan_type::signaling_NaN()));
+}
+
 struct a_negatable_type : stronk<a_negatable_type, int32_t, can_negate, can_equate>
 {
     using stronk::stronk;
