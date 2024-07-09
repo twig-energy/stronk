@@ -18,8 +18,7 @@ namespace details
 
 template<typename... Ts>
 struct BaseTypeList
-{
-};
+{};
 
 // ============
 // Cons

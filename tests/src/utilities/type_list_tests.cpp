@@ -1,3 +1,6 @@
+#include <cstdint>
+#include <type_traits>
+
 #include <stronk/utilities/type_list.h>
 
 namespace twig
