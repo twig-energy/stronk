@@ -9,6 +9,8 @@
 #include <stronk/unit.h>
 #include <stronk/utilities/type_list.h>
 
+#include "stronk/utilities/constexpr_helpers.h"
+
 namespace twig::unit_tests
 {
 
@@ -30,28 +32,6 @@ struct Mass : stronk<Mass, int64_t, unit, can_equate, can_gtest_print>
     using stronk::stronk;
 };
 
-// Some systems might want to create a stronk type for `Meters`, `Kilometers`, `LightYears`, etc. but we can also
-// utilize the std::ratio system to have a single type for `Distance`.
-struct Meters : std::ratio<1, 1>
-{
-    using base_unit_t = Distance;
-};
-
-struct Kilometers : std::kilo
-{
-    using base_unit_t = Distance;
-};
-
-struct Minutes : std::ratio<1'000'000'000ULL * 60, 1>
-{
-    using base_unit_t = Time;
-};
-
-struct Hours : std::ratio<Minutes::num * 60, 1>
-{
-    using base_unit_t = Time;
-};
-
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
 // nice.
 using Speed = decltype(Distance {} / Time {});
@@ -63,27 +43,6 @@ struct a_regular_type
 {};
 struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 {};
-struct an_identity_unit_type : stronk<an_identity_unit_type, int32_t, identity_unit>
-{};
-
-// Now we have it all set up
-TEST(stronk_units, example)  // NOLINT
-{
-    Time two_hours = make<Hours>(2);
-    EXPECT_EQ(two_hours.unwrap_as<Minutes>(), 120);
-
-    Distance ten_km = make<Kilometers>(10.);
-    Time forty_minutes = make<Minutes>(40);
-
-    // Dividing different units will generate a new type (Distance/Time)
-    Speed fifteen_km_per_hour = ten_km / forty_minutes;
-    // And you get your original type out once there's only one type left
-    Distance distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
-
-    // units can be multiplied and divided by IdentityUnits (values without units)
-    Distance thirty_km = make<Meters>(30.) * 1000;
-    EXPECT_EQ(distance_moved_over_2_hours_at_speed, thirty_km);
-}
 
 // Testing the concepts
 static_assert(unit_like<Mass>);
@@ -92,8 +51,6 @@ static_assert(unit_like<Speed>);
 static_assert(!identity_unit_like<Speed>);
 static_assert(unit_like<Acceleration>);
 static_assert(!identity_unit_like<Acceleration>);
-static_assert(!unit_like<an_identity_unit_type>);
-static_assert(identity_unit_like<an_identity_unit_type>);
 static_assert(!unit_like<a_regular_stronk_type>);
 static_assert(!identity_unit_like<a_regular_stronk_type>);
 static_assert(!unit_like<a_regular_type>);
@@ -102,19 +59,20 @@ static_assert(!identity_unit_like<a_regular_type>);
 // Testing the generated types
 
 // clang-format off
-using example_1 = NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance, Time>, TypeList<Mass>>>;
-using example_2 = NewUnitType<int32_t, UnitTypeLists<TypeList<Mass, Distance>, TypeList<Time>>>;
-static_assert(Mass::is_single_unit);
-static_assert(!Mass::is_unitless);
-static_assert(std::is_same_v<Mass::pure_t, Mass>);
-static_assert(std::is_same_v<multiply_t<Distance, Time>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Time>, TypeList<>>>>);
-static_assert(std::is_same_v<multiply_t<multiply_t<Distance, Time>, Distance>, NewUnitType<double, UnitTypeLists<TypeList<Distance, Distance, Time>, TypeList<>>>>);
+static_assert(Mass::dimensions_t::is_pure());
+using example_1 = NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 2>, Dimension<Time, 1>, Dimension<Mass, -1>>>;
+using example_2 = NewStronkUnit<int32_t, create_dimensions_t<Dimension<Mass, 1>, Dimension<Distance, 1>, Dimension<Time, -1>>>;
+static_assert(!example_1::dimensions_t::is_pure());
+static_assert(!example_1::dimensions_t::is_pure());
+static_assert(std::is_same_v<Mass::dimensions_t::first_t::unit_t, Mass>);
+static_assert(std::is_same_v<multiply_t<Distance, Time>, NewStronkUnit<double, create_dimensions_t<Dimension<Distance, 1>, Dimension<Time, 1>>>>);
+static_assert(std::is_same_v<multiply_t<multiply_t<Distance, Time>, Distance>, NewStronkUnit<double, create_dimensions_t<Dimension<Distance, 2>, Dimension<Time, 1>>>>);
 static_assert(std::is_same_v<divide_t<multiply_t<Distance, Time>, Distance>, Time>);
 static_assert(std::is_same_v<divide_t<example_1, example_1>, int32_t>);
-static_assert(std::is_same_v<multiply_t<example_1, example_1>, NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance, Distance, Distance, Time, Time>, TypeList<Mass, Mass>>>>);
-static_assert(std::is_same_v<multiply_t<example_1, example_2>, NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance, Distance>, TypeList<>>>>);
-static_assert(std::is_same_v<multiply_t<example_2, example_1>, NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Distance, Distance>, TypeList<>>>>);
-static_assert(std::is_same_v<divide_t<example_1, example_2>, NewUnitType<int32_t, UnitTypeLists<TypeList<Distance, Time, Time>, TypeList<Mass, Mass>>>>);
+static_assert(std::is_same_v<multiply_t<example_1, example_1>, NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 4>, Dimension<Time, 2>, Dimension<Mass, -2>>>>);
+static_assert(std::is_same_v<multiply_t<example_1, example_2>, NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 3>>>>);
+static_assert(std::is_same_v<multiply_t<example_2, example_1>, NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 3>>>>);
+static_assert(std::is_same_v<divide_t<example_1, example_2>, NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 1>, Dimension<Time, 2>, Dimension<Mass, -2>>>>);
 // clang-format on
 
 TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)  // NOLINT

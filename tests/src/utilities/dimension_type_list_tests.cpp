@@ -3,7 +3,7 @@
 #include <stronk/utilities/constexpr_helpers.h>
 #include <stronk/utilities/dimension_type_list.h>
 
-namespace twig::experiments
+namespace twig
 {
 
 struct distance
@@ -47,4 +47,4 @@ static_assert(std::same_as<Speed::divide_t<Speed>, EmptyDimensions>);
 static_assert(std::same_as<Distance::divide_t<Time>, Speed>);
 static_assert(std::same_as<Time::divide_t<Distance>, Dimensions<Dimension<distance, -1>, Dimension<time, 1>>>);
 
-}  // namespace twig::experiments
+}  // namespace twig

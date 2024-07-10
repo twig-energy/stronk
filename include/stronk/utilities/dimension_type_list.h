@@ -5,11 +5,11 @@
 #include <boost/type_index/ctti_type_index.hpp>
 #include <stronk/utilities/constexpr_helpers.h>
 
-namespace twig::experiments
+namespace twig
 {
 
 template<typename T>
-concept is_dimension = requires(T) {
+concept dimension_like = requires(T) {
     typename T::unit_t;
     T::rank;
 };
@@ -31,12 +31,12 @@ struct Dimension
     using negate_t = Dimension<UnitT, -RankV>;
 };
 
-template<is_dimension... Ts>
+template<dimension_like... Ts>
 struct Dimensions;
 
 using EmptyDimensions = Dimensions<>;
 
-template<is_dimension... As>
+template<dimension_like... As>
 struct DimensionsMerge;
 
 // Empty Case implementation
@@ -54,7 +54,7 @@ struct DimensionsMerge<>
     using merge_t = decltype(merge<EmptyDimensions, OtherTs...>());
 };
 
-template<is_dimension A, is_dimension... As>
+template<dimension_like A, dimension_like... As>
 struct DimensionsMerge<A, As...>
 {
     template<typename AccumulatedDimensionListT>
@@ -64,7 +64,7 @@ struct DimensionsMerge<A, As...>
         return res_t();
     }
 
-    template<typename AccumulatedDimensionListT, is_dimension B, is_dimension... Bs>
+    template<typename AccumulatedDimensionListT, dimension_like B, dimension_like... Bs>
     [[nodiscard]] constexpr static auto merge()
     {
         static_assert(A::rank != 0, "Cannot merge dimensions with rank 0");
@@ -93,22 +93,30 @@ struct DimensionsMerge<A, As...>
         }
     }
 
-    template<is_dimension... OtherTs>
+    template<dimension_like... OtherTs>
     using merge_t = decltype(merge<EmptyDimensions, OtherTs...>());
 };
 
-template<is_dimension... Ts>
+template<dimension_like... Ts>
 struct Dimensions
 {
-    template<is_dimension NewDimT>
+    [[nodiscard]] constexpr static auto size() -> std::size_t { return sizeof...(Ts); }
+
+    [[nodiscard]] constexpr static auto empty() -> bool { return size() == 0; }
+
+    [[nodiscard]] constexpr static auto is_pure() -> bool { return size() == 1 && first_t::rank == 1; }
+
+    using first_t = stronk_details::variadic::first_type_of_t<Ts..., Dimension<void, 0>>;  // void if empty
+
+    template<dimension_like NewDimT>
     using push_back_t = Dimensions<Ts..., NewDimT>;
 
-    template<is_dimension... NewDimTs>
+    template<dimension_like... NewDimTs>
     using concat_t = Dimensions<Ts..., NewDimTs...>;
 
     using negate_t = Dimensions<typename Ts::negate_t...>;
 
-    template<is_dimension... Bs>
+    template<dimension_like... Bs>
     static auto multiply(Dimensions<Bs...>)
     {
         return DimensionsMerge<Ts...>::template merge<Dimensions<>, Bs...>();
@@ -116,7 +124,7 @@ struct Dimensions
     template<typename OtherDimensionsT>
     using multiply_t = decltype(multiply(OtherDimensionsT {}));
 
-    template<is_dimension... Bs>
+    template<dimension_like... Bs>
     static auto divide(Dimensions<Bs...>)
     {
         using negated_b = Dimensions<Bs...>::negate_t;
@@ -124,6 +132,16 @@ struct Dimensions
     }
     template<typename OtherDimensionsT>
     using divide_t = decltype(divide(OtherDimensionsT {}));
+};
+
+template<typename T>
+concept dimensions_like = requires(T) {
+    typename T::first_t;
+    T::size();
+    T::empty();
+    typename T::negate_t;
+    typename T::template multiply_t<EmptyDimensions>;
+    typename T::template divide_t<EmptyDimensions>;
 };
 
 namespace
@@ -135,7 +153,7 @@ auto create(Dimensions<ExistingDimTs...> dim)
     return dim;
 }
 
-template<typename... ExistingDimTs, is_dimension Dim, is_dimension... DimTs>
+template<typename... ExistingDimTs, dimension_like Dim, dimension_like... DimTs>
 auto create(Dimensions<ExistingDimTs...> dims, Dim, DimTs... rest)
 {
     return create(dims.multiply(Dimensions<Dim> {}), rest...);
@@ -144,13 +162,13 @@ auto create(Dimensions<ExistingDimTs...> dims, Dim, DimTs... rest)
 }  // namespace
 
 // Ensures order and uniqueness of dimensions
-template<is_dimension... DimTs>
+template<dimension_like... DimTs>
 auto create_dimensions(DimTs... dims)
 {
     return create(EmptyDimensions {}, dims...);
 }
 
-template<is_dimension... DimTs>
+template<dimension_like... DimTs>
 using create_dimensions_t = decltype(create_dimensions(DimTs {}...));
 
-}  // namespace twig::experiments
+}  // namespace twig

@@ -57,20 +57,20 @@ using Force = decltype(Mass {} * Acceleration {});
 // Now we have it all set up
 void example()
 {
-    Time two_hours = make<Hours>(2);
-    std::cout << two_hours.unwrap_as<Minutes>() << " should be " << 120 << std::endl;
+    // Time two_hours = make<Hours>(2);
+    // std::cout << two_hours.unwrap_as<Minutes>() << " should be " << 120 << std::endl;
 
-    Distance ten_km = make<Kilometers>(10.);
-    Time forty_minutes = make<Minutes>(40);
+    // Distance ten_km = make<Kilometers>(10.);
+    // Time forty_minutes = make<Minutes>(40);
 
-    // Dividing different units will generate a new type (Distance/Time)
-    Speed fifteen_km_per_hour = ten_km / forty_minutes;
-    // And you get your original type out once there's only one type left
-    Distance distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
+    // // Dividing different units will generate a new type (Distance/Time)
+    // Speed fifteen_km_per_hour = ten_km / forty_minutes;
+    // // And you get your original type out once there's only one type left
+    // Distance distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
 
-    // units can be multiplied and divided by IdentityUnits (values without units)
-    Distance thirty_km = make<Meters>(30.) * 1000;
-    std::cout << distance_moved_over_2_hours_at_speed << " should be " << thirty_km << std::endl;
+    // // units can be multiplied and divided by IdentityUnits (values without units)
+    // Distance thirty_km = make<Meters>(30.) * 1000;
+    // std::cout << distance_moved_over_2_hours_at_speed << " should be " << thirty_km << std::endl;
 }
 
 }  // namespace twig

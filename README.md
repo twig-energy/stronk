@@ -221,7 +221,7 @@ struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::s
 
 // To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::divided_unit<Distance, Time>::unit_description_t, double>
+struct twig::unit_lookup<twig::divided_unit<Distance, Time>::dimensions_t, double>
 {
     using type = Speed;
 };
