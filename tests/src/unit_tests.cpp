@@ -7,7 +7,6 @@
 #include <stronk/prefabs.h>
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
-#include <stronk/utilities/type_list.h>
 
 #include "stronk/utilities/constexpr_helpers.h"
 

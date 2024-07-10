@@ -3,9 +3,8 @@
 #include <utility>
 
 #include <stronk/stronk.h>
-#include <stronk/utilities/dimension_type_list.h>
+#include <stronk/utilities/dimensions.h>
 #include <stronk/utilities/macros.h>
-#include <stronk/utilities/type_list.h>
 
 namespace twig
 {
