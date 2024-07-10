@@ -31,8 +31,8 @@ concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T:
 template<typename StronkT>
 struct unit
 {
-    constexpr static auto dimensions = Dimensions<Dimension<StronkT, 1>> {};
-    using dimensions_t = Dimensions<Dimension<StronkT, 1>>;
+    constexpr static auto dimensions = create_dimensions_t<Dimension<StronkT, 1>> {};
+    using dimensions_t = create_dimensions_t<Dimension<StronkT, 1>>;
 
     /**
      * @brief unwrap but in the ratio specified. Like the regular unwrap,

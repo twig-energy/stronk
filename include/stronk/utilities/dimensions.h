@@ -31,6 +31,8 @@ struct Dimension
     using negate_t = Dimension<UnitT, -RankV>;
 };
 
+namespace details
+{
 template<dimension_like... Ts>
 struct Dimensions;
 
@@ -97,6 +99,7 @@ struct DimensionsMerge<A, As...>
     using merge_t = decltype(merge<EmptyDimensions, OtherTs...>());
 };
 
+// Use create_dimensions_t to instantiate this type
 template<dimension_like... Ts>
 struct Dimensions
 {
@@ -134,6 +137,21 @@ struct Dimensions
     using divide_t = decltype(divide(OtherDimensionsT {}));
 };
 
+template<typename... ExistingDimTs>
+auto create(Dimensions<ExistingDimTs...> dim)
+{
+    return dim;
+}
+
+template<typename... ExistingDimTs, dimension_like Dim, dimension_like... DimTs>
+auto create(Dimensions<ExistingDimTs...> dims, Dim, DimTs... rest)
+{
+    return create(dims.multiply(details::Dimensions<Dim> {}), rest...);
+}
+
+}  // namespace details
+
+using EmptyDimensions = details::EmptyDimensions;
 template<typename T>
 concept dimensions_like = requires(T) {
     typename T::first_t;
@@ -144,28 +162,11 @@ concept dimensions_like = requires(T) {
     typename T::template divide_t<EmptyDimensions>;
 };
 
-namespace
-{
-
-template<typename... ExistingDimTs>
-auto create(Dimensions<ExistingDimTs...> dim)
-{
-    return dim;
-}
-
-template<typename... ExistingDimTs, dimension_like Dim, dimension_like... DimTs>
-auto create(Dimensions<ExistingDimTs...> dims, Dim, DimTs... rest)
-{
-    return create(dims.multiply(Dimensions<Dim> {}), rest...);
-}
-
-}  // namespace
-
 // Ensures order and uniqueness of dimensions
 template<dimension_like... DimTs>
 auto create_dimensions(DimTs... dims)
 {
-    return create(EmptyDimensions {}, dims...);
+    return details::create(details::EmptyDimensions {}, dims...);
 }
 
 template<dimension_like... DimTs>
