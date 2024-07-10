@@ -54,16 +54,16 @@ struct Euro : twig::stronk<Euro, double, twig::unit>
 
 void introducing_another_type()
 {
-    // // twig::make allows you to scale the input value but it does not change the resulting type
-    // WattHours one_mega_watt_hour = twig::make<std::mega, WattHours>(1.);
-    // // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    // auto euros_per_mega_watt_hour = Euro {300.} / one_mega_watt_hour;
+    // twig::make allows you to scale the input value but it does not change the resulting type
+    WattHours one_mega_watt_hour = twig::make<std::mega, WattHours>(1.);
+    // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
+    auto euros_per_mega_watt_hour = Euro {300.} / one_mega_watt_hour;
 
-    // // This flexibility allows us to write expessive code, while having the type system check our implementation.
-    // Euro price_for_buying_5_mega_watt_hours = euros_per_mega_watt_hour * twig::make<std::mega, WattHours>(5.);
+    // This flexibility allows us to write expessive code, while having the type system check our implementation.
+    Euro price_for_buying_5_mega_watt_hours = euros_per_mega_watt_hour * twig::make<std::mega, WattHours>(5.);
 
-    // auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
-    // WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
+    auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
+    WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
 }
 
 auto main() -> int

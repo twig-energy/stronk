@@ -10,11 +10,41 @@
 namespace twig
 {
 
+// Concepts
+
+template<typename T>
+concept unit_like = stronk_like<T> && requires { T::dimensions; };
+
+template<typename T>
+concept identity_unit_like = unit_like<T> && requires { T::dimensions::empty(); };
+
+template<typename T>
+concept ratio_like = requires(T v) {
+    T::num;
+    T::den;
+};
+
+template<typename T>
+concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T::base_unit_t; };
+
+// Implementations
+
 template<typename StronkT>
 struct unit
 {
     constexpr static auto dimensions = Dimensions<Dimension<StronkT, 1>> {};
     using dimensions_t = Dimensions<Dimension<StronkT, 1>>;
+
+    /**
+     * @brief unwrap but in the ratio specified. Like the regular unwrap,
+     * unwrap_as requires the ratio's base_unit_t==StronkT.
+     *
+     * @tparam RatioT a std::ratio like type with a baseunit_t (to compare to
+     * StronkT)
+     */
+    template<ratio_with_base_unit_like RatioT>
+        requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
+    [[nodiscard]] auto unwrap_as() const noexcept;
 };
 
 template<dimensions_like DimensionsT>
@@ -27,12 +57,6 @@ struct unit_skill_builder
         using dimensions_t = DimensionsT;
     };
 };
-
-template<typename T>
-concept unit_like = stronk_like<T> && requires { T::dimensions; };
-
-template<typename T>
-concept identity_unit_like = unit_like<T> && requires { T::dimensions::empty(); };
 
 // You can specialize this type if you want to add other skills to your dynamic types.
 template<typename UnderlyingT, dimensions_like DimensionsT>
@@ -270,6 +294,33 @@ constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b.template unwrap<T>();
     return a;
+}
+
+template<ratio_like RatioT, typename T, typename Arg>
+    requires(stronk_like<T> && unit_like<T> && std::convertible_to<Arg, typename T::underlying_type>)
+auto make(Arg&& args) -> T
+{
+    // RatioT from <ratio> (includes std::kilo, std::centi etc)
+    using underlying_type = typename T::underlying_type;
+    return T {std::forward<Arg>(args)} * static_cast<underlying_type>(RatioT::num)
+        / static_cast<underlying_type>(RatioT::den);
+}
+
+template<ratio_with_base_unit_like RatioT, typename Arg>
+    requires(std::convertible_to<Arg, typename RatioT::base_unit_t::underlying_type>)
+auto make(Arg&& args)
+{
+    return make<RatioT, typename RatioT::base_unit_t>(std::forward<Arg>(args));
+}
+
+template<typename StronkT>
+template<ratio_with_base_unit_like RatioT>
+    requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
+auto unit<StronkT>::unwrap_as() const noexcept
+{
+    using underlying_type = typename StronkT::underlying_type;
+    return static_cast<const StronkT&>(*this).template unwrap<StronkT>() * static_cast<underlying_type>(RatioT::den)
+        / static_cast<underlying_type>(RatioT::num);
 }
 
 }  // namespace twig
