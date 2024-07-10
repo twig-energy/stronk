@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
+  VCPKG_COMMIT: "f7423ee180c4b7f40d43402c2feb3859161ef625"
 
 jobs:
   version_bump:
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v2
+        uses: SonarSource/sonarcloud-github-c-cpp@v3
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
