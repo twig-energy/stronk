@@ -30,7 +30,7 @@ add_executable(
     src/specializers_tests.cpp
     src/stronk_tests.cpp
     src/unit_tests.cpp
-    src/utilities/type_list_tests.cpp
+    src/utilities/dimensions_tests.cpp
 )
 
 target_link_libraries(

@@ -212,6 +212,16 @@
       ]
     },
     {
+      "name": "ci-macos-gcc-12",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "dev-mode",
+        "vcpkg",
+        "gcc-12"
+      ]
+    },
+    {
       "name": "ci-windows-msvc",
       "inherits": [
         "ci-build",

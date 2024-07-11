@@ -6,16 +6,16 @@
 // Macro for getting the full type of multiplying two units
 // Only works when T1 and T2 has one unit on the multiplication part
 // NOLINTNEXTLINE
-#define STRONK_MULTIPLY_TYPE(T1, T2)                                            \
-    NewUnitType<typename twig::underlying_multiply_operation<T1, T2>::res_type, \
-                typename twig::multiplied_unit<T1, T2>::unit_description_t>
+#define STRONK_MULTIPLY_TYPE(T1, T2)                                              \
+    NewStronkUnit<typename twig::underlying_multiply_operation<T1, T2>::res_type, \
+                  typename twig::multiplied_unit<T1, T2>::dimensions_t>
 
 // Macro for getting the full type of dividing two units
 // Only works when T1 and T2 has one unit on the multiplication part
 // NOLINTNEXTLINE
-#define STRONK_DIVIDE_TYPE(T1, T2)                                            \
-    NewUnitType<typename twig::underlying_divide_operation<T1, T2>::res_type, \
-                typename twig::divided_unit<T1, T2>::unit_description_t>
+#define STRONK_DIVIDE_TYPE(T1, T2)                                              \
+    NewStronkUnit<typename twig::underlying_divide_operation<T1, T2>::res_type, \
+                  typename twig::divided_unit<T1, T2>::dimensions_t>
 
 // Specialize the struct created when multiplying two types. Allows you to add
 // other skills than the default prefab. Only works when T1 and T2 has one unit

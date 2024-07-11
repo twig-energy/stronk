@@ -17,7 +17,12 @@
     "abseil": {
       "description": "Dependencies for abseil extension",
       "dependencies": [
-        "abseil"
+        {
+          "name": "abseil",
+          "features": [
+            "cxx17"
+          ]
+        }
       ]
     },
     "nlohmann-json": {
@@ -39,5 +44,5 @@
       ]
     }
   },
-  "builtin-baseline": "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
+  "builtin-baseline": "230d85084ca006926d51c3d332c94298fb3bd56c"
 }
