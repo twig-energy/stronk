@@ -95,7 +95,7 @@ struct unit_lookup
     using type = NewStronkUnit<UnderlyingT, DimensionsT>;
 };
 
-template<typename StronkT, typename UnderlyingT>
+template<unit_like StronkT, typename UnderlyingT>
 auto choose_return_type(UnderlyingT res)
 {
     using dimensions_t = typename StronkT::dimensions_t;
@@ -143,11 +143,11 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using type_lists = typename multiplied_unit<A, B>::dimensions_t;
-    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::type;
+    using dimensions_t = typename multiplied_unit<A, B>::dimensions_t;
+    using resulting_unit = typename unit_lookup<dimensions_t, decltype(res)>::type;
 
     // check that the type is setup correctly. It might have been specialized.
-    static_assert(std::is_same_v<type_lists, typename resulting_unit::dimensions_t>,
+    static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
                   "See multiplied_unit<A,B>::skill");
     return choose_return_type<resulting_unit>(res);
@@ -212,10 +212,10 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using type_lists = typename divided_unit<A, B>::dimensions_t;
-    using resulting_unit = typename unit_lookup<type_lists, decltype(res)>::type;
+    using dimensions_t = typename divided_unit<A, B>::dimensions_t;
+    using resulting_unit = typename unit_lookup<dimensions_t, decltype(res)>::type;
     // check that the type is setup correctly. It might have been specialized.
-    static_assert(std::is_same_v<type_lists, typename resulting_unit::dimensions_t>,
+    static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
                   "See divided_unit<A,B>::skill");
     return choose_return_type<resulting_unit>(res);
