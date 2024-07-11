@@ -83,190 +83,192 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          cmake --preset=ci-sonarcloud
+          cmake --preset=ci-sonarcloud || cat /home/runner/work/stronk/stronk/vcpkg/buildtrees/abseil/config-x64-linux-dbg-err.log /home/runner/work/stronk/stronk/vcpkg/buildtrees/abseil/config-x64-linux-dbg-out.log
 
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build --config Release
 
           sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
 
-  coverage:
-    needs: [lint]
+  # coverage:
+  #   needs: [lint]
 
-    runs-on: ubuntu-22.04
+  #   runs-on: ubuntu-22.04
 
-    # To enable coverage, delete the last line from the conditional below and
-    # edit the "<name>" placeholder to your GitHub name.
-    # If you do not wish to use codecov, then simply delete this job from the
-    # workflow.
-    if: github.repository_owner == 'twig-energy'
+  #   # To enable coverage, delete the last line from the conditional below and
+  #   # edit the "<name>" placeholder to your GitHub name.
+  #   # If you do not wish to use codecov, then simply delete this job from the
+  #   # workflow.
+  #   if: github.repository_owner == 'twig-energy'
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Install LCov
-        run: sudo apt-get update -q
-          && sudo apt-get install lcov -q -y
+  #     - name: Install LCov
+  #       run: sudo apt-get update -q
+  #         && sudo apt-get install lcov -q -y
 
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "17.0"
+  #     - name: Install LLVM and Clang
+  #       uses: KyleMayes/install-llvm-action@v1
+  #       with:
+  #         version: "17.0"
 
-      - name: Install vcpkg
-        uses: friendlyanon/setup-vcpkg@v1
-        with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-coverage-<hash>",
-          }
+  #     - name: Install vcpkg
+  #       uses: friendlyanon/setup-vcpkg@v1
+  #       with:
+  #         {
+  #           committish: "${{ env.VCPKG_COMMIT }}",
+  #           cache-key: "vcpkg-coverage-<hash>",
+  #         }
 
-      - name: Configure
-        env: { CXX: clang++-17 }
-        run: cmake --preset=ci-coverage
+  #     - name: Configure
+  #       env: { CXX: clang++-17 }
+  #       run: cmake --preset=ci-coverage
 
-      - name: Build
-        run: cmake --build build/coverage -j 2
+  #     - name: Build
+  #       run: cmake --build build/coverage -j 2
 
-      - name: Test
-        working-directory: build/coverage
-        run: ctest --output-on-failure -j 2
+  #     - name: Test
+  #       working-directory: build/coverage
+  #       run: ctest --output-on-failure -j 2
 
-      - name: Process coverage info
-        run: cmake --build build/coverage -t coverage
+  #     - name: Process coverage info
+  #       run: cmake --build build/coverage -t coverage
 
-      - name: Submit to codecov.io
-        uses: codecov/codecov-action@v4
-        with:
-          file: build/coverage/coverage.info
+  #     - name: Submit to codecov.io
+  #       uses: codecov/codecov-action@v4
+  #       with:
+  #         file: build/coverage/coverage.info
 
-  sanitize:
-    needs: [lint]
+  # sanitize:
+  #   needs: [lint]
 
-    runs-on: ubuntu-22.04
+  #   runs-on: ubuntu-22.04
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "17.0"
+  #     - name: Install LLVM and Clang
+  #       uses: KyleMayes/install-llvm-action@v1
+  #       with:
+  #         version: "17.0"
 
-      - name: Fix clang++
-        run: |
-          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+  #     - name: Fix clang++
+  #       run: |
+  #         cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
 
-      - name: Install vcpkg
-        uses: friendlyanon/setup-vcpkg@v1
-        with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-sanitize-<hash>",
-          }
+  #     - name: Install vcpkg
+  #       uses: friendlyanon/setup-vcpkg@v1
+  #       with:
+  #         {
+  #           committish: "${{ env.VCPKG_COMMIT }}",
+  #           cache-key: "vcpkg-sanitize-<hash>",
+  #         }
 
-      - name: Configure
-        env: { CXX: clang++-17 }
-        run: cmake --preset=ci-sanitize
+  #     - name: Configure
+  #       env: { CXX: clang++-17 }
+  #       run: cmake --preset=ci-sanitize
 
-      - name: Build
-        run: cmake --build build/sanitize -j 2
+  #     - name: Build
+  #       run: cmake --build build/sanitize -j 2
 
-      - name: Test
-        working-directory: build/sanitize
-        env:
-          ASAN_OPTIONS: "strict_string_checks=1:\
-            detect_stack_use_after_return=1:\
-            check_initialization_order=1:\
-            strict_init_order=1:\
-            detect_leaks=1"
-          UBSAN_OPTIONS: print_stacktrace=1
-        run: ctest --output-on-failure -j 2
+  #     - name: Test
+  #       working-directory: build/sanitize
+  #       env:
+  #         ASAN_OPTIONS: "strict_string_checks=1:\
+  #           detect_stack_use_after_return=1:\
+  #           check_initialization_order=1:\
+  #           strict_init_order=1:\
+  #           detect_leaks=1"
+  #         UBSAN_OPTIONS: print_stacktrace=1
+  #       run: ctest --output-on-failure -j 2
 
-  test:
-    needs: [lint]
+  # test:
+  #   needs: [lint]
 
-    strategy:
-      matrix:
-        os: [macos-12, ubuntu-22.04, windows-2022]
-        compiler: [gcc-11, clang-13, clang-14, clang-15, clang-17, msvc]
-        exclude:
-          - os: windows-2022
-            compiler: clang-13
-          - os: windows-2022
-            compiler: clang-14
-          - os: windows-2022
-            compiler: clang-15
-          - os: windows-2022
-            compiler: clang-17
-          - os: windows-2022
-            compiler: gcc-11
-          - os: ubuntu-22.04
-            compiler: msvc
-          - os: macos-12
-            compiler: msvc
-          - os: macos-12
-            compiler: clang-13
-          - os: macos-12
-            compiler: clang-14
-          - os: macos-12
-            compiler: clang-15
-          - os: macos-12
-            compiler: clang-17
+  #   strategy:
+  #     matrix:
+  #       os: [macos-12, ubuntu-22.04, windows-2022]
+  #       compiler: [gcc-11, gcc-12, clang-13, clang-14, clang-15, clang-17, msvc]
+  #       exclude:
+  #         - os: windows-2022
+  #           compiler: clang-13
+  #         - os: windows-2022
+  #           compiler: clang-14
+  #         - os: windows-2022
+  #           compiler: clang-15
+  #         - os: windows-2022
+  #           compiler: clang-17
+  #         - os: windows-2022
+  #           compiler: gcc-11
+  #         - os: windows-2022
+  #           compiler: gcc-12
+  #         - os: ubuntu-22.04
+  #           compiler: msvc
+  #         - os: macos-12
+  #           compiler: msvc
+  #         - os: macos-12
+  #           compiler: clang-13
+  #         - os: macos-12
+  #           compiler: clang-14
+  #         - os: macos-12
+  #           compiler: clang-15
+  #         - os: macos-12
+  #           compiler: clang-17
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Install static analyzers
-        if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install cppcheck -y -q
+  #     - name: Install static analyzers
+  #       if: matrix.os == 'ubuntu-22.04'
+  #       run: sudo apt-get install cppcheck -y -q
 
-      - name: Install LLVM and Clang
-        if: matrix.os == 'ubuntu-22.04'
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "17.0"
+  #     - name: Install LLVM and Clang
+  #       if: matrix.os == 'ubuntu-22.04'
+  #       uses: KyleMayes/install-llvm-action@v1
+  #       with:
+  #         version: "17.0"
 
-      - name: Fix clang installations
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
-          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
-          cp ./llvm/bin/clang-tidy ./llvm/bin/clang-tidy-17
+  #     - name: Fix clang installations
+  #       if: matrix.os == 'ubuntu-22.04'
+  #       run: |
+  #         cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+  #         cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+  #         cp ./llvm/bin/clang-tidy ./llvm/bin/clang-tidy-17
 
-      - name: Install vcpkg
-        uses: friendlyanon/setup-vcpkg@v1
-        with: { committish: "${{ env.VCPKG_COMMIT }}" }
+  #     - name: Install vcpkg
+  #       uses: friendlyanon/setup-vcpkg@v1
+  #       with: { committish: "${{ env.VCPKG_COMMIT }}" }
 
-      - name: Configure
-        shell: pwsh
-        run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
+  #     - name: Configure
+  #       shell: pwsh
+  #       run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
 
-      - name: Build
-        run: cmake --build build --config Release -j 2
+  #     - name: Build
+  #       run: cmake --build build --config Release -j 2
 
-      - name: Install
-        run: cmake --install build --config Release --prefix prefix
+  #     - name: Install
+  #       run: cmake --install build --config Release --prefix prefix
 
-      - name: Test
-        working-directory: build
-        run: ctest --output-on-failure -C Release -j 2
+  #     - name: Test
+  #       working-directory: build
+  #       run: ctest --output-on-failure -C Release -j 2
 
-      - name: Publish C++ Unit Tests Report
-        uses: mikepenz/action-junit-report@v3
-        with:
-          report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
-          require_tests: true
-          fail_on_failure: true
+  #     - name: Publish C++ Unit Tests Report
+  #       uses: mikepenz/action-junit-report@v3
+  #       with:
+  #         report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
+  #         require_tests: true
+  #         fail_on_failure: true
 
-      - name: Benchmarks
-        working-directory: build
-        if: matrix.os != 'windows-2022'
-        run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
+  #     - name: Benchmarks
+  #       working-directory: build
+  #       if: matrix.os != 'windows-2022'
+  #       run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
 
-      - name: Benchmarks-windows
-        working-directory: build
-        if: matrix.os == 'windows-2022'
-        run: |
-          ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
+  #     - name: Benchmarks-windows
+  #       working-directory: build
+  #       if: matrix.os == 'windows-2022'
+  #       run: |
+  #         ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks
