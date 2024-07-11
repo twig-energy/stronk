@@ -83,14 +83,14 @@ struct DimensionsMerge<A, As...>
                 // The combination of the two dimensions results in a dimension with rank 0, so we can remove it
                 return DimensionsMerge<As...>::template merge<AccumulatedDimensionListT, Bs...>();
             } else {
-                using new_merged_list = AccumulatedDimensionListT::template push_back_t<new_dim>;
+                using new_merged_list = typename AccumulatedDimensionListT::template push_back_t<new_dim>;
                 return DimensionsMerge<As...>::template merge<new_merged_list, Bs...>();
             }
         } else if constexpr (t_before_o) {
-            using new_merged_list = AccumulatedDimensionListT::template push_back_t<A>;
+            using new_merged_list = typename AccumulatedDimensionListT::template push_back_t<A>;
             return DimensionsMerge<As...>::template merge<new_merged_list, B, Bs...>();
         } else {
-            using new_merged_list = AccumulatedDimensionListT::template push_back_t<B>;
+            using new_merged_list = typename AccumulatedDimensionListT::template push_back_t<B>;
             return DimensionsMerge<A, As...>::template merge<new_merged_list, Bs...>();
         }
     }
@@ -130,7 +130,7 @@ struct Dimensions
     template<dimension_like... Bs>
     static auto divide(Dimensions<Bs...>)
     {
-        using negated_b = Dimensions<Bs...>::negate_t;
+        using negated_b = typename Dimensions<Bs...>::negate_t;
         return multiply(negated_b {});
     }
     template<typename OtherDimensionsT>

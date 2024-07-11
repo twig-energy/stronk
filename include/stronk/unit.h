@@ -91,6 +91,20 @@ struct unit_lookup
     using type = NewStronkUnit<UnderlyingT, DimensionsT>;
 };
 
+template<typename StronkT, typename UnderlyingT>
+auto choose_return_type(UnderlyingT res)
+{
+    using dimensions_t = typename StronkT::dimensions_t;
+    if constexpr (dimensions_t::empty()) {
+        return res;
+    } else if constexpr (dimensions_t::is_pure()) {
+        using pure_t = typename dimensions_t::first_t::unit_t;
+        return pure_t {static_cast<typename pure_t::underlying_type>(res)};
+    } else {
+        return StronkT {res};
+    }
+}
+
 // ==================
 // Multiply
 // ==================
@@ -132,14 +146,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
     static_assert(std::is_same_v<type_lists, typename resulting_unit::dimensions_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
                   "See multiplied_unit<A,B>::skill");
-    if constexpr (type_lists::empty()) {
-        return res;
-    } else if constexpr (type_lists::is_pure()) {
-        using pure_t = typename resulting_unit::dimensions_t::first_t::unit_t;
-        return pure_t {static_cast<typename pure_t::underlying_type>(res)};
-    } else {
-        return resulting_unit {res};
-    }
+    return choose_return_type<resulting_unit>(res);
 }
 
 template<unit_like A, unit_like B>
@@ -203,7 +210,7 @@ struct divided_unit
     using dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
 
     template<typename StronkT>
-    using skill = unit_skill_builder<dimensions_t>::template skill<StronkT>;
+    using skill = typename unit_skill_builder<dimensions_t>::template skill<StronkT>;
 };
 
 // You can specialize this struct if you want another underlying divide operation
@@ -232,14 +239,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
     static_assert(std::is_same_v<type_lists, typename resulting_unit::dimensions_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
                   "See divided_unit<A,B>::skill");
-    if constexpr (type_lists::empty()) {
-        return res;
-    } else if constexpr (type_lists::is_pure()) {
-        using pure_t = typename resulting_unit::dimensions_t::first_t::unit_t;
-        return pure_t {static_cast<typename pure_t::underlying_type>(res)};
-    } else {
-        return resulting_unit {res};
-    }
+    return choose_return_type<resulting_unit>(res);
 }
 
 template<unit_like A, unit_like B>
@@ -254,7 +254,7 @@ constexpr auto operator/(const T& a, const T& b) noexcept -> T
 template<identity_unit_like T, unit_like B>
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
-    using new_dimensions = B::dimensions_t::negate_t;
+    using new_dimensions = typename B::dimensions_t::negate_t;
     using new_unit = typename unit_lookup<new_dimensions, typename B::underlying_type>::type;
     return new_unit {a.template unwrap<T>() / b.template unwrap<B>()};
 }
@@ -269,7 +269,7 @@ template<typename T, unit_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
-    using new_dimensions = B::dimensions_t::negate_t;
+    using new_dimensions = typename B::dimensions_t::negate_t;
     using new_unit = typename unit_lookup<new_dimensions, typename B::underlying_type>::type;
     return new_unit {a / b.template unwrap<B>()};
 }
