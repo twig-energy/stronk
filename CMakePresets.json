@@ -43,6 +43,24 @@
       }
     },
     {
+      "name": "clang-13",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-13",
+        "CC": "clang-13",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-13"
+      }
+    },
+    {
+      "name": "clang-14",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-14",
+        "CC": "clang-14",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-14"
+      }
+    },
+    {
       "name": "clang-15",
       "hidden": true,
       "environment": {
@@ -242,6 +260,20 @@
       "inherits": [
         "ci-ubuntu",
         "gcc-13"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-13",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-13"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-14",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-14"
       ]
     },
     {
