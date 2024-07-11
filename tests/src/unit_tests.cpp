@@ -31,13 +31,6 @@ struct Mass : stronk<Mass, int64_t, unit, can_equate, can_gtest_print>
     using stronk::stronk;
 };
 
-// The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
-// nice.
-using Speed = decltype(Distance {} / Time {});
-using Acceleration = decltype(Speed {} / Time {});
-using TimeSquared = decltype(Time {} * Time {});
-using Force = decltype(Mass {} * Acceleration {});
-
 // Some systems might want to create a stronk type for `Meters`, `Kilometers`, `LightYears`, etc. but we can also
 // utilize the std::ratio system to have a single type for `Distance`.
 struct Meters : std::ratio<1, 1>
@@ -60,10 +53,21 @@ struct Hours : std::ratio<Minutes::num * 60, 1>
     using base_unit_t = Time;
 };
 
+// The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
+// nice.
+using Speed = decltype(Distance {} / Time {});
+using Acceleration = decltype(Speed {} / Time {});
+using TimeSquared = decltype(Time {} * Time {});
+using Force = decltype(Mass {} * Acceleration {});
+
 struct a_regular_type
 {};
 struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 {};
+struct an_identity_unit_type : stronk<an_identity_unit_type, int32_t, identity_unit>
+{
+    using stronk::stronk;
+};
 
 // Now we have it all set up
 TEST(stronk_units, example)  // NOLINT
@@ -84,6 +88,14 @@ TEST(stronk_units, example)  // NOLINT
     EXPECT_EQ(distance_moved_over_2_hours_at_speed, thirty_km);
 }
 
+TEST(stronk_units, identity_unit)
+{
+    Distance thirty_km = make<Meters>(30.) * 1000;
+    Distance sixty_km = thirty_km * an_identity_unit_type {2};
+    Distance twenty_km = sixty_km / an_identity_unit_type {3};
+    EXPECT_EQ(twenty_km.unwrap_as<Kilometers>(), 20);
+}
+
 // Testing the concepts
 static_assert(unit_like<Mass>);
 static_assert(!identity_unit_like<Mass>);
@@ -91,6 +103,8 @@ static_assert(unit_like<Speed>);
 static_assert(!identity_unit_like<Speed>);
 static_assert(unit_like<Acceleration>);
 static_assert(!identity_unit_like<Acceleration>);
+static_assert(unit_like<an_identity_unit_type>);
+static_assert(identity_unit_like<an_identity_unit_type>);
 static_assert(!unit_like<a_regular_stronk_type>);
 static_assert(!identity_unit_like<a_regular_stronk_type>);
 static_assert(!unit_like<a_regular_type>);
@@ -99,9 +113,9 @@ static_assert(!identity_unit_like<a_regular_type>);
 // Testing the generated types
 
 // clang-format off
-static_assert(Mass::dimensions_t::is_pure());
 using example_1 = NewStronkUnit<int32_t, create_dimensions_t<Dimension<Distance, 2>, Dimension<Time, 1>, Dimension<Mass, -1>>>;
 using example_2 = NewStronkUnit<int32_t, create_dimensions_t<Dimension<Mass, 1>, Dimension<Distance, 1>, Dimension<Time, -1>>>;
+static_assert(Mass::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(std::is_same_v<Mass::dimensions_t::first_t::unit_t, Mass>);

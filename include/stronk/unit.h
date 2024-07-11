@@ -12,10 +12,10 @@ namespace twig
 // Concepts
 
 template<typename T>
-concept unit_like = stronk_like<T> && requires { T::dimensions; };
+concept unit_like = stronk_like<T> && requires { typename T::dimensions_t; };
 
 template<typename T>
-concept identity_unit_like = unit_like<T> && requires { T::dimensions::empty(); };
+concept identity_unit_like = unit_like<T> && requires { requires T::dimensions_t::empty(); };
 
 template<typename T>
 concept ratio_like = requires(T v) {
@@ -31,7 +31,6 @@ concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T:
 template<typename StronkT>
 struct unit
 {
-    constexpr static auto dimensions = create_dimensions_t<Dimension<StronkT, 1>> {};
     using dimensions_t = create_dimensions_t<Dimension<StronkT, 1>>;
 
     /**
@@ -46,13 +45,18 @@ struct unit
     [[nodiscard]] auto unwrap_as() const noexcept;
 };
 
+template<typename StronkT>
+struct identity_unit
+{
+    using dimensions_t = create_dimensions_t<>;
+};
+
 template<dimensions_like DimensionsT>
 struct unit_skill_builder
 {
     template<typename StronkT>
     struct skill
     {
-        constexpr static auto dimensions = DimensionsT {};
         using dimensions_t = DimensionsT;
     };
 };
@@ -152,24 +156,6 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 template<unit_like A, unit_like B>
 using multiply_t = decltype(A() * B());
 
-template<identity_unit_like T>
-constexpr auto operator*(const T& a, const T& b) noexcept -> T
-{
-    return T {a.template unwrap<T>() * b.template unwrap<T>()};
-}
-
-template<identity_unit_like T, unit_like B>
-constexpr auto operator*(const T& a, const B& b) noexcept -> B
-{
-    return B {a.template unwrap<T>() * b.template unwrap<B>()};
-}
-
-template<unit_like A, identity_unit_like T>
-constexpr auto operator*(const A& a, const T& b) noexcept -> A
-{
-    return A {a.template unwrap<A>() * b.template unwrap<T>()};
-}
-
 template<typename T, unit_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator*(const T& a, const B& b) noexcept -> B
@@ -189,13 +175,6 @@ template<unit_like A, typename T>
 constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() *= b;
-    return a;
-}
-
-template<unit_like A, identity_unit_like T>
-constexpr auto operator*=(A& a, const T& b) noexcept -> A&
-{
-    a.template unwrap<A>() *= b.template unwrap<T>();
     return a;
 }
 
@@ -245,26 +224,6 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 template<unit_like A, unit_like B>
 using divide_t = decltype(A() / B());
 
-template<identity_unit_like T>
-constexpr auto operator/(const T& a, const T& b) noexcept -> T
-{
-    return T {a.template unwrap<T>() / b.template unwrap<T>()};
-}
-
-template<identity_unit_like T, unit_like B>
-constexpr auto operator/(const T& a, const B& b) noexcept
-{
-    using new_dimensions = typename B::dimensions_t::negate_t;
-    using new_unit = typename unit_lookup<new_dimensions, typename B::underlying_type>::type;
-    return new_unit {a.template unwrap<T>() / b.template unwrap<B>()};
-}
-
-template<unit_like A, identity_unit_like T>
-constexpr auto operator/(const A& a, const T& b) noexcept -> A
-{
-    return A {a.template unwrap<A>() / b.template unwrap<T>()};
-}
-
 template<typename T, unit_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/(const T& a, const B& b) noexcept
@@ -286,12 +245,6 @@ template<unit_like A, typename T>
 constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
-    return a;
-}
-template<unit_like A, identity_unit_like T>
-constexpr auto operator/=(A& a, const T& b) noexcept -> A&
-{
-    a.template unwrap<A>() /= b.template unwrap<T>();
     return a;
 }
 
