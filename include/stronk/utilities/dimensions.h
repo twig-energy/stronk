@@ -73,11 +73,11 @@ struct DimensionsMerge<A, As...>
         static_assert(B::rank != 0, "Cannot merge dimensions with rank 0");
 
         using boost::typeindex::ctti_type_index;
-        constexpr auto t_equals_o = std::is_same_v<typename A::unit_t, typename B::unit_t>;
-        constexpr auto t_before_o =
+        constexpr auto a_equals_b = std::is_same_v<typename A::unit_t, typename B::unit_t>;
+        constexpr auto a_before_b =
             ctti_type_index::type_id<typename A::unit_t>().before(ctti_type_index::type_id<typename B::unit_t>());
 
-        if constexpr (t_equals_o) {
+        if constexpr (a_equals_b) {
             using new_dim = typename A::template add_t<B>;
             if constexpr (new_dim::rank == 0) {
                 // The combination of the two dimensions results in a dimension with rank 0, so we can remove it
@@ -86,7 +86,7 @@ struct DimensionsMerge<A, As...>
                 using new_merged_list = typename AccumulatedDimensionListT::template push_back_t<new_dim>;
                 return DimensionsMerge<As...>::template merge<new_merged_list, Bs...>();
             }
-        } else if constexpr (t_before_o) {
+        } else if constexpr (a_before_b) {
             using new_merged_list = typename AccumulatedDimensionListT::template push_back_t<A>;
             return DimensionsMerge<As...>::template merge<new_merged_list, B, Bs...>();
         } else {
