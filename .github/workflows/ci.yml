@@ -83,7 +83,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          cmake --preset=ci-sonarcloud || cat /home/runner/work/stronk/stronk/vcpkg/buildtrees/abseil/config-x64-linux-dbg-err.log /home/runner/work/stronk/stronk/vcpkg/buildtrees/abseil/config-x64-linux-dbg-out.log
+          cmake --preset=ci-sonarcloud
 
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build --config Release
 
