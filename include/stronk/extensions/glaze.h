@@ -1,7 +1,5 @@
 #pragma once
-#include <string_view>
-
-#include <glaze/glaze.hpp>
+#include <glaze/core/meta.hpp>
 #include <stronk/stronk.h>
 #include <stronk/utilities/strings.h>
 
