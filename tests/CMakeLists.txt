@@ -14,6 +14,7 @@ endif ()
 find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(glaze CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
 
 # ---- Tests ----
@@ -25,6 +26,7 @@ add_executable(
     src/can_stream_tests.cpp
     src/extensions/absl_tests.cpp
     src/extensions/fmt_tests.cpp
+    src/extensions/glaze_tests.cpp
     src/extensions/gtest_tests.cpp
     src/extensions/nlohmann_json_tests.cpp
     src/specializers_tests.cpp
@@ -39,6 +41,7 @@ target_link_libraries(
             absl::hash
             fmt::fmt
             nlohmann_json::nlohmann_json
+            glaze::glaze
             GTest::gtest_main
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)

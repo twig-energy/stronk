@@ -31,6 +31,12 @@
         "nlohmann-json"
       ]
     },
+    "glaze": {
+      "description": "Dependencies for glaze extension",
+      "dependencies": [
+        "glaze"
+      ]
+    },
     "test": {
       "description": "Dependencies for testing",
       "dependencies": [
