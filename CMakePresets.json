@@ -61,14 +61,6 @@
       }
     },
     {
-      "name": "gcc-11",
-      "hidden": true,
-      "environment": {
-        "CXX": "g++-11",
-        "CC": "gcc-11"
-      }
-    },
-    {
       "name": "gcc-12",
       "hidden": true,
       "environment": {
@@ -157,7 +149,7 @@
         "coverage-unix",
         "dev-mode",
         "vcpkg",
-        "gcc-11"
+        "gcc-12"
       ],
       "cacheVariables": {
         "COVERAGE_HTML_COMMAND": ""
@@ -182,16 +174,6 @@
       "name": "ci-build",
       "binaryDir": "${sourceDir}/build",
       "hidden": true
-    },
-    {
-      "name": "ci-macos-gcc-11",
-      "inherits": [
-        "ci-build",
-        "ci-unix",
-        "dev-mode",
-        "vcpkg",
-        "gcc-11"
-      ]
     },
     {
       "name": "ci-macos-gcc-12",
@@ -221,13 +203,6 @@
         "ci-unix",
         "vcpkg",
         "dev-mode"
-      ]
-    },
-    {
-      "name": "ci-ubuntu-gcc-11",
-      "inherits": [
-        "ci-ubuntu",
-        "gcc-11"
       ]
     },
     {
@@ -265,7 +240,7 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-11"
+        "gcc-12"
       ]
     },
     {
@@ -275,7 +250,7 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-11"
+        "gcc-12"
       ]
     }
   ]
