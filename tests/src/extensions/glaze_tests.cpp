@@ -1,16 +1,13 @@
 
 #include <glaze/glaze.hpp>
 #include <gtest/gtest.h>
-#include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
 #include <stronk/extensions/glaze.h>
 #include <stronk/stronk.h>
 
 namespace twig
 {
 
-struct an_int_can_glaze_de_and_serialize
-    : stronk<an_int_can_glaze_de_and_serialize, int, can_glaze_de_and_serialize, can_equate>
+struct an_int_can_glaze_de_and_serialize : stronk<an_int_can_glaze_de_and_serialize, int, can_equate>
 {
     using stronk::stronk;
 };
@@ -36,8 +33,7 @@ TEST(can_glaze_de_and_serialize, when_serializing_stronk_integer_then_can_deseri
     EXPECT_EQ(val, glz::read_json<an_int_can_glaze_de_and_serialize_wrapper>(json_str).value());
 }
 
-struct a_string_can_glaze_de_and_serialize
-    : stronk<a_string_can_glaze_de_and_serialize, std::string, can_glaze_de_and_serialize, can_equate>
+struct a_string_can_glaze_de_and_serialize : stronk<a_string_can_glaze_de_and_serialize, std::string, can_equate>
 {
     using stronk::stronk;
 };

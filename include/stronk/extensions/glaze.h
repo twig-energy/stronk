@@ -1,18 +1,9 @@
 #pragma once
 #include <glaze/core/meta.hpp>
 #include <stronk/stronk.h>
-#include <stronk/utilities/strings.h>
 
-namespace twig
+template<twig::stronk_like T>
+struct glz::meta<T>
 {
-
-template<typename StronkT>
-struct can_glaze_de_and_serialize
-{
-    struct glaze
-    {
-        constexpr static auto value = &StronkT::_you_should_not_be_using_this_but_rather_unwrap;
-    };
+    constexpr static auto value = &T::_you_should_not_be_using_this_but_rather_unwrap;
 };
-
-}  // namespace twig
