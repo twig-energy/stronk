@@ -149,7 +149,7 @@
         "coverage-unix",
         "dev-mode",
         "vcpkg",
-        "gcc-12"
+        "clang-17"
       ],
       "cacheVariables": {
         "COVERAGE_HTML_COMMAND": ""
