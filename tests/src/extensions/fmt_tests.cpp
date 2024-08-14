@@ -1,7 +1,9 @@
-#include <fmt/core.h>
-#include <gtest/gtest.h>
-#include <stronk/extensions/fmt.h>
-#include <stronk/stronk.h>
+#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
+
+#    include <fmt/core.h>
+#    include <gtest/gtest.h>
+#    include <stronk/extensions/fmt.h>
+#    include <stronk/stronk.h>
 
 namespace twig
 {
@@ -51,3 +53,5 @@ TEST(can_fmt_format, format_string_can_have_format_specifiers_applied_if_underly
 }
 
 }  // namespace twig
+
+#endif

@@ -1,8 +1,9 @@
+#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 
-#include <glaze/glaze.hpp>
-#include <gtest/gtest.h>
-#include <stronk/extensions/glaze.h>
-#include <stronk/stronk.h>
+#    include <glaze/glaze.hpp>
+#    include <gtest/gtest.h>
+#    include <stronk/extensions/glaze.h>
+#    include <stronk/stronk.h>
 
 namespace twig
 {
@@ -87,3 +88,5 @@ TEST(can_glaze_de_and_serialize, when_serializing_a_type_with_multiple_members_i
 }
 
 }  // namespace twig
+
+#endif
