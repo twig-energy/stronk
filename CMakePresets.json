@@ -61,6 +61,14 @@
       }
     },
     {
+      "name": "gcc-11",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-11",
+        "CC": "gcc-11"
+      }
+    },
+    {
       "name": "gcc-12",
       "hidden": true,
       "environment": {
@@ -149,7 +157,7 @@
         "coverage-unix",
         "dev-mode",
         "vcpkg",
-        "clang-17"
+        "gcc-11"
       ],
       "cacheVariables": {
         "COVERAGE_HTML_COMMAND": ""

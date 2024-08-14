@@ -1,8 +1,10 @@
 
-#include <glaze/glaze.hpp>
-#include <gtest/gtest.h>
-#include <stronk/extensions/glaze.h>
-#include <stronk/stronk.h>
+#if !defined(__GNUC__) || (__GNUC__ >= 12)
+
+#    include <glaze/glaze.hpp>
+#    include <gtest/gtest.h>
+#    include <stronk/extensions/glaze.h>
+#    include <stronk/stronk.h>
 
 namespace twig
 {
@@ -14,23 +16,25 @@ struct an_int_can_glaze_de_and_serialize : stronk<an_int_can_glaze_de_and_serial
 
 struct an_int_can_glaze_de_and_serialize_wrapper
 {
-    an_int_can_glaze_de_and_serialize number;
+    an_int_can_glaze_de_and_serialize a_number;
 
     auto operator==(const an_int_can_glaze_de_and_serialize_wrapper& other) const -> bool = default;
 
     struct glaze
     {
-        constexpr static auto value = glz::object(&an_int_can_glaze_de_and_serialize_wrapper::number);
+        constexpr static auto value = glz::object(&an_int_can_glaze_de_and_serialize_wrapper::a_number);
     };
 };
 
 TEST(can_glaze_de_and_serialize, when_serializing_stronk_integer_then_can_deserialize_to_same_value)
 {
-    const auto val = an_int_can_glaze_de_and_serialize_wrapper {.number = an_int_can_glaze_de_and_serialize {42}};
+    const auto val = an_int_can_glaze_de_and_serialize_wrapper {.a_number = an_int_can_glaze_de_and_serialize {42}};
 
     auto json_str = glz::write_json(val);
-    EXPECT_EQ(R"({"number":42})", json_str);
-    EXPECT_EQ(val, glz::read_json<an_int_can_glaze_de_and_serialize_wrapper>(json_str).value());
+    EXPECT_EQ(R"({"a_number":42})", json_str);
+    auto val_opt = glz::read_json<an_int_can_glaze_de_and_serialize_wrapper>(json_str);
+    EXPECT_TRUE(val_opt.has_value());
+    EXPECT_EQ(val, val_opt.value());
 }
 
 struct a_string_can_glaze_de_and_serialize : stronk<a_string_can_glaze_de_and_serialize, std::string, can_equate>
@@ -40,7 +44,7 @@ struct a_string_can_glaze_de_and_serialize : stronk<a_string_can_glaze_de_and_se
 
 struct a_string_can_glaze_de_and_serialize_wrapper
 {
-    a_string_can_glaze_de_and_serialize str;
+    a_string_can_glaze_de_and_serialize a_string;
 
     auto operator==(const a_string_can_glaze_de_and_serialize_wrapper& other) const -> bool = default;
 
@@ -54,7 +58,7 @@ TEST(can_glaze_de_and_serialize, when_serializing_stronk_string_then_can_deseria
 {
     const auto val = a_string_can_glaze_de_and_serialize_wrapper {.str = a_string_can_glaze_de_and_serialize {"hello"}};
     auto json_str = glz::write_json(val);
-    EXPECT_EQ(R"({"str":"hello"})", json_str);
+    EXPECT_EQ(R"({"a_string":"hello"})", json_str);
     EXPECT_EQ(val, glz::read_json<a_string_can_glaze_de_and_serialize_wrapper>(json_str).value());
 }
 
@@ -84,3 +88,5 @@ TEST(can_glaze_de_and_serialize, when_serializing_a_type_with_multiple_members_i
 }
 
 }  // namespace twig
+
+#endif
