@@ -1,10 +1,8 @@
 
-#if !defined(__GNUC__) || (__GNUC__ >= 12)
-
-#    include <glaze/glaze.hpp>
-#    include <gtest/gtest.h>
-#    include <stronk/extensions/glaze.h>
-#    include <stronk/stronk.h>
+#include <glaze/glaze.hpp>
+#include <gtest/gtest.h>
+#include <stronk/extensions/glaze.h>
+#include <stronk/stronk.h>
 
 namespace twig
 {
@@ -50,13 +48,14 @@ struct a_string_can_glaze_de_and_serialize_wrapper
 
     struct glaze
     {
-        constexpr static auto value = glz::object(&a_string_can_glaze_de_and_serialize_wrapper::str);
+        constexpr static auto value = glz::object(&a_string_can_glaze_de_and_serialize_wrapper::a_string);
     };
 };
 
 TEST(can_glaze_de_and_serialize, when_serializing_stronk_string_then_can_deserialize_to_same_value)
 {
-    const auto val = a_string_can_glaze_de_and_serialize_wrapper {.str = a_string_can_glaze_de_and_serialize {"hello"}};
+    const auto val =
+        a_string_can_glaze_de_and_serialize_wrapper {.a_string = a_string_can_glaze_de_and_serialize {"hello"}};
     auto json_str = glz::write_json(val);
     EXPECT_EQ(R"({"a_string":"hello"})", json_str);
     EXPECT_EQ(val, glz::read_json<a_string_can_glaze_de_and_serialize_wrapper>(json_str).value());
@@ -88,5 +87,3 @@ TEST(can_glaze_de_and_serialize, when_serializing_a_type_with_multiple_members_i
 }
 
 }  // namespace twig
-
-#endif
