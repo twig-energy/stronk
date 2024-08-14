@@ -7,7 +7,7 @@
 namespace twig
 {
 
-struct a_can_gtest_print_type : stronk<a_can_gtest_print_type, int, can_gtest_print>
+struct a_can_gtest_print_type : stronk<a_can_gtest_print_type, int>
 {
     using stronk::stronk;
 };

@@ -21,6 +21,7 @@ find_package(absl CONFIG REQUIRED)
 add_executable(
     stronk_test
     src/can_decrement_tests.cpp
+    src/can_format_tests.cpp
     src/can_hash_tests.cpp
     src/can_increment_tests.cpp
     src/can_stream_tests.cpp

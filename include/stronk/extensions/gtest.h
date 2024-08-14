@@ -7,13 +7,10 @@
 namespace twig
 {
 
-template<typename StronkT>
-struct can_gtest_print
+template<twig::stronk_like StronkT>
+void PrintTo(const StronkT& val, std::ostream* os)
 {
-    friend void PrintTo(const StronkT& val, std::ostream* os)
-    {
-        *os << val.template unwrap<StronkT>();
-    }
-};
+    *os << val.template unwrap<StronkT>();
+}
 
 }  // namespace twig

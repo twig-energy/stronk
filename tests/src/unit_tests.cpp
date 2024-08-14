@@ -15,17 +15,17 @@ namespace twig::unit_tests
 // Example code:
 
 // First we define our stronk types:
-struct Distance : stronk<Distance, double, unit, can_equate_with_is_close, can_gtest_print>
+struct Distance : stronk<Distance, double, unit, can_equate_with_is_close>
 {
     using stronk::stronk;
 };
 
-struct Time : stronk<Time, int64_t, unit, can_equate, can_gtest_print>
+struct Time : stronk<Time, int64_t, unit, can_equate>
 {
     using stronk::stronk;
 };
 
-struct Mass : stronk<Mass, int64_t, unit, can_equate, can_gtest_print>
+struct Mass : stronk<Mass, int64_t, unit, can_equate>
 {
     using stronk::stronk;
 };

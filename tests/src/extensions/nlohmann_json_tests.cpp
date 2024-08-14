@@ -9,7 +9,7 @@
 namespace twig
 {
 
-struct a_can_nlohmann_json : stronk<a_can_nlohmann_json, int, can_nlohmann_json, can_equate>
+struct a_can_nlohmann_json : stronk<a_can_nlohmann_json, int, can_equate>
 {
     using stronk::stronk;
 };
@@ -23,7 +23,7 @@ TEST(can_nlohmann_json, when_serializing_stronk_integer_then_can_deserialize_to_
     EXPECT_EQ(val, json_val.at("number").get<a_can_nlohmann_json>());
 }
 
-struct a_string_can_nlohmann_json : stronk<a_string_can_nlohmann_json, std::string, can_nlohmann_json, can_equate>
+struct a_string_can_nlohmann_json : stronk<a_string_can_nlohmann_json, std::string, can_equate>
 {
     using stronk::stronk;
 };
