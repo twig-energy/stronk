@@ -188,12 +188,8 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, ubuntu-22.04, windows-2022]
-        compiler: [gcc-11, gcc-12, clang-13, clang-14, clang-15, clang-17, msvc]
+        compiler: [gcc-11, gcc-12, clang-15, clang-17, msvc]
         exclude:
-          - os: windows-2022
-            compiler: clang-13
-          - os: windows-2022
-            compiler: clang-14
           - os: windows-2022
             compiler: clang-15
           - os: windows-2022
@@ -206,10 +202,6 @@ jobs:
             compiler: msvc
           - os: macos-12
             compiler: msvc
-          - os: macos-12
-            compiler: clang-13
-          - os: macos-12
-            compiler: clang-14
           - os: macos-12
             compiler: clang-15
           - os: macos-12

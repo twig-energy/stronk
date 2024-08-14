@@ -11,7 +11,7 @@
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;nlohmann-json;benchmark"
+        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;nlohmann-json;glaze;benchmark"
       }
     },
     {
@@ -40,24 +40,6 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy-17;--header-filter=^${sourceDir}/(include|tests|benchmarks)"
-      }
-    },
-    {
-      "name": "clang-13",
-      "hidden": true,
-      "environment": {
-        "CXX": "clang++-13",
-        "CC": "clang-13",
-        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-13"
-      }
-    },
-    {
-      "name": "clang-14",
-      "hidden": true,
-      "environment": {
-        "CXX": "clang++-14",
-        "CC": "clang-14",
-        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-14"
       }
     },
     {
@@ -263,20 +245,6 @@
       ]
     },
     {
-      "name": "ci-ubuntu-clang-13",
-      "inherits": [
-        "ci-ubuntu",
-        "clang-13"
-      ]
-    },
-    {
-      "name": "ci-ubuntu-clang-14",
-      "inherits": [
-        "ci-ubuntu",
-        "clang-14"
-      ]
-    },
-    {
       "name": "ci-ubuntu-clang-15",
       "inherits": [
         "ci-ubuntu",
@@ -297,7 +265,7 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-11"
+        "gcc-12"
       ]
     },
     {
@@ -307,7 +275,7 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-11"
+        "gcc-12"
       ]
     }
   ]
