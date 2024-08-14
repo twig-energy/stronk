@@ -1,8 +1,9 @@
-#include <format>
+#if __has_include(<format>)
+#    include <format>
 
-#include <gtest/gtest.h>
-#include <stronk/can_format.h>
-#include <stronk/stronk.h>
+#    include <gtest/gtest.h>
+#    include <stronk/can_format.h>
+#    include <stronk/stronk.h>
 
 namespace twig
 {
@@ -30,3 +31,5 @@ TEST(can_format, format_string_can_have_format_specifiers_applied_if_underlying_
 }
 
 }  // namespace twig
+
+#endif
