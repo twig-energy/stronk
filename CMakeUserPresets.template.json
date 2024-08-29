@@ -55,7 +55,7 @@
             "binaryDir": "${sourceDir}/build/coverage",
             "inherits": [
                 "dev-linux",
-                "coverage-linux",
+                "coverage-unix",
                 "vcpkg"
             ]
         },
@@ -64,7 +64,7 @@
             "binaryDir": "${sourceDir}/build/sanitize",
             "inherits": [
                 "dev-linux",
-                "sanitize-linux",
+                "sanitize-unix",
                 "vcpkg"
             ]
         }

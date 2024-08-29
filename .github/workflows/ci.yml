@@ -206,6 +206,8 @@ jobs:
             compiler: clang-15
           - os: macos-12
             compiler: clang-17
+          - os: macos-12
+            compiler: gcc-11
 
     runs-on: ${{ matrix.os }}
 
