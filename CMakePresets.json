@@ -11,7 +11,7 @@
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;nlohmann-json;glaze;benchmark"
+        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;doctest;nlohmann-json;glaze;benchmark"
       }
     },
     {
@@ -137,7 +137,6 @@
     },
     {
       "name": "coverage-unix",
-      "binaryDir": "${sourceDir}/build/coverage",
       "inherits": [
         "ci-unix"
       ],
@@ -153,6 +152,7 @@
     },
     {
       "name": "ci-coverage",
+      "binaryDir": "${sourceDir}/build/coverage",
       "inherits": [
         "coverage-unix",
         "dev-mode",
@@ -164,19 +164,26 @@
       }
     },
     {
-      "name": "ci-sanitize",
-      "binaryDir": "${sourceDir}/build/sanitize",
+      "name": "sanitize-unix",
       "inherits": [
-        "ci-unix",
-        "dev-mode",
-        "vcpkg",
-        "clang-17"
+        "ci-unix"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize",
         "CMAKE_CXX_FLAGS_SANITIZE": "-O2 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-common",
         "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "Sanitize;RelWithDebInfo;Release;Debug;"
       }
+    },
+    {
+      "name": "ci-sanitize",
+      "binaryDir": "${sourceDir}/build/sanitize",
+      "inherits": [
+        "ci-unix",
+        "sanitize-unix",
+        "dev-mode",
+        "vcpkg",
+        "clang-17"
+      ]
     },
     {
       "name": "ci-build",

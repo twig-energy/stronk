@@ -16,6 +16,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(glaze CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
+find_package(doctest CONFIG REQUIRED)
 
 # ---- Tests ----
 add_executable(
@@ -26,6 +27,7 @@ add_executable(
     src/can_increment_tests.cpp
     src/can_stream_tests.cpp
     src/extensions/absl_tests.cpp
+    src/extensions/doctest_tests.cpp
     src/extensions/fmt_tests.cpp
     src/extensions/glaze_tests.cpp
     src/extensions/gtest_tests.cpp
@@ -40,10 +42,11 @@ target_link_libraries(
     stronk_test
     PRIVATE twig::stronk
             absl::hash
+            doctest::doctest
             fmt::fmt
-            nlohmann_json::nlohmann_json
             glaze::glaze
             GTest::gtest_main
+            nlohmann_json::nlohmann_json
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)
 

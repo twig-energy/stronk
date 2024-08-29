@@ -25,6 +25,12 @@
         }
       ]
     },
+    "doctest": {
+      "description": "Dependencies for doctest extension",
+      "dependencies": [
+        "doctest"
+      ]
+    },
     "nlohmann-json": {
       "description": "Dependencies for nlohmann::json extension",
       "dependencies": [
