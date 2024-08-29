@@ -64,7 +64,7 @@
             "binaryDir": "${sourceDir}/build/sanitize",
             "inherits": [
                 "dev-linux",
-                "sanitize-linux",
+                "sanitize-unix",
                 "vcpkg"
             ]
         }
