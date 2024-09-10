@@ -99,7 +99,7 @@ struct can_add
 
     constexpr friend auto operator+(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT(lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>());
+        return StronkT {lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>()};
     }
 };
 
@@ -114,7 +114,7 @@ struct can_subtract
 
     constexpr friend auto operator-(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT(lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>());
+        return StronkT {lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>()};
     }
 };
 
@@ -368,13 +368,13 @@ struct can_be_used_as_flag
     [[nodiscard]] static constexpr auto on() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT(true);
+        return StronkT {true};
     }
 
     [[nodiscard]] static constexpr auto off() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT(false);
+        return StronkT {false};
     }
 };
 

@@ -479,7 +479,8 @@ TEST(can_iterate, can_iterate_works_for_vectors)  // NOLINT
         }();
         auto curr = -8;
         for (auto& val : vector) {
-            EXPECT_EQ(val, curr);
+            val++;
+            EXPECT_EQ(val, curr + 1);
             curr++;
         }
     }
@@ -519,8 +520,10 @@ TEST(can_index, can_index_works_for_vectors)  // NOLINT
         }();
         auto curr = -8;
         for (size_t j = 0; j < i; j++) {
-            EXPECT_EQ(vector.at(j), curr);
-            EXPECT_EQ(vector[j], curr);
+            vector.at(j)++;
+            vector[j]++;
+            EXPECT_EQ(vector.at(j), curr + 2);
+            EXPECT_EQ(vector[j], curr + 2);
             curr++;
         }
     }
