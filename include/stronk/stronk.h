@@ -99,7 +99,7 @@ struct can_add
 
     constexpr friend auto operator+(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT(lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>());
+        return StronkT {lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>()};
     }
 };
 
@@ -114,7 +114,7 @@ struct can_subtract
 
     constexpr friend auto operator-(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
     {
-        return StronkT(lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>());
+        return StronkT {lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>()};
     }
 };
 
@@ -368,13 +368,13 @@ struct can_be_used_as_flag
     [[nodiscard]] static constexpr auto on() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT(true);
+        return StronkT {true};
     }
 
     [[nodiscard]] static constexpr auto off() noexcept -> StronkT
     {
         static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT(false);
+        return StronkT {false};
     }
 };
 
@@ -413,23 +413,11 @@ struct can_const_iterate
 template<typename StronkT>
 struct can_iterate : can_const_iterate<StronkT>
 {
-    [[nodiscard]] constexpr auto begin() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
-    }
-    [[nodiscard]] constexpr auto end() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
-    }
+    using can_const_iterate<StronkT>::begin;
+    using can_const_iterate<StronkT>::end;
 
-    [[nodiscard]] constexpr auto cbegin() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
-    }
-    [[nodiscard]] constexpr auto cend() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
-    }
+    using can_const_iterate<StronkT>::cbegin;
+    using can_const_iterate<StronkT>::cend;
 
     [[nodiscard]] constexpr auto begin() noexcept
     {
@@ -456,17 +444,10 @@ struct can_const_index
 };
 
 template<typename StronkT>
-struct can_index
+struct can_index : can_const_index<StronkT>
 {
-    [[nodiscard]] constexpr auto operator[](const auto& indexer) const noexcept -> const auto&
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>()[indexer];
-    }
-
-    [[nodiscard]] constexpr auto at(const auto& indexer) const -> const auto&
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().at(indexer);
-    }
+    using can_const_index<StronkT>::operator[];
+    using can_const_index<StronkT>::at;
 
     [[nodiscard]] constexpr auto operator[](const auto& indexer) noexcept -> auto&
     {
