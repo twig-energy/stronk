@@ -58,6 +58,21 @@ jobs:
         if: always()
         run: cmake -P cmake/spell.cmake
 
+  check-readme:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Update Readme
+      run: python tools/embed_code.py -i --file ./README.md
+
+    - name: Test that readme is up to date
+      if: github.ref != 'refs/heads/main'
+      run: echo "$(git diff HEAD origin/main version.py)"
+
+
   sonarcloud:
     needs: [lint]
     runs-on: ubuntu-22.04
