@@ -1,4 +1,6 @@
 #pragma once
+// IWYU pragma: always_keep
+
 #include <glaze/core/meta.hpp>
 #include <stronk/stronk.h>
 

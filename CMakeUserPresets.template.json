@@ -2,7 +2,7 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
+        "minor": 28,
         "patch": 0
     },
     "configurePresets": [
@@ -25,7 +25,7 @@
             "inherits": [
                 "dev-common",
                 "ci-unix",
-                "clang-17"
+                "clang-19"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",

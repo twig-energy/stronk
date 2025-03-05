@@ -1,4 +1,6 @@
 #pragma once
+// IWYU pragma: always_keep
+
 #include <string_view>
 
 #include <fmt/compile.h>

@@ -19,10 +19,10 @@ add_executable(stronk_benchmarks src/construction_benchmarks.cpp src/unit_benchm
 
 target_link_libraries(
     stronk_benchmarks
-    PRIVATE twig::stronk
-            absl::hash
-            fmt::fmt
+    PRIVATE absl::hash
             benchmark::benchmark_main
+            fmt::fmt
+            twig::stronk
 )
 target_compile_features(stronk_benchmarks PRIVATE cxx_std_20)
 

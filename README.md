@@ -88,7 +88,7 @@ void watts_and_identity_units()
 Different units can be combined by multiplying or dividing them:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=26:line_end=47
-// Lets introduce hours as a new unit_like type
+// Let's introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
@@ -114,7 +114,7 @@ void watt_hours_and_generating_new_units()
 These new generated types are also units which can be used to generate new units:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=48:line_end=67
-// Lets introduce a type for euros, and start combining more types.
+// Let's introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
     using stronk::stronk;
@@ -200,7 +200,7 @@ By default the units are generated with the `stronk_default_prefab` type.
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
 
-// Lets consider the following units:
+// Let's consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>
 {
     using stronk::stronk;
@@ -211,8 +211,8 @@ struct Time : twig::stronk<Time, double, twig::unit>
     using stronk::stronk;
 };
 
-// Lets say you want to use a custom defined stronk type for certain unit combinations.
-// Lets introduce our own `Speed` type:
+// Let's say you want to use a custom defined stronk type for certain unit combinations.
+// Let's introduce our own `Speed` type:
 struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
     using stronk::stronk;

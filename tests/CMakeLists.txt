@@ -40,13 +40,13 @@ add_executable(
 
 target_link_libraries(
     stronk_test
-    PRIVATE twig::stronk
-            absl::hash
+    PRIVATE absl::hash
             doctest::doctest
             fmt::fmt
             glaze::glaze
             GTest::gtest_main
             nlohmann_json::nlohmann_json
+            twig::stronk
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)
 
@@ -54,3 +54,13 @@ add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_outpu
 
 # ---- End-of-file commands ----
 add_folders(Tests)
+
+# ---- Code coverage ----
+if (ENABLE_COVERAGE)
+    target_code_coverage(
+        stronk_test
+        ALL
+        EXCLUDE
+        source
+    )
+endif ()

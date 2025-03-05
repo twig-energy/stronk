@@ -20,7 +20,7 @@ env:
 
 jobs:
   version_bump:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +31,7 @@ jobs:
         run: echo "$(git diff HEAD origin/main version.py)" | grep __version__ -wq
 
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
@@ -43,129 +43,98 @@ jobs:
         run: pip3 install codespell
 
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: ./.github/actions/install-clang
         with:
-          version: "17.0"
-
-      - name: Fix clang-format
-        run: |
-          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
+          version: "19"
 
       - name: Lint
-        run: cmake -D FORMAT_COMMAND=clang-format-17 -P cmake/lint.cmake
+        run: cmake -D FORMAT_COMMAND=clang-format-19 -P cmake/lint.cmake
 
       - name: Spell check
         if: always()
         run: cmake -P cmake/spell.cmake
 
-  sonarcloud:
-    needs: [lint]
-    runs-on: ubuntu-22.04
+  sonar:
+    needs: lint
+    if: ${{ !cancelled() && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }} # Don't skip on main build, even though lint is skipped.
+
+    runs-on: ubuntu-24.04
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v3
-
-      - name: Install vcpkg
-        uses: friendlyanon/setup-vcpkg@v1
         with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-sonarcloud-<hash>",
-          }
-
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cmake --preset=ci-sonarcloud
-
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build --config Release
-
-          sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
-
-  coverage:
-    needs: [lint]
-
-    runs-on: ubuntu-22.04
-
-    # To enable coverage, delete the last line from the conditional below and
-    # edit the "<name>" placeholder to your GitHub name.
-    # If you do not wish to use codecov, then simply delete this job from the
-    # workflow.
-    if: github.repository_owner == 'twig-energy'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install LCov
-        run: sudo apt-get update -q
-          && sudo apt-get install lcov -q -y
+          fetch-depth: 0
+          lfs: true
 
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: ./.github/actions/install-clang
         with:
-          version: "17.0"
+          version: "19"
+
+      - name: Install Build Wrapper
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-coverage-<hash>",
-          }
+          committish: "${{ env.VCPKG_COMMIT }}"
+          cache-key: "vcpkg-sonar-<hash>"
 
       - name: Configure
-        env: { CXX: clang++-17 }
-        run: cmake --preset=ci-coverage
+        run: |
+          cmake --preset=ci-coverage
 
-      - name: Build
-        run: cmake --build build/coverage -j 2
+      - name: Build with build-wrapper
+        run: |
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build -j 4
 
-      - name: Test
-        working-directory: build/coverage
-        run: ctest --output-on-failure -j 2
+      - name: Test and code coverage
+        timeout-minutes: 10
+        run: cmake --build build -t ccov-all -j 4
 
-      - name: Process coverage info
-        run: cmake --build build/coverage -t coverage
-
-      - name: Submit to codecov.io
-        uses: codecov/codecov-action@v4
+      - name: Run sonar-scanner
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          file: build/coverage/coverage.info
+          args: >
+            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+
+      - name: clang-tidy
+        run: |
+          python3 -m venv .venv && source .venv/bin/activate
+          pip3 install clangd-tidy
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            bash ./tools/run_clangd_tidy_on_changed.sh all # all files
+          else
+            bash ./tools/run_clangd_tidy_on_changed.sh #  only changed files
+          fi
+
+      - name: Run include what you use check.
+        run: ./tools/check_include_what_you_use.sh # if this fails you can run the script locally.
 
   sanitize:
     needs: [lint]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: ./.github/actions/install-clang
         with:
-          version: "17.0"
-
-      - name: Fix clang++
-        run: |
-          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
+          version: "19"
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-sanitize-<hash>",
-          }
+          committish: "${{ env.VCPKG_COMMIT }}"
+          cache-key: "vcpkg-sanitize-<hash>"
 
       - name: Configure
-        env: { CXX: clang++-17 }
         run: cmake --preset=ci-sanitize
 
       - name: Build
@@ -187,53 +156,45 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-12, ubuntu-22.04, windows-2022]
-        compiler: [gcc-11, gcc-12, clang-15, clang-17, msvc]
-        exclude:
-          - os: windows-2022
-            compiler: clang-15
-          - os: windows-2022
-            compiler: clang-17
-          - os: windows-2022
+        os: [ubuntu-24.04]
+        compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-18, clang-19]
+        include:
+          - os: windows-latest
+            compiler: msvc
+          - os: macos-latest
             compiler: gcc-11
-          - os: windows-2022
+          - os: macos-latest
             compiler: gcc-12
-          - os: ubuntu-22.04
-            compiler: msvc
-          - os: macos-12
-            compiler: msvc
-          - os: macos-12
-            compiler: clang-15
-          - os: macos-12
-            compiler: clang-17
-          - os: macos-12
-            compiler: gcc-11
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install static analyzers
-        if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install cppcheck -y -q
+      - name: Extract compiler version
+        if: matrix.os == 'ubuntu-24.04'
+        id: extract-version
+        run: |
+          COMPILER_VERSION=$(echo "${{ matrix.compiler }}" | cut -d'-' -f2)
+          echo "COMPILER_VERSION=$COMPILER_VERSION" >> $GITHUB_OUTPUT
 
       - name: Install LLVM and Clang
-        if: matrix.os == 'ubuntu-22.04'
-        uses: KyleMayes/install-llvm-action@v1
+        if: matrix.os == 'ubuntu-24.04' && contains(matrix.compiler, 'clang')
+        uses: ./.github/actions/install-clang
         with:
-          version: "17.0"
+          version: ${{ steps.extract-version.outputs.COMPILER_VERSION }}
 
-      - name: Fix clang installations
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          cp ./llvm/bin/clang++ ./llvm/bin/clang++-17
-          cp ./llvm/bin/clang-format ./llvm/bin/clang-format-17
-          cp ./llvm/bin/clang-tidy ./llvm/bin/clang-tidy-17
+      - name: Install GCC
+        if: matrix.os == 'ubuntu-24.04' && contains(matrix.compiler, 'gcc')
+        uses: ./.github/actions/install-gcc
+        with:
+          version: ${{ steps.extract-version.outputs.COMPILER_VERSION }}
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
-        with: { committish: "${{ env.VCPKG_COMMIT }}" }
+        with:
+          committish: "${{ env.VCPKG_COMMIT }}"
+          cache-key: "vcpkg-${{ matrix.os }}-${{ matrix.compiler }}-<hash>"
 
       - name: Configure
         shell: pwsh
@@ -258,11 +219,11 @@ jobs:
 
       - name: Benchmarks
         working-directory: build
-        if: matrix.os != 'windows-2022'
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
 
       - name: Benchmarks-windows
         working-directory: build
-        if: matrix.os == 'windows-2022'
+        if: ${{ contains(matrix.os, 'windows') }}
         run: |
           ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks

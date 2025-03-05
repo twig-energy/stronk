@@ -1,4 +1,6 @@
 #pragma once
+// IWYU pragma: always_keep
+
 #include <doctest/doctest.h>
 #include <stronk/stronk.h>
 

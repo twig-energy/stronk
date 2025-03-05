@@ -4,7 +4,7 @@
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
 
-// Lets consider the following units:
+// Let's consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>
 {
     using stronk::stronk;
@@ -15,8 +15,8 @@ struct Time : twig::stronk<Time, double, twig::unit>
     using stronk::stronk;
 };
 
-// Lets say you want to use a custom defined stronk type for certain unit combinations.
-// Lets introduce our own `Speed` type:
+// Let's say you want to use a custom defined stronk type for certain unit combinations.
+// Let's introduce our own `Speed` type:
 struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
     using stronk::stronk;
@@ -33,7 +33,7 @@ struct twig::unit_lookup<twig::divided_unit<Distance, Time>::dimensions_t, doubl
 // The above of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 
 // Sometimes you might want to specialize the multiply or divide operation for the underlying value
-// Lets specialize `Time^2` to use int64_t as its underlying type.
+// Let's specialize `Time^2` to use int64_t as its underlying type.
 template<>
 struct twig::underlying_multiply_operation<Time, Time>
 {

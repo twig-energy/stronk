@@ -1,0 +1,24 @@
+---
+name: "Install LLVM and Clang"
+description: "Installs LLVM and Clang on CI runners"
+inputs:
+  version:
+    description: "Which version of LLVM to install"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install LLVM and Clang
+      if: ${{ runner.environment != 'self-hosted' }}
+      shell: bash
+      run: |
+        # if clang-version is already installed return
+        if which clang-${{ inputs.version }} > /dev/null; then
+          exit 0
+        fi
+
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{ inputs.version }}
+        rm llvm.sh
+        sudo apt-get install -y clang-tidy-${{ inputs.version }} clang-format-${{ inputs.version }}
