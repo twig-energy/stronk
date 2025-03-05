@@ -12,6 +12,9 @@ default(
     source/*.cpp
     source/*.h
     source/*.hpp
+    src/*.cpp
+    src/*.h
+    src/*.hpp
     include/*.hpp
     include/*.h
     tests/*.cpp
