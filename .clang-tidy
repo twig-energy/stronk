@@ -20,7 +20,7 @@ Checks: "*,\
   -readability-identifier-length,\
   -readability-function-cognitive-complexity,\
   "
-HeaderFilterRegex: "^.*/include/twig/epex"
+HeaderFilterRegex: "^.*/include/stronk"
 WarningsAsErrors: ""
 CheckOptions:
   - key: "bugprone-argument-comment.StrictMode"
