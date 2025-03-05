@@ -141,15 +141,7 @@ jobs:
         run: cmake --build build -j 2
 
       - name: Test
-        working-directory: build
-        env:
-          ASAN_OPTIONS: "strict_string_checks=1:\
-            detect_stack_use_after_return=1:\
-            check_initialization_order=1:\
-            strict_init_order=1:\
-            detect_leaks=1"
-          UBSAN_OPTIONS: print_stacktrace=1
-        run: ctest --output-on-failure -j 2
+        run: ctest --preset=sanitize -j 2
 
   test:
     needs: [lint]
@@ -207,16 +199,13 @@ jobs:
         run: cmake --install build --config Release --prefix prefix
 
       - name: Test
-        working-directory: build
-        run: ctest -C Release -j 2
+        run: ctest --preset=default -j 2
 
       - name: Benchmarks
-        working-directory: build
         if: ${{ !contains(matrix.os, 'windows') }}
         run: ${{ github.workspace }}/build/benchmarks/stronk_benchmarks
 
       - name: Benchmarks-windows
-        working-directory: build
         if: ${{ contains(matrix.os, 'windows') }}
         run: |
           ${{ github.workspace }}/build/benchmarks/Release/stronk_benchmarks

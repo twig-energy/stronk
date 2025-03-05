@@ -289,5 +289,33 @@
         "gcc-12"
       ]
     }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "sanitize",
+      "inherits": "default",
+      "environment": {
+        "ASAN_OPTIONS": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1"
+      }
+    },
+    {
+      "name": "sanitize-thread",
+      "inherits": "default",
+      "environment": {
+        "TSAN_OPTIONS": "suppressions=${sourceDir}/sanitize-thread-suppressions.txt"
+      }
+    }
   ]
 }
