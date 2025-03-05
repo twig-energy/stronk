@@ -7,6 +7,10 @@
   },
   "configurePresets": [
     {
+      "name": "default",
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
       "name": "dev-mode",
       "hidden": true,
       "cacheVariables": {
@@ -183,7 +187,6 @@
     },
     {
       "name": "ci-sanitize",
-      "binaryDir": "${sourceDir}/build",
       "inherits": [
         "ci-unix",
         "sanitize-unix",
@@ -194,7 +197,6 @@
     },
     {
       "name": "ci-build",
-      "binaryDir": "${sourceDir}/build",
       "hidden": true
     },
     {
