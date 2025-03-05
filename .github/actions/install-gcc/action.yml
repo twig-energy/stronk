@@ -12,7 +12,7 @@ runs:
       if: ${{ runner.environment != 'self-hosted' }}
       shell: bash
       run: |
-        GCC_VERSION=`echo ${{ inputs.version }} | cut -d'-' -f 2`
+        GCC_VERSION=`echo ${{ inputs.version }} | cut -d'-' -f2`
 
         if ! apt-cache show  "gcc-$GCC_VERSION" > /dev/null; then
           # Add test repository if gcc version is not available.
