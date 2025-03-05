@@ -9,12 +9,7 @@ endif ()
 option(ENABLE_COVERAGE "Enable coverage support separate from CTest's" OFF)
 if (ENABLE_COVERAGE)
     include(cmake/code-coverage.cmake)
-    add_code_coverage_all_targets(
-        EXCLUDE
-        tests/*
-        examples/*
-        benchmarks/*
-    )
+    add_code_coverage_all_targets(EXCLUDE tests/* examples/*)
 endif ()
 
 include(CTest)

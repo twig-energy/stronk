@@ -66,6 +66,6 @@ if (ENABLE_COVERAGE)
         stronk_test
         ALL
         EXCLUDE
-        source
+        src
     )
 endif ()

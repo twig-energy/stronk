@@ -45,7 +45,9 @@
       "hidden": true,
       "environment": {
         "CXX": "clang++-18",
-        "CC": "clang-18",
+        "CC": "clang-18"
+      },
+      "cacheVariables": {
         "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-18",
         "LLVM_COV_COMMAND": "llvm-cov-18",
         "LLVM_PROFDATA_COMMAND": "llvm-profdata-18"
@@ -56,7 +58,9 @@
       "hidden": true,
       "environment": {
         "CXX": "clang++-19",
-        "CC": "clang-19",
+        "CC": "clang-19"
+      },
+      "cacheVariables": {
         "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-19",
         "LLVM_COV_COMMAND": "llvm-cov-19",
         "LLVM_PROFDATA_COMMAND": "llvm-profdata-19"

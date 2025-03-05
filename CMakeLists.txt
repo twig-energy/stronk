@@ -68,5 +68,5 @@ endif ()
 
 # ---- Code coverage ----
 if (ENABLE_COVERAGE)
-    target_code_coverage(twig_stronk ALL)
+    target_code_coverage(twig_stronk INTERFACE ALL)
 endif ()
