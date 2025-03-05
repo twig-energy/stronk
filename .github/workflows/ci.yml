@@ -83,7 +83,7 @@ jobs:
         uses: friendlyanon/setup-vcpkg@v1
         with:
           committish: "${{ env.VCPKG_COMMIT }}"
-          cache-key: "vcpkg-sonar-<hash>"
+          cache-version: "vcpkg-sonar"
 
       - name: Configure
         run: |
@@ -135,7 +135,7 @@ jobs:
         uses: friendlyanon/setup-vcpkg@v1
         with:
           committish: "${{ env.VCPKG_COMMIT }}"
-          cache-key: "vcpkg-sanitize-<hash>"
+          cache-version: "vcpkg-sanitize"
 
       - name: Configure
         run: cmake --preset=ci-sanitize
@@ -189,7 +189,7 @@ jobs:
         uses: friendlyanon/setup-vcpkg@v1
         with:
           committish: "${{ env.VCPKG_COMMIT }}"
-          cache-key: "vcpkg-${{ matrix.os }}-${{ matrix.compiler }}-<hash>"
+          cache-version: "vcpkg-${{ matrix.os }}-${{ matrix.compiler }}"
 
       - name: Configure
         shell: pwsh
