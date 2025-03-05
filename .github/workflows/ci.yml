@@ -199,7 +199,7 @@ jobs:
         run: cmake --install build --config Release --prefix prefix
 
       - name: Test
-        run: ctest --preset=default -j 2
+        run: ctest --preset=default -C Release -j 2
 
       - name: Benchmarks
         if: ${{ !contains(matrix.os, 'windows') }}
