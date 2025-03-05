@@ -1,6 +1,8 @@
 #pragma once
 #include <concepts>
-#include <utility>
+#include <cstddef>
+#include <functional>
+#include <type_traits>
 
 namespace twig
 {
@@ -15,9 +17,10 @@ concept can_hash_like = std::same_as<typename StronkT::can_hash_indicator, std::
 
 }  // namespace twig
 template<twig::can_hash_like T>
-struct std::hash<T>
+struct std::hash<T>  // NOLINT(cert-dcl58-cpp) std::hash is exempt from this rule
 {
-    [[nodiscard]] auto operator()(T const& s) const noexcept -> std::size_t
+    [[nodiscard]]
+    auto operator()(const T& s) const noexcept -> std::size_t
     {
         return std::hash<typename T::underlying_type> {}(s.template unwrap<T>());
     }

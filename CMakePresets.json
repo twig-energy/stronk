@@ -183,7 +183,7 @@
     },
     {
       "name": "ci-sanitize",
-      "binaryDir": "${sourceDir}/build/sanitize",
+      "binaryDir": "${sourceDir}/build",
       "inherits": [
         "ci-unix",
         "sanitize-unix",

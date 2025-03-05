@@ -1,18 +1,9 @@
 {
     "clangd.path": "clangd-19",
     "clangd.arguments": [
-        "-compile-commands-dir=${workspaceFolder}/build/dev"
+        "-compile-commands-dir=${workspaceFolder}/build"
     ],
-    "clang-format.executable": "clang-format-17",
-    "cpplint.filters": [
-        "-build/c++11",
-        "-build/include_order",
-        "-legal/copyright",
-        "-readability/braces",
-        "-runtime/references",
-        "-runtime/string",
-        "-whitespace"
-    ],
+    "clang-format.executable": "clang-format-19",
     "files.associations": {
         "cctype": "cpp",
         "clocale": "cpp",
@@ -112,7 +103,7 @@
         "structs",
         "VCPKG"
     ],
-    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/dev/compile_commands.json",
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json",
     "sonarlint.connectedMode.project": {
         "connectionId": "twig-energy",
         "projectKey": "twig-energy_stronk"

@@ -42,7 +42,7 @@ auto default_max_for_random() -> T
     }
 }
 
-static inline auto get_random_device() -> std::mt19937&
+inline static auto get_random_device() -> std::mt19937&
 {
     static thread_local std::random_device dev;
     static thread_local std::mt19937 rng(dev());
@@ -79,7 +79,10 @@ auto rand() -> T
 template<typename T>
 struct generate_randomish
 {
-    auto operator()() const -> T { return details::rand<T>(); }
+    auto operator()() const -> T
+    {
+        return details::rand<T>();
+    }
 };
 template<>
 struct generate_randomish<std::string>
@@ -97,7 +100,10 @@ struct generate_randomish<std::string>
 template<twig::stronk_like T>
 struct generate_randomish<T>
 {
-    auto operator()() const -> T { return T {generate_randomish<typename T::underlying_type> {}()}; }
+    auto operator()() const -> T
+    {
+        return T {generate_randomish<typename T::underlying_type> {}()};
+    }
 };
 
 template<typename T>

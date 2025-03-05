@@ -3,6 +3,7 @@
 
 #include <nlohmann/adl_serializer.hpp>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <stronk/stronk.h>
 
 template<twig::stronk_like T>

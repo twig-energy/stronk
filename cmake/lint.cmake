@@ -10,12 +10,19 @@ default(FORMAT_COMMAND clang-format-19)
 default(
     PATTERNS
     source/*.cpp
+    source/*.h
     source/*.hpp
     include/*.hpp
-    test/*.cpp
-    test/*.hpp
-    example/*.cpp
-    example/*.hpp
+    include/*.h
+    tests/*.cpp
+    tests/*.h
+    tests/*.hpp
+    examples/*.cpp
+    examples/*.h
+    examples/*.hpp
+    benchmarks/*.cpp
+    benchmarks/*.h
+    benchmarks/*.hpp
 )
 default(FIX NO)
 

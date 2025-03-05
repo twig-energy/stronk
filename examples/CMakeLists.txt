@@ -15,6 +15,11 @@ function (add_example NAME)
     add_executable("${NAME}" "${NAME}.cpp")
     target_link_libraries("${NAME}" PRIVATE twig::stronk)
     target_compile_features("${NAME}" PRIVATE cxx_std_20)
+    target_compile_options(
+        "${NAME}" PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-unused-variable
+                          -Wno-implicit-int-float-conversion>
+    )
+
     add_custom_target(
         "run_${NAME}"
         COMMAND "${NAME}"
@@ -22,6 +27,7 @@ function (add_example NAME)
     )
     add_dependencies("run_${NAME}" "${NAME}")
     add_dependencies(run-examples "run_${NAME}")
+
 endfunction ()
 
 add_example(unit_example)

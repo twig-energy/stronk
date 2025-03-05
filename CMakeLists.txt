@@ -16,7 +16,7 @@ project(
     VERSION ${version}
     DESCRIPTION "An easy to customize strong type library with built in support for unit-like behavior"
     HOMEPAGE_URL "https://github.com/twig-energy/stronk"
-    LANGUAGES NONE
+    LANGUAGES CXX
 )
 
 include(cmake/project-is-top-level.cmake)
@@ -43,14 +43,17 @@ if (NOT CMAKE_SKIP_INSTALL_RULES)
 endif ()
 
 if (PROJECT_IS_TOP_LEVEL)
-    option(BUILD_EXAMPLES "Build examples tree." "${stronk_DEVELOPER_MODE}")
+    option(BUILD_TESTING "Build tests tree." "${stronk_DEVELOPER_MODE}")
+    if (BUILD_TESTING)
+        add_subdirectory(tests)
+    endif ()
 
+    option(BUILD_EXAMPLES "Build examples tree." "${stronk_DEVELOPER_MODE}")
     if (BUILD_EXAMPLES)
         add_subdirectory(examples)
     endif ()
 
     option(BUILD_BENCHMARKS "Build benchmarks tree." "${stronk_DEVELOPER_MODE}")
-
     if (BUILD_BENCHMARKS)
         add_subdirectory(benchmarks)
     endif ()

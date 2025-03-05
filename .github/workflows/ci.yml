@@ -138,10 +138,10 @@ jobs:
         run: cmake --preset=ci-sanitize
 
       - name: Build
-        run: cmake --build build/sanitize -j 2
+        run: cmake --build build -j 2
 
       - name: Test
-        working-directory: build/sanitize
+        working-directory: build
         env:
           ASAN_OPTIONS: "strict_string_checks=1:\
             detect_stack_use_after_return=1:\

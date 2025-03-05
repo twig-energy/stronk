@@ -1,9 +1,9 @@
 """
-  Parse markdown document and embed the referenced code into code blocks
+Parse markdown document and embed the referenced code into code blocks
 
-  Example syntax for code blocks:
-    ```cpp:file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
-    ```
+Example syntax for code blocks:
+  ```cpp:file=./examples/unit_energy_example.cpp:line_start=0:line_end=29
+  ```
 """
 
 from dataclasses import dataclass
@@ -81,9 +81,9 @@ def parse_markdown(file: Path) -> List[Section]:
 
     for section_start, _ in sections:
         section = Section.parse_section(lines[section_start])
-        assert (
-            section.file.exists()
-        ), f"Failed to parse section: {lines[section_start]}: '{section.file.absolute()}' did not exist"
+        assert section.file.exists(), (
+            f"Failed to parse section: {lines[section_start]}: '{section.file.absolute()}' did not exist"
+        )
         res.append(section)
     return res
 
@@ -137,12 +137,16 @@ def parse_arguments():
 
 
 def run():
-    args = parse_arguments()
-    assert args.file.exists()
-    sections_to_load = parse_markdown(args.file)
-    files_to_code = load_code_sections(sections_to_load)
-    new_file_str = embed_data_in_docs(args.file, files_to_code)
-    output_result(args.file, new_file_str, args.inline)
+    try:
+        args = parse_arguments()
+        assert args.file.exists()
+        sections_to_load = parse_markdown(args.file)
+        files_to_code = load_code_sections(sections_to_load)
+        new_file_str = embed_data_in_docs(args.file, files_to_code)
+        output_result(args.file, new_file_str, args.inline)
+    except Exception as e:
+        print(e)
+        return 1
     return 0
 
 

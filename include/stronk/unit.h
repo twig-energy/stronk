@@ -1,4 +1,5 @@
 #pragma once
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -31,7 +32,7 @@ concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T:
 template<typename StronkT>
 struct unit
 {
-    using dimensions_t = create_dimensions_t<Dimension<StronkT, 1>>;
+    using dimensions_t = create_dimensions_t<dimension<StronkT, 1>>;
 
     /**
      * @brief unwrap but in the ratio specified. Like the regular unwrap,
@@ -42,7 +43,8 @@ struct unit
      */
     template<ratio_with_base_unit_like RatioT>
         requires(std::is_same_v<StronkT, typename RatioT::base_unit_t>)
-    [[nodiscard]] auto unwrap_as() const noexcept;
+    [[nodiscard]]
+    auto unwrap_as() const noexcept;
 };
 
 template<typename StronkT>
@@ -63,8 +65,8 @@ struct unit_skill_builder
 
 // You can specialize this type if you want to add other skills to your dynamic types.
 template<typename UnderlyingT, dimensions_like DimensionsT>
-struct NewStronkUnit
-    : stronk<NewStronkUnit<UnderlyingT, DimensionsT>,
+struct new_stronk_unit
+    : stronk<new_stronk_unit<UnderlyingT, DimensionsT>,
              UnderlyingT,
              can_order,
              can_add,
@@ -76,7 +78,7 @@ struct NewStronkUnit
     constexpr static auto dimensions = DimensionsT {};
     using dimensions_t = DimensionsT;
 
-    using stronk<NewStronkUnit<UnderlyingT, DimensionsT>,
+    using stronk<new_stronk_unit<UnderlyingT, DimensionsT>,
                  UnderlyingT,
                  can_order,
                  can_add,
@@ -92,7 +94,7 @@ struct NewStronkUnit
 template<dimensions_like DimensionsT, typename UnderlyingT>
 struct unit_lookup
 {
-    using type = NewStronkUnit<UnderlyingT, DimensionsT>;
+    using type = new_stronk_unit<UnderlyingT, DimensionsT>;
 };
 
 template<unit_like StronkT, typename UnderlyingT>
@@ -255,7 +257,7 @@ auto make(Arg&& args) -> T
     // RatioT from <ratio> (includes std::kilo, std::centi etc)
     using underlying_type = typename T::underlying_type;
     return T {std::forward<Arg>(args)} * static_cast<underlying_type>(RatioT::num)
-        / static_cast<underlying_type>(RatioT::den);
+         / static_cast<underlying_type>(RatioT::den);
 }
 
 template<ratio_with_base_unit_like RatioT, typename Arg>
@@ -272,7 +274,7 @@ auto unit<StronkT>::unwrap_as() const noexcept
 {
     using underlying_type = typename StronkT::underlying_type;
     return static_cast<const StronkT&>(*this).template unwrap<StronkT>() * static_cast<underlying_type>(RatioT::den)
-        / static_cast<underlying_type>(RatioT::num);
+         / static_cast<underlying_type>(RatioT::num);
 }
 
 }  // namespace twig

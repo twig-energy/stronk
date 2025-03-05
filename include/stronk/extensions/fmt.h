@@ -1,8 +1,11 @@
 #pragma once
 // IWYU pragma: always_keep
 
+#include <concepts>
 #include <string_view>
+#include <type_traits>
 
+#include <fmt/base.h>
 #include <fmt/compile.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
