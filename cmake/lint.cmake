@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.28)
 
 macro (default name)
     if (NOT DEFINED "${name}")
@@ -6,16 +6,26 @@ macro (default name)
     endif ()
 endmacro ()
 
-default(FORMAT_COMMAND clang-format-17)
+default(FORMAT_COMMAND clang-format-19)
 default(
     PATTERNS
     source/*.cpp
+    source/*.h
     source/*.hpp
+    src/*.cpp
+    src/*.h
+    src/*.hpp
     include/*.hpp
-    test/*.cpp
-    test/*.hpp
-    example/*.cpp
-    example/*.hpp
+    include/*.h
+    tests/*.cpp
+    tests/*.h
+    tests/*.hpp
+    examples/*.cpp
+    examples/*.h
+    examples/*.hpp
+    benchmarks/*.cpp
+    benchmarks/*.h
+    benchmarks/*.hpp
 )
 default(FIX NO)
 

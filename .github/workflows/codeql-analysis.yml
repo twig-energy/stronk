@@ -20,12 +20,12 @@ on:
   schedule:
     - cron: "44 8 * * 1"
 env:
-  VCPKG_COMMIT: "230d85084ca006926d51c3d332c94298fb3bd56c"
+  VCPKG_COMMIT: "d5ec528843d29e3a52d745a64b469f810b2cedbf"
 
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -57,10 +57,12 @@ jobs:
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-codeql-<hash>",
-          }
+            committish: "${{ env.VCPKG_COMMIT }}"
+            cache-key: "vcpkg-codeql-<hash>"
+
+      - uses: ./.github/actions/install-gcc
+        with:
+          version: "14"
 
       - name: Build
         run: |

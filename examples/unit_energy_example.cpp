@@ -24,7 +24,7 @@ void watts_and_identity_units()
     static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
 }
 
-// Lets introduce hours as a new unit_like type
+// Let's introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
@@ -46,7 +46,7 @@ void watt_hours_and_generating_new_units()
     Watt watt = watt_hours / Hours {3.};
 }
 
-// Lets introduce a type for euros, and start combining more types.
+// Let's introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
     using stronk::stronk;

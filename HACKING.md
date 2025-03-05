@@ -34,13 +34,12 @@ the project:
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 20,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
     {
       "name": "dev",
-      "binaryDir": "${sourceDir}/build/dev",
       "inherits": ["dev-mode", "vcpkg", "ci-<os>", "<compiler>"],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"

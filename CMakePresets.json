@@ -2,12 +2,17 @@
   "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 20,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
     {
+      "name": "default",
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
       "name": "dev-mode",
+      "inherits": "default",
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
@@ -29,13 +34,6 @@
       }
     },
     {
-      "name": "cppcheck",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr"
-      }
-    },
-    {
       "name": "clang-tidy",
       "hidden": true,
       "cacheVariables": {
@@ -43,21 +41,29 @@
       }
     },
     {
-      "name": "clang-15",
+      "name": "clang-18",
       "hidden": true,
       "environment": {
-        "CXX": "clang++-15",
-        "CC": "clang-15",
-        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-15"
+        "CXX": "clang++-18",
+        "CC": "clang-18"
+      },
+      "cacheVariables": {
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-18",
+        "LLVM_COV_COMMAND": "llvm-cov-18",
+        "LLVM_PROFDATA_COMMAND": "llvm-profdata-18"
       }
     },
     {
-      "name": "clang-17",
+      "name": "clang-19",
       "hidden": true,
       "environment": {
-        "CXX": "clang++-17",
-        "CC": "clang-17",
-        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-17"
+        "CXX": "clang++-19",
+        "CC": "clang-19"
+      },
+      "cacheVariables": {
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-19",
+        "LLVM_COV_COMMAND": "llvm-cov-19",
+        "LLVM_PROFDATA_COMMAND": "llvm-profdata-19"
       }
     },
     {
@@ -82,6 +88,14 @@
       "environment": {
         "CXX": "g++-13",
         "CC": "gcc-13"
+      }
+    },
+    {
+      "name": "gcc-14",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-14",
+        "CC": "gcc-14"
       }
     },
     {
@@ -136,31 +150,33 @@
       "hidden": true
     },
     {
-      "name": "coverage-unix",
+      "name": "coverage-linux",
       "inherits": [
+        "clang-19",
+        "dev-mode",
         "ci-unix"
       ],
       "hidden": true,
       "cacheVariables": {
         "ENABLE_COVERAGE": "ON",
+        "CODE_COVERAGE": "ON",
         "CMAKE_BUILD_TYPE": "Coverage",
-        "CMAKE_CXX_FLAGS_COVERAGE": "-Og -g --coverage",
-        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
-        "CMAKE_SHARED_LINKER_FLAGS_COVERAGE": "--coverage",
-        "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "Coverage;RelWithDebInfo;Release;Debug;"
+        "CMAKE_CXX_FLAGS_COVERAGE": "-Og -g -fprofile-instr-generate -fcoverage-mapping",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "-fprofile-instr-generate -fcoverage-mapping",
+        "CMAKE_SHARED_LINKER_FLAGS_COVERAGE": "-fprofile-instr-generate -fcoverage-mapping",
+        "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "Coverage;RelWithDebInfo;Release;Debug;",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
       "name": "ci-coverage",
-      "binaryDir": "${sourceDir}/build/coverage",
       "inherits": [
-        "coverage-unix",
-        "dev-mode",
-        "vcpkg",
-        "gcc-11"
+        "ci-build",
+        "coverage-linux",
+        "vcpkg"
       ],
       "cacheVariables": {
-        "COVERAGE_HTML_COMMAND": ""
+        "CMAKE_COVERAGE_OUTPUT_DIRECTORY": "${sourceDir}/build/ccov"
       }
     },
     {
@@ -176,18 +192,16 @@
     },
     {
       "name": "ci-sanitize",
-      "binaryDir": "${sourceDir}/build/sanitize",
       "inherits": [
         "ci-unix",
         "sanitize-unix",
         "dev-mode",
         "vcpkg",
-        "clang-17"
+        "clang-19"
       ]
     },
     {
       "name": "ci-build",
-      "binaryDir": "${sourceDir}/build",
       "hidden": true
     },
     {
@@ -197,7 +211,7 @@
         "ci-unix",
         "dev-mode",
         "vcpkg",
-        "gcc-11"
+        "gcc-14"
       ]
     },
     {
@@ -252,17 +266,24 @@
       ]
     },
     {
-      "name": "ci-ubuntu-clang-15",
+      "name": "ci-ubuntu-gcc-14",
       "inherits": [
         "ci-ubuntu",
-        "clang-15"
+        "gcc-14"
       ]
     },
     {
-      "name": "ci-ubuntu-clang-17",
+      "name": "ci-ubuntu-clang-18",
       "inherits": [
         "ci-ubuntu",
-        "clang-17"
+        "clang-18"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-19",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-19"
       ]
     },
     {
@@ -272,18 +293,36 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-12"
+        "gcc-14"
       ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
     },
     {
-      "name": "ci-sonarcloud",
-      "inherits": [
-        "ci-build",
-        "ci-unix",
-        "vcpkg",
-        "dev-mode",
-        "gcc-12"
-      ]
+      "name": "sanitize",
+      "inherits": "default",
+      "environment": {
+        "ASAN_OPTIONS": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1"
+      }
+    },
+    {
+      "name": "sanitize-thread",
+      "inherits": "default",
+      "environment": {
+        "TSAN_OPTIONS": "suppressions=${sourceDir}/sanitize-thread-suppressions.txt"
+      }
     }
   ]
 }

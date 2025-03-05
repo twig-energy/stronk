@@ -532,7 +532,7 @@ TEST(can_index, can_index_works_for_vectors)  // NOLINT
 template<an_int_test_type Val>
 struct type_which_requires_stronk_none_type_template_param
 {
-    static constexpr an_int_test_type value = Val;
+    constexpr static an_int_test_type value = Val;
 };
 
 TEST(none_type_template_parameter, stronk_types_can_be_used_as_none_type_template_parameters)  // NOLINT

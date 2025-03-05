@@ -1,0 +1,16 @@
+---
+InheritParentConfig: "true"
+Checks: "\
+  -bugprone-easily-swappable-parameters\
+  ,-cppcoreguidelines-avoid-magic-numbers\
+  ,-readability-function-cognitive-complexity\
+  ,-readability-magic-numbers\
+  ,-readability-identifier-naming\
+  ,-google-readability-avoid-underscore-in-googletest-name\
+  ,-modernize-use-ranges\
+  "
+CheckOptions:
+  - key: "readability-identifier-length.MinimumVariableNameLength"
+    value: "1"
+  - key: "readability-identifier-length.MinimumParameterNameLength"
+    value: "1"

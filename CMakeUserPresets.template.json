@@ -2,7 +2,7 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
+        "minor": 28,
         "patch": 0
     },
     "configurePresets": [
@@ -11,8 +11,7 @@
             "hidden": true,
             "inherits": [
                 "dev-mode",
-                "vcpkg",
-                "clang-tidy"
+                "vcpkg"
             ],
             "cacheVariables": {},
             "environment": {
@@ -21,11 +20,10 @@
         },
         {
             "name": "dev-linux",
-            "binaryDir": "${sourceDir}/build/dev-linux",
             "inherits": [
                 "dev-common",
                 "ci-unix",
-                "clang-17"
+                "clang-19"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
@@ -34,7 +32,6 @@
         },
         {
             "name": "dev-win64",
-            "binaryDir": "${sourceDir}/build/dev-win64",
             "inherits": [
                 "dev-common",
                 "ci-win64",
@@ -47,21 +44,18 @@
         },
         {
             "name": "dev",
-            "binaryDir": "${sourceDir}/build/dev",
             "inherits": "dev-linux"
         },
         {
             "name": "dev-coverage",
-            "binaryDir": "${sourceDir}/build/coverage",
             "inherits": [
                 "dev-linux",
-                "coverage-unix",
+                "coverage-linux",
                 "vcpkg"
             ]
         },
         {
             "name": "dev-sanitize",
-            "binaryDir": "${sourceDir}/build/sanitize",
             "inherits": [
                 "dev-linux",
                 "sanitize-unix",

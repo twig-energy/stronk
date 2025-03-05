@@ -45,7 +45,7 @@ struct underlying_multiply_operation<tests::specializer_type_a, tests::specializ
     constexpr static auto multiply(const typename tests::specializer_type_a::underlying_type& v1,
                                    const typename tests::specializer_type_b::underlying_type& v2) noexcept -> res_type
     {
-        return static_cast<int64_t>(v1) * static_cast<int64_t>(v2) + 1LL;
+        return (static_cast<int64_t>(v1) * static_cast<int64_t>(v2)) + 1LL;
     }
 };
 
@@ -58,7 +58,7 @@ struct underlying_divide_operation<tests::specializer_type_a, tests::specializer
     constexpr static auto divide(const typename tests::specializer_type_a::underlying_type& v1,
                                  const typename tests::specializer_type_b::underlying_type& v2) noexcept -> res_type
     {
-        return static_cast<int64_t>(v1) / static_cast<int64_t>(v2) + 1LL;
+        return (static_cast<int64_t>(v1) / static_cast<int64_t>(v2)) + 1LL;
     }
 };
 
@@ -79,7 +79,7 @@ using specializer_type_a_divided_by_b = decltype(tests::specializer_type_a {} / 
 STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_squared, tests::specializer_type_a);  // a^3
 STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_squared, tests::specializer_type_b);  // a^2 * b
 // STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_times_b, tests::specializer_type_a); // a^2 * b
-STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_times_b, tests::specializer_type_b);  // a * b^2
+STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_times_b, tests::specializer_type_b);       // a * b^2
 STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_divided_by_b, tests::specializer_type_a);  // a^2 / b
 // STRONK_SPECIALIZE_MULTIPLY(specializer_type_a_divided_by_b, tests::specializer_type_b); // a
 

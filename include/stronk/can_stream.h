@@ -26,6 +26,7 @@ template<typename StronkT>
 struct can_stream
     : can_ostream<StronkT>
     , can_istream<StronkT>
-{};
+{
+};
 
 }  // namespace twig

@@ -1,0 +1,23 @@
+---
+name: "Install GCC"
+description: "Installs GCC on CI runners"
+inputs:
+  version:
+    description: "Which version of GCC to install. E.g. '13' or 'gcc-13'"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install GCC
+      if: ${{ runner.environment != 'self-hosted' }}
+      shell: bash
+      run: |
+        GCC_VERSION=`echo ${{ inputs.version }} | cut -d'-' -f2`
+
+        if ! apt-cache show  "gcc-$GCC_VERSION" > /dev/null; then
+          # Add test repository if gcc version is not available.
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update -q
+        fi
+
+        sudo apt-get install gcc-$GCC_VERSION g++-$GCC_VERSION g++-$GCC_VERSION-multilib -y -q

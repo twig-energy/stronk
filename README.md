@@ -1,5 +1,7 @@
-[![codecov](https://codecov.io/gh/twig-energy/stronk/branch/main/graph/badge.svg?token=TWO57YT2YA)](https://codecov.io/gh/twig-energy/stronk)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=twig-energy_stronk&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=twig-energy_stronk)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=twig-energy_stronk&metric=coverage)](https://sonarcloud.io/summary/new_code?id=twig-energy_stronk)
 [![license](https://img.shields.io/github/license/twig-energy/stronk)](LICENSE)
+
 ```text
             ==================================================================
 
@@ -14,16 +16,19 @@
 
 ## An easy to customize, strong type library with built-in support for unit-like behavior
 
-#### What:
+#### What
+
 - Easy support for stron{g|k} typing, with plenty of built-in skills to add functionality to your own types.
 - Automatically combine types with physics-like unit behavior: `10 [Meter] / 2 [Second] = 5 [Meter / Second]`.
 
-#### Why:
+#### Why
+
 - Strong types allow you to catch argument ordering mismatches.
 - Unit-like behavior allows you to use the type system to verify the correctness of your implementation.
 - Catch refactoring bugs at compile time by limiting access to the underlying values.
 
-#### How:
+#### How
+
 ```cpp :file=./examples/firstname_lastname_example.cpp
 #include <iostream>
 #include <string>
@@ -88,7 +93,7 @@ void watts_and_identity_units()
 Different units can be combined by multiplying or dividing them:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=26:line_end=47
-// Lets introduce hours as a new unit_like type
+// Let's introduce hours as a new unit_like type
 struct Hours : twig::stronk<Hours, double, twig::unit>
 {
     using stronk::stronk;
@@ -114,7 +119,7 @@ void watt_hours_and_generating_new_units()
 These new generated types are also units which can be used to generate new units:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=48:line_end=67
-// Lets introduce a type for euros, and start combining more types.
+// Let's introduce a type for euros, and start combining more types.
 struct Euro : twig::stronk<Euro, double, twig::unit>
 {
     using stronk::stronk;
@@ -140,9 +145,11 @@ Units are a great way of using the type system to validate your code.
 Credit to [Jonathan Müller](https://github.com/foonathan)'s [blogpost](https://www.foonathan.net/2016/10/strong-typedefs/) and [Jonathan Boccara](https://github.com/joboccara)'s [blogpost](https://www.fluentcpp.com/2016/12/08/strong-types-for-strong-interfaces/) - both of which have been great sources of inspiration.
 
 ## Current list of skills
+
 Skills adds functionality to your stronk types. We have implemented a number of generic skills which should help you get started.
 
 ### Regular
+
 - `can_negate`: unary `operator-`
 - `can_add`: binary `operator+` `operator=+`
 - `can_subtract`: binary `operator-` and `operator=-`
@@ -169,10 +176,12 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_decrement` adds both `operator--` operators.
 
 ### Units
+
 - `unit`: enables unit behavior for multiplication and division.
 - `identity_unit`: enables unit behavior, but does not affect the type of multiplication and division.
 
-### Third Party Library extensions (see `stronk/extensions/<library>.h`):
+### Third Party Library extensions (see `stronk/extensions/<library>.h`)
+
 - `can_absl_hash`: implements the `AbslHashValue` friend function.
 - `can_gtest_print`: for printing the values in gtest check macros
 - `can_fmt_format`: implements `struct fmt::formatter<T>` with default formatting string `"{}"`. In the future we will add a `can_format` for `std::format`.
@@ -181,14 +190,16 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 Adding new skills is easy so feel free to add more.
 
 ## Prefabs: (see `stronk/prefabs.h`)
+
 Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
 - `stronk_default_unit`: arithmetic unit with most of the regular operations
 - `stronk_flag`: flag like boolean with equal operators etc.
 
-## Examples:
+## Examples
 
-### Specializers:
+### Specializers
+
 In case you want to specialize the resulting type of unit multiplication and division you can utilize the `stronk/specializer.h` header.
 
 By default the units are generated with the `stronk_default_prefab` type.
@@ -200,7 +211,7 @@ By default the units are generated with the `stronk_default_prefab` type.
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
 
-// Lets consider the following units:
+// Let's consider the following units:
 struct Distance : twig::stronk<Distance, double, twig::unit>
 {
     using stronk::stronk;
@@ -211,8 +222,8 @@ struct Time : twig::stronk<Time, double, twig::unit>
     using stronk::stronk;
 };
 
-// Lets say you want to use a custom defined stronk type for certain unit combinations.
-// Lets introduce our own `Speed` type:
+// Let's say you want to use a custom defined stronk type for certain unit combinations.
+// Let's introduce our own `Speed` type:
 struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
 {
     using stronk::stronk;
@@ -230,6 +241,7 @@ struct twig::unit_lookup<twig::divided_unit<Distance, Time>::dimensions_t, doubl
 ```
 
 # Using Stronk in Your Project
+
 The project is CMake FetchContent ready and is available on [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/stronk).
 After retrieving stronk, add the following to your CMakeLists.txt
 
@@ -242,6 +254,7 @@ target_link_libraries(
 ```
 
 ### Requirements
+
 A c++20 compatible compiler and standard library with concepts support.
 
 We depend on Boost's type_index package to get compile time generated ids for each type to be able to sort types for units (so we can compare types generated from different expressions).
@@ -253,12 +266,14 @@ In the extensions subfolder we have added skills for common third party librarie
 For more information on how to build see the [BUILDING](BUILDING.md) and [HACKING](HACKING.md) documents.
 
 # Benchmarks
+
 Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
+
 ```
 2022-09-06T15:29:32+02:00
-Running ./build/dev/benchmarks/stronk_benchmarks
+Running ./build/benchmarks/stronk_benchmarks
 Run on (64 X 4549.12 MHz CPU s)
 CPU Caches:
   L1 Data 32 KiB (x32)
@@ -320,9 +335,10 @@ benchmark_copy_vector_of<string_wrapping_type>                  /8192           
 ```
 
 Calling "Skill" functions (which internally calls unwrap) performs identically to calling the functions directly on the raw types. They even auto-vectorize the same:
+
 ```
 2022-09-06T15:29:32+02:00
-Running ./build/dev/benchmarks/stronk_benchmarks
+Running ./build/benchmarks/stronk_benchmarks
 Run on (64 X 4549.12 MHz CPU s)
 CPU Caches:
   L1 Data 32 KiB (x32)

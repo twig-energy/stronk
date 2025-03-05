@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.28)
 
 project(stronkTests LANGUAGES CXX)
 
@@ -40,17 +40,32 @@ add_executable(
 
 target_link_libraries(
     stronk_test
-    PRIVATE twig::stronk
-            absl::hash
+    PRIVATE absl::hash
             doctest::doctest
             fmt::fmt
             glaze::glaze
             GTest::gtest_main
             nlohmann_json::nlohmann_json
+            twig::stronk
 )
 target_compile_features(stronk_test PRIVATE cxx_std_20)
+target_compile_options(
+    stronk_test
+    PRIVATE # right now we don't know how to conversions inside units nicely
+            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-implicit-int-float-conversion -Wno-sign-conversion>
+)
 
 add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_output=xml:")
 
 # ---- End-of-file commands ----
 add_folders(Tests)
+
+# ---- Code coverage ----
+if (ENABLE_COVERAGE)
+    target_code_coverage(
+        stronk_test
+        ALL
+        EXCLUDE
+        src
+    )
+endif ()

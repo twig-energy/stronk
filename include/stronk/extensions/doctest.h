@@ -1,4 +1,8 @@
 #pragma once
+// IWYU pragma: always_keep
+
+#include <concepts>
+
 #include <doctest/doctest.h>
 #include <stronk/stronk.h>
 
@@ -10,7 +14,7 @@ concept has_doctest_to_string = requires(U val) {
         doctest::toString(val)
     } -> std::same_as<doctest::String>;
 };
-}
+}  // namespace twig
 
 template<twig::stronk_like T>
 struct doctest::StringMaker<T>
