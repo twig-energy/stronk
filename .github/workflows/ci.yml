@@ -208,14 +208,7 @@ jobs:
 
       - name: Test
         working-directory: build
-        run: ctest --output-on-failure -C Release -j 2
-
-      - name: Publish C++ Unit Tests Report
-        uses: mikepenz/action-junit-report@v3
-        with:
-          report_paths: ${{ github.workspace }}/build/**/*[tT]est*.xml
-          require_tests: true
-          fail_on_failure: true
+        run: ctest -C Release -j 2
 
       - name: Benchmarks
         working-directory: build
