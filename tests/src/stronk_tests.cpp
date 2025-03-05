@@ -34,6 +34,146 @@ TEST(unwrap, when_unwrapping_it_works_with_its_own_argument)  // NOLINT
     EXPECT_EQ(b.unwrap<a_float_test_type>(), 42.1F);
 }
 
+template<an_int_test_type Val>
+struct type_which_requires_stronk_none_type_template_param
+{
+    constexpr static an_int_test_type value = Val;
+};
+
+TEST(none_type_template_parameter, stronk_types_can_be_used_as_none_type_template_parameters)  // NOLINT
+{
+    auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
+    EXPECT_EQ(val.value.unwrap<an_int_test_type>(), 25);
+}
+
+struct mark_if_moved_type
+{
+    bool* indicator;
+
+    explicit mark_if_moved_type(bool* indicator_)
+        : indicator(indicator_)
+    {
+    }
+
+    mark_if_moved_type(const mark_if_moved_type& o) = default;
+    mark_if_moved_type(mark_if_moved_type&& s) noexcept
+        : indicator(s.indicator)
+    {
+        (*this->indicator) = true;
+        s.indicator = nullptr;
+    }
+
+    auto operator=(const mark_if_moved_type&) -> mark_if_moved_type& = delete;
+    auto operator=(mark_if_moved_type&&) noexcept -> mark_if_moved_type& = delete;
+    ~mark_if_moved_type() = default;
+};
+struct a_move_indicating_type : stronk<a_move_indicating_type, mark_if_moved_type>
+{
+    using stronk::stronk;
+};
+
+TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)  // NOLINT
+{
+    {  // wrapping type
+        auto marker = false;
+        auto val = a_move_indicating_type(mark_if_moved_type {&marker});
+        marker = false;
+        auto copy = val;
+        (void)copy;
+        EXPECT_FALSE(marker);
+        auto moved = std::move(val);
+        EXPECT_TRUE(marker);
+    }
+
+    {  // underlying type
+        auto marker = false;
+        auto val = a_move_indicating_type {mark_if_moved_type {&marker}};
+        marker = false;
+        auto copy = val.unwrap<a_move_indicating_type>();  // NOLINT
+        (void)copy;
+        EXPECT_FALSE(marker);
+        auto moved = std::move(val.unwrap<a_move_indicating_type>());
+        EXPECT_TRUE(marker);
+    }
+}
+
+struct a_string_type : stronk<a_string_type, std::string>
+{
+    using stronk::stronk;
+};
+
+TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
+{
+    auto str = std::string {"yoyo"};
+    auto stronked_copy = a_string_type {str};
+    EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
+
+    auto stronked_moved = a_string_type {std::string {"lolo"}};
+    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
+
+    auto stronked_forward = a_string_type {"soso"};
+    EXPECT_EQ(stronked_forward.unwrap<a_string_type>(), "soso");
+}
+
+struct implicit_wrapper
+{
+    double d;
+
+    operator double() const
+    {
+        return this->d;
+    }  // NOLINT(google-explicit-constructor) because thats the test
+};
+
+struct explicit_wrapper
+{
+    double d;
+
+    explicit operator double() const
+    {
+        return this->d;
+    }
+};
+
+struct a_double_type : stronk<a_double_type, double>
+{
+    using stronk::stronk;
+};
+
+// no implicit conversions
+static_assert(!std::convertible_to<double, a_double_type>);
+static_assert(!std::convertible_to<implicit_wrapper, a_double_type>);
+static_assert(!std::convertible_to<explicit_wrapper, a_double_type>);
+
+// but can be constructed from implicitly convertible types
+static_assert(std::constructible_from<a_double_type, double>);
+static_assert(std::constructible_from<a_double_type, implicit_wrapper>);
+static_assert(!std::constructible_from<a_double_type, explicit_wrapper>);
+
+struct a_type_with_multiple_members
+{
+    int a;
+    double b;
+
+    a_type_with_multiple_members(int a, double b)
+        : a(a)
+        , b(b)
+    {
+    }
+};
+
+struct wrapping_multiple_member_type : stronk<wrapping_multiple_member_type, a_type_with_multiple_members>
+{
+    using stronk::stronk;
+};
+
+TEST(can_forward_multiple_args, correctly_passes_multiple_args_in_constructor)
+{
+    auto val = wrapping_multiple_member_type {1, 2.1};
+    EXPECT_EQ(val.unwrap<wrapping_multiple_member_type>().a, 1);
+    EXPECT_EQ(val.unwrap<wrapping_multiple_member_type>().b, 2.1);
+}
+
 struct an_orderable_type : stronk<an_orderable_type, int, can_order>
 {
     using stronk::stronk;
@@ -527,97 +667,6 @@ TEST(can_index, can_index_works_for_vectors)  // NOLINT
             curr++;
         }
     }
-}
-
-template<an_int_test_type Val>
-struct type_which_requires_stronk_none_type_template_param
-{
-    constexpr static an_int_test_type value = Val;
-};
-
-TEST(none_type_template_parameter, stronk_types_can_be_used_as_none_type_template_parameters)  // NOLINT
-{
-    auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
-    EXPECT_EQ(val.value.unwrap<an_int_test_type>(), 25);
-}
-
-struct MarkIfMovedType
-{
-    bool* indicator;
-
-    explicit MarkIfMovedType(bool* indicator_)
-        : indicator(indicator_)
-    {
-    }
-
-    MarkIfMovedType(const MarkIfMovedType& o) = default;
-    MarkIfMovedType(MarkIfMovedType&& s) noexcept
-        : indicator(s.indicator)
-    {
-        (*this->indicator) = true;
-        s.indicator = nullptr;
-    }
-
-    auto operator=(const MarkIfMovedType&) -> MarkIfMovedType& = delete;
-    auto operator=(MarkIfMovedType&&) noexcept -> MarkIfMovedType& = delete;
-    ~MarkIfMovedType() = default;
-};
-struct a_move_indicating_type : stronk<a_move_indicating_type, MarkIfMovedType>
-{
-    using stronk::stronk;
-};
-
-TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)  // NOLINT
-{
-    {  // wrapping type
-        auto marker = false;
-        auto val = a_move_indicating_type(MarkIfMovedType {&marker});
-        marker = false;
-        auto copy = val;
-        (void)copy;
-        EXPECT_FALSE(marker);
-        auto moved = std::move(val);
-        EXPECT_TRUE(marker);
-    }
-
-    {  // underlying type
-        auto marker = false;
-        auto val = a_move_indicating_type {MarkIfMovedType {&marker}};
-        marker = false;
-        auto copy = val.unwrap<a_move_indicating_type>();  // NOLINT
-        (void)copy;
-        EXPECT_FALSE(marker);
-        auto moved = std::move(val.unwrap<a_move_indicating_type>());
-        EXPECT_TRUE(marker);
-    }
-}
-
-struct a_type_with_a_constructor
-{
-    int val;
-
-    explicit a_type_with_a_constructor(int val)
-        : val(val)
-    {
-    }
-};
-
-struct a_string_type : stronk<a_string_type, std::string>
-{
-    using stronk::stronk;
-};
-
-TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
-{
-    auto str = std::string {"yoyo"};
-    auto stronked_copy = a_string_type {str};
-    EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
-
-    auto stronked_moved = a_string_type {std::string {"lolo"}};
-    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
-
-    auto stronked_forward = a_string_type {"soso"};
-    EXPECT_EQ(stronked_forward.unwrap<a_string_type>(), "soso");
 }
 
 }  // namespace twig
