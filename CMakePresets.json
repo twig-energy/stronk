@@ -288,7 +288,7 @@
         "ci-unix",
         "vcpkg",
         "dev-mode",
-        "gcc-12"
+        "gcc-14"
       ]
     }
   ],
