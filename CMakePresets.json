@@ -12,6 +12,7 @@
     },
     {
       "name": "dev-mode",
+      "inherits": "default",
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
