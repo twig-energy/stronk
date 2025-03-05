@@ -97,6 +97,7 @@
     },
     "cSpell.words": [
         "absl",
+        "consteval",
         "decltype",
         "sonarcloud",
         "stronk",
