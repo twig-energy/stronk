@@ -151,7 +151,7 @@ jobs:
         os: [ubuntu-24.04]
         compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-18, clang-19]
         include:
-          - os: windows-22
+          - os: windows-2022
             compiler: msvc
           - os: macos-13
             compiler: gcc-11

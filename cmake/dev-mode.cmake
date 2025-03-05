@@ -1,5 +1,11 @@
 include(cmake/folders.cmake)
 
+if (NOT stronk_DEVELOPER_MODE)
+    return()
+elseif (NOT PROJECT_IS_TOP_LEVEL)
+    message(AUTHOR_WARNING "Developer mode is intended for developers of stronk")
+endif ()
+
 option(ENABLE_COVERAGE "Enable coverage support separate from CTest's" OFF)
 if (ENABLE_COVERAGE)
     include(cmake/code-coverage.cmake)
