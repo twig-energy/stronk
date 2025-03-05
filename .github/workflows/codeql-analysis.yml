@@ -57,10 +57,12 @@ jobs:
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
         with:
-          {
-            committish: "${{ env.VCPKG_COMMIT }}",
-            cache-key: "vcpkg-codeql-<hash>",
-          }
+            committish: "${{ env.VCPKG_COMMIT }}"
+            cache-key: "vcpkg-codeql-<hash>"
+
+      - uses: ./.github/actions/install-gcc
+        with:
+          version: "14"
 
       - name: Build
         run: |
