@@ -61,6 +61,15 @@
       }
     },
     {
+      "name": "clang-19",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-19",
+        "CC": "clang-19",
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-19"
+      }
+    },
+    {
       "name": "gcc-11",
       "hidden": true,
       "environment": {
