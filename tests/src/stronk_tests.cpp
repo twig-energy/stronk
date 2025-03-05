@@ -119,10 +119,10 @@ struct implicit_wrapper
 {
     double d;
 
-    operator double() const
+    operator double() const  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions) because that's the test
     {
         return this->d;
-    }  // NOLINT(google-explicit-constructor) because thats the test
+    }
 };
 
 struct explicit_wrapper
