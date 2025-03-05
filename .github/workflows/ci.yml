@@ -159,11 +159,11 @@ jobs:
         os: [ubuntu-24.04]
         compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-18, clang-19]
         include:
-          - os: windows-latest
+          - os: windows-22
             compiler: msvc
-          - os: macos-latest
+          - os: macos-13
             compiler: gcc-11
-          - os: macos-latest
+          - os: macos-13
             compiler: gcc-12
 
     runs-on: ${{ matrix.os }}
