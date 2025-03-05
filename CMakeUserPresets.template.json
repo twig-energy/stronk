@@ -20,7 +20,6 @@
         },
         {
             "name": "dev-linux",
-            "binaryDir": "${sourceDir}/build",
             "inherits": [
                 "dev-common",
                 "ci-unix",
@@ -33,7 +32,6 @@
         },
         {
             "name": "dev-win64",
-            "binaryDir": "${sourceDir}/build",
             "inherits": [
                 "dev-common",
                 "ci-win64",
@@ -46,12 +44,10 @@
         },
         {
             "name": "dev",
-            "binaryDir": "${sourceDir}/build",
             "inherits": "dev-linux"
         },
         {
             "name": "dev-coverage",
-            "binaryDir": "${sourceDir}/build",
             "inherits": [
                 "dev-linux",
                 "coverage-linux",
@@ -60,7 +56,6 @@
         },
         {
             "name": "dev-sanitize",
-            "binaryDir": "${sourceDir}/build",
             "inherits": [
                 "dev-linux",
                 "sanitize-unix",
