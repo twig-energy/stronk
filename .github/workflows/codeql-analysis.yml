@@ -44,7 +44,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -58,7 +58,7 @@ jobs:
         uses: friendlyanon/setup-vcpkg@v1
         with:
             committish: "${{ env.VCPKG_COMMIT }}"
-            cache-key: "vcpkg-codeql-<hash>"
+            cache-version: "vcpkg-codeql"
 
       - uses: ./.github/actions/install-gcc
         with:
@@ -71,4 +71,4 @@ jobs:
           cmake --install build --prefix bin
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
