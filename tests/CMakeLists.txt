@@ -52,7 +52,10 @@ target_compile_features(stronk_test PRIVATE cxx_std_20)
 target_compile_options(
     stronk_test
     PRIVATE # right now we don't know how to conversions inside units nicely
-            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-implicit-int-float-conversion -Wno-sign-conversion>
+            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+            -Wno-implicit-int-float-conversion
+            -Wno-sign-conversion
+            -Wno-implicit-int-conversion>
 )
 
 add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_output=xml:")
