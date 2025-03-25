@@ -86,14 +86,14 @@ static_assert(Mass::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(std::is_same_v<Mass::dimensions_t::first_t::unit_t, Mass>);
-static_assert(std::is_same_v<multiply_t<Distance, Time>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 1>>>>);
-static_assert(std::is_same_v<multiply_t<multiply_t<Distance, Time>, Distance>, new_stronk_unit<create_dimensions_t<dimension<Distance, 2>, dimension<Time, 1>>>>);
-static_assert(std::is_same_v<divide_t<multiply_t<Distance, Time>, Distance>, Time>);
-static_assert(std::is_same_v<divide_t<example_1, example_1>, identity_unit>);
-static_assert(std::is_same_v<multiply_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 4>, dimension<Time, 2>, dimension<Mass, -2>>>>);
-static_assert(std::is_same_v<multiply_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
-static_assert(std::is_same_v<multiply_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
-static_assert(std::is_same_v<divide_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 2>, dimension<Mass, -2>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<Distance, Time>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 1>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<multiplied_unit_t<Distance, Time>, Distance>, new_stronk_unit<create_dimensions_t<dimension<Distance, 2>, dimension<Time, 1>>>>);
+static_assert(std::is_same_v<divided_unit_t<multiplied_unit_t<Distance, Time>, Distance>, Time>);
+static_assert(std::is_same_v<divided_unit_t<example_1, example_1>, identity_unit>);
+static_assert(std::is_same_v<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 4>, dimension<Time, 2>, dimension<Mass, -2>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
+static_assert(std::is_same_v<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 2>, dimension<Mass, -2>>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)  // NOLINT

@@ -141,16 +141,9 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
     using underlying_t = decltype(res);
 
-    // check that the type is setup correctly. It might have been specialized.
-    static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
-                  "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
-                  "See multiplied_dimensions<A,B>::skill");
     using value_t = typename resulting_unit::template value<underlying_t>;
     return value_t {res};
 }
-
-template<unit_like A, unit_like B>
-using multiply_t = decltype(value_of_unit_t<A, int>() * value_of_unit_t<B, int>())::unit_t;
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
@@ -207,15 +200,10 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
     using dimensions_t = divided_dimensions_t<typename A::unit_t, typename B::unit_t>;
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
     using underlying_t = decltype(res);
-    // check that the type is setup correctly. It might have been specialized.
-    static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
-                  "Seems to be a mismatch in units for your specialized type");
+
     using value_t = typename resulting_unit::template value<underlying_t>;
     return value_t {res};
 }
-
-template<unit_like A, unit_like B>
-using divide_t = decltype(value_of_unit_t<A, int>() / value_of_unit_t<B, int>())::unit_t;
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
