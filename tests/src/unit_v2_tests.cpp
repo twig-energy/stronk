@@ -13,41 +13,16 @@ namespace twig::unit_v2::unit_tests
 // Example code:
 
 // First we define our stronk types:
-struct meters : unit<meters>
+struct meters : unit<meters, can_equate_with_is_close>
 {
-    template<typename T>
-    struct value
-        : stronk<value<T>, T, can_equate_with_is_close>
-        , value_of_unit<meters>
-    {
-        using stronk_base_t = ::twig::stronk<value<T>, T, can_equate_with_is_close>;
-        using stronk_base_t::stronk_base_t;
-    };
 };
 
-struct seconds : unit<seconds>
+struct seconds : unit<seconds, can_equate>
 {
-    template<typename T>
-    struct value
-        : stronk<value<T>, T, can_equate>
-        , value_of_unit<seconds>
-    {
-        using stronk_base_t = ::twig::stronk<value<T>, T, can_equate>;
-        using stronk_base_t::stronk_base_t;
-    };
-    using unit_t = seconds;
 };
 
-struct kilogram : unit<kilogram>
+struct kilogram : unit<kilogram, can_equate>
 {
-    template<typename T>
-    struct value
-        : stronk<value<T>, T, unit, can_equate>
-        , value_of_unit<kilogram>
-    {
-        using stronk_base_t = stronk<value<T>, T, unit, can_equate>;
-        using stronk_base_t::stronk_base_t;
-    };
 };
 
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
@@ -206,6 +181,13 @@ TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basi
                 i <=> j);
         }
     }
+}
+
+TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
+{
+    auto m_int = make<meters>(1);
+    auto m_double = make<meters>(1.0);
+    static_assert(!std::same_as<decltype(m_int), decltype(m_double)>);
 }
 
 }  // namespace twig::unit_v2::unit_tests

@@ -30,16 +30,27 @@ struct identity_unit
     using value = UnderlyingT;
 };
 
-template<typename DimensionT>
-struct unit
-{
-    using dimensions_t = ::twig::create_dimensions_t<::twig::dimension<DimensionT, 1>>;
-};
-
 template<unit_like T>
 struct value_of_unit
 {
     using unit_t = T;
+};
+
+template<typename Tag, template<typename StronkT> typename... SkillTs>
+struct unit
+{
+    using dimensions_t = ::twig::create_dimensions_t<dimension<Tag, 1>>;
+
+    unit() = delete;  // Do not construct this type
+
+    template<typename UnderlyingT>
+    struct value
+        : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
+        , value_of_unit<unit>
+    {
+        using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
+        using base_t::base_t;
+    };
 };
 
 template<::twig::dimensions_like DimensionsT>
