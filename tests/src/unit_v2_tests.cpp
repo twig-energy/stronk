@@ -90,7 +90,7 @@ static_assert(std::is_same_v<multiply_t<example_2, example_1>, new_stronk_unit<c
 static_assert(std::is_same_v<divide_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 2>, dimension<Mass, -2>>>>);
 // clang-format on
 
-TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)  // NOLINT
+TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -103,7 +103,7 @@ TEST(stronk_units, when_multiplied_with_a_scalar_the_type_does_not_change_and_it
 }
 
 // NOLINTNEXTLINE
-TEST(stronk_units,
+TEST(stronk_units_v2,
      when_multiplied_with_own_type_the_value_in_the_resulting_type_behaves_as_if_it_the_values_were_multiplied)
 {
     for (auto i = -16; i < 16; i++) {
@@ -113,7 +113,7 @@ TEST(stronk_units,
     }
 }
 
-TEST(stronk_units, when_dividing_out_a_type_the_result_corrosponds_to_dividing_out_that_factor)  // NOLINT
+TEST(stronk_units_v2, when_dividing_out_a_type_the_result_corrosponds_to_dividing_out_that_factor)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -127,7 +127,7 @@ TEST(stronk_units, when_dividing_out_a_type_the_result_corrosponds_to_dividing_o
     }
 }
 
-TEST(stronk_units, one_over_unit_times_unit_is_one)  // NOLINT
+TEST(stronk_units_v2, one_over_unit_times_unit_is_one)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         if (i == 0) {
@@ -142,7 +142,7 @@ TEST(stronk_units, one_over_unit_times_unit_is_one)  // NOLINT
     }
 }
 
-TEST(stronk_units, when_dividing_a_unit_by_another_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
+TEST(stronk_units_v2, when_dividing_a_unit_by_another_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -155,7 +155,8 @@ TEST(stronk_units, when_dividing_a_unit_by_another_the_result_is_a_new_type_with
     }
 }
 
-TEST(stronk_units, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
+TEST(stronk_units_v2,
+     when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_type_with_the_divided_values)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -174,7 +175,7 @@ TEST(stronk_units, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new_ty
     }
 }
 
-TEST(stronk_units, generated_units_can_add_and_subtract_and_compare_like_basic_types)  // NOLINT
+TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basic_types)  // NOLINT
 {
     for (auto i = -16; i < 16; i++) {
         EXPECT_EQ(-Speed::value<double> {static_cast<double>(i)}, Speed::value<double> {static_cast<double>(-i)});

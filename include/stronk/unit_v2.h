@@ -94,30 +94,37 @@ struct unit_lookup
     using type = new_stronk_unit<DimensionsT>;
 };
 
-template<unit_like StronkT, typename UnderlyingT>
-auto choose_return_type(UnderlyingT res)
+template<>
+struct unit_lookup<::twig::create_dimensions_t<>>
 {
-    using dimensions_t = typename StronkT::dimensions_t;
-    if constexpr (dimensions_t::empty()) {
-        return identity_unit::value<UnderlyingT> {res};
-    } else if constexpr (dimensions_t::is_pure()) {
-        using pure_value_t = typename dimensions_t::first_t::unit_t::template value<UnderlyingT>;
-        return pure_value_t {res};
-    } else {
-        using unit_value_t = typename StronkT::template value<UnderlyingT>;
-        return unit_value_t {res};
-    }
-}
+    using type = identity_unit;
+};
+
+template<::twig::dimensions_like DimensionsT>
+    requires(DimensionsT::is_pure())
+struct unit_lookup<DimensionsT>
+{
+    using type = typename DimensionsT::first_t::unit_t;
+};
 
 // ==================
 // Multiply
 // ==================
 
-template<unit_value_like A, unit_value_like B>
-struct multiplied_dimensions
+template<typename A, typename B>
+struct multiplied_dimensions;
+
+template<unit_like A, unit_like B>
+struct multiplied_dimensions<A, B>
 {
-    // This is the result:
-    using dimensions_t = typename A::unit_t::dimensions_t::template multiply_t<typename B::unit_t::dimensions_t>;
+    // This is the resulting dimensions:
+    using dimensions_t = typename A::dimensions_t::template multiply_t<typename B::dimensions_t>;
+};
+
+template<unit_value_like A, unit_value_like B>
+struct multiplied_dimensions<A, B>
+{
+    using dimensions_t = typename multiplied_dimensions<typename A::unit_t, typename B::unit_t>::dimensions_t;
 };
 
 // You can specialize this struct if you want another underlying multiply operation
@@ -142,12 +149,14 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 
     using dimensions_t = typename multiplied_dimensions<A, B>::dimensions_t;
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
+    using underlying_t = decltype(res);
 
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
                   "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
                   "See multiplied_dimensions<A,B>::skill");
-    return choose_return_type<resulting_unit>(res);
+    using value_t = typename resulting_unit::template value<underlying_t>;
+    return value_t {res};
 }
 
 template<unit_like A, unit_like B>
@@ -179,11 +188,20 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 // Divide
 // ==================
 
-template<unit_value_like A, unit_value_like B>
-struct divided_dimensions
+template<typename A, typename B>
+struct divided_dimensions;
+
+template<unit_like A, unit_like B>
+struct divided_dimensions<A, B>
 {
-    // This is the result:
-    using dimensions_t = typename A::unit_t::dimensions_t::template divide_t<typename B::unit_t::dimensions_t>;
+    // This is the resulting dimensions:
+    using dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
+};
+
+template<unit_value_like A, unit_value_like B>
+struct divided_dimensions<A, B>
+{
+    using dimensions_t = typename divided_dimensions<typename A::unit_t, typename B::unit_t>::dimensions_t;
 };
 
 // You can specialize this struct if you want another underlying divide operation
@@ -208,23 +226,24 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 
     using dimensions_t = typename divided_dimensions<A, B>::dimensions_t;
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
+    using underlying_t = decltype(res);
     // check that the type is setup correctly. It might have been specialized.
     static_assert(std::is_same_v<dimensions_t, typename resulting_unit::dimensions_t>,
-                  "Seems to be a mismatch in units for your specialized type. Maybe you added the wrong skill. "
-                  "See divided_dimensions<A,B>::skill");
-    return choose_return_type<resulting_unit>(res);
+                  "Seems to be a mismatch in units for your specialized type");
+    using value_t = typename resulting_unit::template value<underlying_t>;
+    return value_t {res};
 }
 
 template<unit_like A, unit_like B>
 using divide_t = decltype(value_of_unit_t<A, int>() / value_of_unit_t<B, int>())::unit_t;
 
 template<typename T, unit_value_like B>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
     auto res = a / b.template unwrap<B>();
     using new_dimensions = typename B::unit_t::dimensions_t::negate_t;
-    using underlying_type = decltype(a / b.template unwrap<B>());
+    using underlying_type = decltype(res);
     using new_unit = typename unit_lookup<new_dimensions>::type;
     using new_unit_value = new_unit::template value<underlying_type>;
     return new_unit_value {res};
