@@ -111,21 +111,8 @@ struct unit_lookup<DimensionsT>
 // Multiply
 // ==================
 
-template<typename A, typename B>
-struct multiplied_dimensions;
-
 template<unit_like A, unit_like B>
-struct multiplied_dimensions<A, B>
-{
-    // This is the resulting dimensions:
-    using dimensions_t = typename A::dimensions_t::template multiply_t<typename B::dimensions_t>;
-};
-
-template<unit_value_like A, unit_value_like B>
-struct multiplied_dimensions<A, B>
-{
-    using dimensions_t = typename multiplied_dimensions<typename A::unit_t, typename B::unit_t>::dimensions_t;
-};
+using multiplied_dimensions_t = typename A::dimensions_t::template multiply_t<typename B::dimensions_t>;
 
 // You can specialize this struct if you want another underlying multiply operation
 template<::twig::stronk_like T1, ::twig::stronk_like T2>
@@ -147,7 +134,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using dimensions_t = typename multiplied_dimensions<A, B>::dimensions_t;
+    using dimensions_t = multiplied_dimensions_t<typename A::unit_t, typename B::unit_t>;
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
     using underlying_t = decltype(res);
 
@@ -188,21 +175,8 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 // Divide
 // ==================
 
-template<typename A, typename B>
-struct divided_dimensions;
-
 template<unit_like A, unit_like B>
-struct divided_dimensions<A, B>
-{
-    // This is the resulting dimensions:
-    using dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
-};
-
-template<unit_value_like A, unit_value_like B>
-struct divided_dimensions<A, B>
-{
-    using dimensions_t = typename divided_dimensions<typename A::unit_t, typename B::unit_t>::dimensions_t;
-};
+using divided_dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
 
 // You can specialize this struct if you want another underlying divide operation
 template<::twig::stronk_like T1, ::twig::stronk_like T2>
@@ -224,7 +198,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using dimensions_t = typename divided_dimensions<A, B>::dimensions_t;
+    using dimensions_t = divided_dimensions_t<typename A::unit_t, typename B::unit_t>;
     using resulting_unit = typename unit_lookup<dimensions_t>::type;
     using underlying_t = decltype(res);
     // check that the type is setup correctly. It might have been specialized.
