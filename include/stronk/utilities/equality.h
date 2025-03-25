@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <concepts>
 
 #include <stronk/utilities/constexpr_helpers.h>
 
@@ -55,5 +56,18 @@ constexpr auto is_close(const T& a, const T& b, T abs_tol, T rel_tol, bool nan_e
 {
     return is_close(abs_tol, rel_tol, nan_equals)(a, b);
 };
+
+template<typename CloseParamsT, typename StronkT>
+constexpr auto almost_equals(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+{
+    static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
+    using type = typename StronkT::underlying_type;
+    auto inner_val_1 = lhs.template unwrap<StronkT>();
+    auto inner_val_2 = rhs.template unwrap<StronkT>();
+
+    constexpr auto abs_tol = CloseParamsT::template abs_tol<type>();
+    constexpr auto rel_tol = CloseParamsT::template rel_tol<type>();
+    return twig::stronk_details::is_close(abs_tol, rel_tol, CloseParamsT::nan_equals)(inner_val_1, inner_val_2);
+}
 
 }  // namespace twig::stronk_details

@@ -28,12 +28,6 @@ struct identity_unit
     using value = UnderlyingT;
 };
 
-template<unit_like T>
-struct value_of_unit
-{
-    using unit_t = T;
-};
-
 template<typename Tag, template<typename StronkT> typename... SkillTs>
 struct unit
 {
@@ -42,12 +36,18 @@ struct unit
     unit() = delete;  // Do not construct this type
 
     template<typename UnderlyingT>
-    struct value
-        : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
-        , value_of_unit<unit>
+    struct value : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
     {
+        using unit_t = Tag;
         using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
+
+        // can convert to same unit with different underlying type
+        template<typename T>
+        constexpr explicit operator value<T>() const
+        {
+            return value<T> {static_cast<T>(this->val())};
+        }
     };
 };
 
@@ -65,16 +65,17 @@ struct new_stronk_unit
                          ::twig::can_add,
                          ::twig::can_subtract,
                          ::twig::can_negate,
-                         ::twig::default_can_equate_builder<UnderlyingT>::template skill>
-        , value_of_unit<new_stronk_unit>
+                         ::twig::can_equate_underlying_type_specific>
     {
+        using unit_t = new_stronk_unit;
+
         using stronk_base_t = ::twig::stronk<value<UnderlyingT>,
                                              UnderlyingT,
                                              ::twig::can_order,
                                              ::twig::can_add,
                                              ::twig::can_subtract,
                                              ::twig::can_negate,
-                                             ::twig::default_can_equate_builder<UnderlyingT>::template skill>;
+                                             ::twig::can_equate_underlying_type_specific>;
         using stronk_base_t::stronk_base_t;
     };
 };

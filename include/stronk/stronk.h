@@ -258,14 +258,7 @@ struct can_equate_with_is_close_base
 {
     constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
     {
-        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
-        using type = typename StronkT::underlying_type;
-        auto inner_val_1 = lhs.template unwrap<StronkT>();
-        auto inner_val_2 = rhs.template unwrap<StronkT>();
-
-        constexpr auto abs_tol = CloseParamsT::template abs_tol<type>();
-        constexpr auto rel_tol = CloseParamsT::template rel_tol<type>();
-        return twig::stronk_details::is_close(abs_tol, rel_tol, CloseParamsT::nan_equals)(inner_val_1, inner_val_2);
+        return twig::stronk_details::almost_equals<CloseParamsT>(lhs, rhs);
     }
 };
 
@@ -295,6 +288,19 @@ struct default_can_equate_builder<T>
     struct skill : can_equate_with_is_close_abs_tol_only<StronkT>
     {
     };
+};
+
+template<typename StronkT>
+struct can_equate_underlying_type_specific
+{
+    constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    {
+        if constexpr (std::is_floating_point_v<typename StronkT::underlying_type>) {
+            return twig::stronk_details::almost_equals<is_close_using_abs_tol_only_params>(lhs, rhs);
+        } else {
+            return lhs.template unwrap<StronkT>() == rhs.template unwrap<StronkT>();
+        }
+    }
 };
 
 template<typename StronkT>

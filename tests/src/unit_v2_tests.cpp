@@ -1,6 +1,5 @@
 #include <concepts>
 #include <cstdint>
-#include <type_traits>
 
 #include <gtest/gtest.h>
 #include <stronk/stronk.h>
@@ -13,7 +12,7 @@ namespace twig::unit_v2::unit_tests
 // Example code:
 
 // First we define our stronk types:
-struct meters : unit<meters, can_equate_with_is_close>
+struct meters : unit<meters, can_equate_underlying_type_specific, can_add>
 {
 };
 
@@ -61,15 +60,15 @@ using example_2 = new_stronk_unit<create_dimensions_t<dimension<kilogram, 1>, di
 static_assert(kilogram::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
-static_assert(std::is_same_v<kilogram::dimensions_t::first_t::unit_t, kilogram>);
-static_assert(std::is_same_v<multiplied_unit_t<meters, seconds>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>>>);
-static_assert(std::is_same_v<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
-static_assert(std::is_same_v<divided_unit_t<example_1, example_1>, identity_unit>);
-static_assert(std::is_same_v<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
-static_assert(std::is_same_v<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::same_as<kilogram::dimensions_t::first_t::unit_t, kilogram>);
+static_assert(std::same_as<multiplied_unit_t<meters, seconds>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>>>);
+static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>>>);
+static_assert(std::same_as<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
+static_assert(std::same_as<divided_unit_t<example_1, example_1>, identity_unit>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::same_as<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
@@ -131,11 +130,8 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_another_the_result_is_a_new_type_w
             if (j == 0) {
                 continue;
             }
-            using meters_per_second_double = unit_value_t<meters_per_second, double>;
-            using meters_double = unit_value_t<meters, double>;
-            using seconds_double = unit_value_t<seconds, double>;
-            EXPECT_EQ(meters_per_second_double(static_cast<double>(i) / j),
-                      meters_double(static_cast<double>(i)) / seconds_double {j});
+            EXPECT_EQ(make<meters_per_second>(static_cast<double>(i) / j),
+                      make<meters>(static_cast<double>(i)) / make<seconds>(j));
         }
     }
 }
@@ -185,9 +181,14 @@ TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basi
 
 TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
 {
-    auto m_int = make<meters>(1);
+    auto m_int = make<meters>(1) + make<meters>(1);
     auto m_double = make<meters>(1.0);
     static_assert(!std::same_as<decltype(m_int), decltype(m_double)>);
+    auto m_int_converted = static_cast<meters::value<int>>(m_double);
+    static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
+    auto equal = m_int == m_int_converted;
+
+    EXPECT_TRUE(equal);
 }
 
 }  // namespace twig::unit_v2::unit_tests
