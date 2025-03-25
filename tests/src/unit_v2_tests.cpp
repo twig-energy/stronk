@@ -13,37 +13,37 @@ namespace twig::unit_v2::unit_tests
 // Example code:
 
 // First we define our stronk types:
-struct Distance : unit<Distance>
+struct meters : unit<meters>
 {
     template<typename T>
     struct value
         : stronk<value<T>, T, can_equate_with_is_close>
-        , value_of_unit<Distance>
+        , value_of_unit<meters>
     {
         using stronk_base_t = ::twig::stronk<value<T>, T, can_equate_with_is_close>;
         using stronk_base_t::stronk_base_t;
     };
 };
 
-struct Time : unit<Time>
+struct seconds : unit<seconds>
 {
     template<typename T>
     struct value
         : stronk<value<T>, T, can_equate>
-        , value_of_unit<Time>
+        , value_of_unit<seconds>
     {
         using stronk_base_t = ::twig::stronk<value<T>, T, can_equate>;
         using stronk_base_t::stronk_base_t;
     };
-    using unit_t = Time;
+    using unit_t = seconds;
 };
 
-struct Mass : unit<Mass>
+struct kilogram : unit<kilogram>
 {
     template<typename T>
     struct value
         : stronk<value<T>, T, unit, can_equate>
-        , value_of_unit<Mass>
+        , value_of_unit<kilogram>
     {
         using stronk_base_t = stronk<value<T>, T, unit, can_equate>;
         using stronk_base_t::stronk_base_t;
@@ -52,10 +52,10 @@ struct Mass : unit<Mass>
 
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
 // nice.
-using Speed = divided_unit_t<Distance, Time>;
-using Acceleration = divided_unit_t<Speed, Time>;
-using TimeSquared = multiplied_unit_t<Time, Time>;
-using Force = multiplied_unit_t<Mass, Acceleration>;
+using meters_per_second = divided_unit_t<meters, seconds>;
+using acceleration_m_per_s2 = divided_unit_t<meters_per_second, seconds>;
+using seconds_sq = multiplied_unit_t<seconds, seconds>;
+using force = multiplied_unit_t<kilogram, acceleration_m_per_s2>;
 
 struct a_regular_type
 {
@@ -65,45 +65,45 @@ struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 };
 
 // Testing the concepts
-static_assert(unit_like<Mass>);
-static_assert(unit_like<Speed>);
-static_assert(unit_like<Acceleration>);
+static_assert(unit_like<kilogram>);
+static_assert(unit_like<meters_per_second>);
+static_assert(unit_like<acceleration_m_per_s2>);
 static_assert(!unit_like<a_regular_stronk_type>);
 static_assert(!unit_like<a_regular_type>);
-static_assert(!unit_like<unit_value_t<Speed, int32_t>>);
+static_assert(!unit_like<unit_value_t<meters_per_second, int32_t>>);
 
-static_assert(unit_value_like<unit_value_t<Mass, int32_t>>);
-static_assert(unit_value_like<unit_value_t<Speed, int32_t>>);
-static_assert(unit_value_like<unit_value_t<Acceleration, int32_t>>);
+static_assert(unit_value_like<unit_value_t<kilogram, int32_t>>);
+static_assert(unit_value_like<unit_value_t<meters_per_second, int32_t>>);
+static_assert(unit_value_like<unit_value_t<acceleration_m_per_s2, int32_t>>);
 static_assert(!unit_value_like<a_regular_stronk_type>);
 static_assert(!unit_value_like<a_regular_type>);
 
 // Testing the generated types
 
 // clang-format off
-using example_1 = new_stronk_unit<create_dimensions_t<dimension<Distance, 2>, dimension<Time, 1>, dimension<Mass, -1>>>;
-using example_2 = new_stronk_unit<create_dimensions_t<dimension<Mass, 1>, dimension<Distance, 1>, dimension<Time, -1>>>;
-static_assert(Mass::dimensions_t::is_pure());
+using example_1 = new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilogram, -1>>>;
+using example_2 = new_stronk_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -1>>>;
+static_assert(kilogram::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
-static_assert(std::is_same_v<Mass::dimensions_t::first_t::unit_t, Mass>);
-static_assert(std::is_same_v<multiplied_unit_t<Distance, Time>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 1>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<multiplied_unit_t<Distance, Time>, Distance>, new_stronk_unit<create_dimensions_t<dimension<Distance, 2>, dimension<Time, 1>>>>);
-static_assert(std::is_same_v<divided_unit_t<multiplied_unit_t<Distance, Time>, Distance>, Time>);
+static_assert(std::is_same_v<kilogram::dimensions_t::first_t::unit_t, kilogram>);
+static_assert(std::is_same_v<multiplied_unit_t<meters, seconds>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>>>);
+static_assert(std::is_same_v<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
 static_assert(std::is_same_v<divided_unit_t<example_1, example_1>, identity_unit>);
-static_assert(std::is_same_v<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 4>, dimension<Time, 2>, dimension<Mass, -2>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
-static_assert(std::is_same_v<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<Distance, 3>>>>);
-static_assert(std::is_same_v<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<Distance, 1>, dimension<Time, 2>, dimension<Mass, -2>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::is_same_v<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::is_same_v<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            using MassInt = unit_value_t<Mass, int>;
-            EXPECT_EQ(MassInt(i * j), MassInt(i) * j);
-            EXPECT_EQ(MassInt(i * j), j * MassInt(i));
+            using kg_int = unit_value_t<kilogram, int>;
+            EXPECT_EQ(kg_int(i * j), kg_int(i) * j);
+            EXPECT_EQ(kg_int(i * j), j * kg_int(i));
         }
     }
 }
@@ -114,9 +114,9 @@ TEST(stronk_units_v2,
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            using TimeSquaredInt = unit_value_t<TimeSquared, int>;
-            using TimeInt = unit_value_t<Time, int>;
-            EXPECT_EQ(TimeSquaredInt {i * j}, TimeInt {i} * TimeInt {j});
+            using seconds_sq_int = unit_value_t<seconds_sq, int>;
+            using seconds_int = unit_value_t<seconds, int>;
+            EXPECT_EQ(seconds_sq_int {i * j}, seconds_int {i} * seconds_int {j});
         }
     }
 }
@@ -125,13 +125,13 @@ TEST(stronk_units_v2, when_dividing_out_a_type_the_result_corrosponds_to_dividin
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            using TimeSquaredInt = unit_value_t<TimeSquared, int>;
-            using TimeInt = unit_value_t<Time, int>;
+            using seconds_sq_int = unit_value_t<seconds_sq, int>;
+            using seconds_int = unit_value_t<seconds, int>;
             if (j != 0) {
-                EXPECT_EQ(TimeInt {i}, TimeSquaredInt {i * j} / TimeInt {j});
+                EXPECT_EQ(seconds_int {i}, seconds_sq_int {i * j} / seconds_int {j});
             }
             if (i != 0) {
-                EXPECT_EQ(TimeInt {j}, TimeSquaredInt {i * j} / TimeInt {i});
+                EXPECT_EQ(seconds_int {j}, seconds_sq_int {i * j} / seconds_int {i});
             }
         }
     }
@@ -143,9 +143,9 @@ TEST(stronk_units_v2, one_over_unit_times_unit_is_one)
         if (i == 0) {
             continue;
         }
-        using DistanceDouble = unit_value_t<Distance, double>;
-        EXPECT_DOUBLE_EQ(1.0, (1.0 / DistanceDouble {static_cast<double>(i)}) * DistanceDouble(static_cast<double>(i)));
-        EXPECT_DOUBLE_EQ(2.0, (2.0 / DistanceDouble {static_cast<double>(i)}) * DistanceDouble(static_cast<double>(i)));
+        using meters_double = unit_value_t<meters, double>;
+        EXPECT_DOUBLE_EQ(1.0, (1.0 / meters_double {static_cast<double>(i)}) * meters_double(static_cast<double>(i)));
+        EXPECT_DOUBLE_EQ(2.0, (2.0 / meters_double {static_cast<double>(i)}) * meters_double(static_cast<double>(i)));
     }
 }
 
@@ -156,10 +156,11 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_another_the_result_is_a_new_type_w
             if (j == 0) {
                 continue;
             }
-            using SpeedDouble = unit_value_t<Speed, double>;
-            using DistanceDouble = unit_value_t<Distance, double>;
-            using TimeDouble = unit_value_t<Time, double>;
-            EXPECT_EQ(SpeedDouble(static_cast<double>(i) / j), DistanceDouble(static_cast<double>(i)) / TimeDouble {j});
+            using meters_per_second_double = unit_value_t<meters_per_second, double>;
+            using meters_double = unit_value_t<meters, double>;
+            using seconds_double = unit_value_t<seconds, double>;
+            EXPECT_EQ(meters_per_second_double(static_cast<double>(i) / j),
+                      meters_double(static_cast<double>(i)) / seconds_double {j});
         }
     }
 }
@@ -176,11 +177,12 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new
                     continue;
                 }
 
-                using AccelerationDouble = unit_value_t<Acceleration, double>;
-                using DistanceDouble = unit_value_t<Distance, double>;
-                unit_value_t<TimeSquared, int> time_squared = unit_value_t<Time, int> {j} * unit_value_t<Time, int> {k};
-                EXPECT_EQ(AccelerationDouble {static_cast<double>(i) / (j * k)},
-                          DistanceDouble(static_cast<double>(i)) / time_squared);
+                using acceleration_m_per_s2_double = unit_value_t<acceleration_m_per_s2, double>;
+                using meters_double = unit_value_t<meters, double>;
+                unit_value_t<seconds_sq, int> time_squared =
+                    unit_value_t<seconds, int> {j} * unit_value_t<seconds, int> {k};
+                EXPECT_EQ(acceleration_m_per_s2_double {static_cast<double>(i) / (j * k)},
+                          meters_double(static_cast<double>(i)) / time_squared);
             }
         }
     }
@@ -189,14 +191,19 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new
 TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basic_types)
 {
     for (auto i = -16; i < 16; i++) {
-        using SpeedDouble = unit_value_t<Speed, double>;
-        EXPECT_EQ(-SpeedDouble {static_cast<double>(i)}, SpeedDouble {static_cast<double>(-i)});
+        using meters_per_second_double = unit_value_t<meters_per_second, double>;
+        EXPECT_EQ(-meters_per_second_double {static_cast<double>(i)},
+                  meters_per_second_double {static_cast<double>(-i)});
         for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(SpeedDouble {static_cast<double>(i)} + SpeedDouble {static_cast<double>(j)},
-                      SpeedDouble {static_cast<double>(i + j)});
-            EXPECT_EQ(SpeedDouble {static_cast<double>(i)} - SpeedDouble {static_cast<double>(j)},
-                      SpeedDouble {static_cast<double>(i - j)});
-            EXPECT_EQ(SpeedDouble {static_cast<double>(i)} <=> SpeedDouble {static_cast<double>(j)}, i <=> j);
+            EXPECT_EQ(
+                meters_per_second_double {static_cast<double>(i)} + meters_per_second_double {static_cast<double>(j)},
+                meters_per_second_double {static_cast<double>(i + j)});
+            EXPECT_EQ(
+                meters_per_second_double {static_cast<double>(i)} - meters_per_second_double {static_cast<double>(j)},
+                meters_per_second_double {static_cast<double>(i - j)});
+            EXPECT_EQ(
+                meters_per_second_double {static_cast<double>(i)} <=> meters_per_second_double {static_cast<double>(j)},
+                i <=> j);
         }
     }
 }
