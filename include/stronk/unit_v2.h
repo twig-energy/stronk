@@ -12,16 +12,13 @@ namespace twig::unit_v2
 
 // Concepts
 template<typename T>
-concept has_dimensions = requires { typename T::dimensions_t; };  // TODO(anders.wind) rename unit_like
+concept unit_like = requires {
+    typename T::dimensions_t;
+    typename T::template value<int>;  // dont know how to express this without int
+};
 
 template<typename T>
-concept unit_like =
-    ::twig::stronk_like<T> && requires { typename T::unit_t; };  // TODO(anders.wind) rename unit_value_like
-
-template<typename T>
-concept identity_unit_like = unit_like<T> && requires {
-    requires T::unit_t::dimension_t::empty();
-};  // TODO(anders.wind) rename identity_unit_value_like
+concept unit_value_like = ::twig::stronk_like<T> && requires { typename T::unit_t; };
 
 // Implementations
 
@@ -30,17 +27,16 @@ struct identity_unit
     using dimensions_t = ::twig::create_dimensions_t<>;
 
     template<typename UnderlyingT>
-    struct Value
+    struct value
     {
-        UnderlyingT value;
+        UnderlyingT val;
 
         constexpr operator UnderlyingT() const  // NOLINT
         {
-            return value;
+            return val;
         }
 
-        constexpr auto operator==(const Value& other) const -> bool = default;
-        constexpr auto operator<=>(const Value& other) const = default;
+        constexpr auto operator<=>(const value& other) const = default;
 
         using unit_t = identity_unit;
     };
@@ -52,6 +48,12 @@ struct unit
     using dimensions_t = ::twig::create_dimensions_t<::twig::dimension<DimensionT, 1>>;
 };
 
+template<unit_like T>
+struct value_of_unit
+{
+    using unit_t = T;
+};
+
 template<::twig::dimensions_like DimensionsT>
 struct new_stronk_unit
 {
@@ -59,29 +61,29 @@ struct new_stronk_unit
 
     // You can specialize this type if you want to add other skills to your dynamic types.
     template<typename UnderlyingT>
-    struct Value
-        : ::twig::stronk<Value<UnderlyingT>,
+    struct value
+        : ::twig::stronk<value<UnderlyingT>,
                          UnderlyingT,
                          ::twig::can_order,
                          ::twig::can_add,
                          ::twig::can_subtract,
                          ::twig::can_negate,
                          ::twig::default_can_equate_builder<UnderlyingT>::template skill>
+        , value_of_unit<new_stronk_unit>
     {
-        using ::twig::stronk<Value<UnderlyingT>,
-                             UnderlyingT,
-                             ::twig::can_order,
-                             ::twig::can_add,
-                             ::twig::can_subtract,
-                             ::twig::can_negate,
-                             ::twig::default_can_equate_builder<UnderlyingT>::template skill>::stronk;
-
-        using unit_t = new_stronk_unit;
+        using stronk_base_t = ::twig::stronk<value<UnderlyingT>,
+                                             UnderlyingT,
+                                             ::twig::can_order,
+                                             ::twig::can_add,
+                                             ::twig::can_subtract,
+                                             ::twig::can_negate,
+                                             ::twig::default_can_equate_builder<UnderlyingT>::template skill>;
+        using stronk_base_t::stronk_base_t;
     };
 };
 
-template<has_dimensions UniT, typename UnderlyingT>
-using value_of_unit_t = typename UniT::template Value<UnderlyingT>;
+template<unit_like UniT, typename UnderlyingT>
+using value_of_unit_t = typename UniT::template value<UnderlyingT>;
 
 /**
  * @brief Lookup which specific type is the type for the given Dimensions.
@@ -92,18 +94,18 @@ struct unit_lookup
     using type = new_stronk_unit<DimensionsT>;
 };
 
-template<has_dimensions StronkT, typename UnderlyingT>
+template<unit_like StronkT, typename UnderlyingT>
 auto choose_return_type(UnderlyingT res)
 {
     using dimensions_t = typename StronkT::dimensions_t;
     if constexpr (dimensions_t::empty()) {
-        return identity_unit::Value<UnderlyingT> {res};
+        return identity_unit::value<UnderlyingT> {res};
     } else if constexpr (dimensions_t::is_pure()) {
-        using pure_t = typename dimensions_t::first_t::unit_t::template Value<UnderlyingT>;
-        return pure_t {res};
+        using pure_value_t = typename dimensions_t::first_t::unit_t::template value<UnderlyingT>;
+        return pure_value_t {res};
     } else {
-        using ValueT = typename StronkT::template Value<UnderlyingT>;
-        return ValueT {res};
+        using unit_value_t = typename StronkT::template value<UnderlyingT>;
+        return unit_value_t {res};
     }
 }
 
@@ -111,7 +113,7 @@ auto choose_return_type(UnderlyingT res)
 // Multiply
 // ==================
 
-template<unit_like A, unit_like B>
+template<unit_value_like A, unit_value_like B>
 struct multiplied_dimensions
 {
     // This is the result:
@@ -133,7 +135,7 @@ struct underlying_multiply_operation
     }
 };
 
-template<unit_like A, unit_like B>
+template<unit_value_like A, unit_value_like B>
 STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
@@ -148,24 +150,24 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
     return choose_return_type<resulting_unit>(res);
 }
 
-template<has_dimensions A, has_dimensions B>
+template<unit_like A, unit_like B>
 using multiply_t = decltype(value_of_unit_t<A, int>() * value_of_unit_t<B, int>())::unit_t;
 
-template<typename T, unit_like B>
+template<typename T, unit_value_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator*(const T& a, const B& b) noexcept -> B
 {
     return B {a * b.template unwrap<B>()};
 }
 
-template<unit_like A, typename T>
+template<unit_value_like A, typename T>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator*(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() * b};
 }
 
-template<unit_like A, typename T>
+template<unit_value_like A, typename T>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 {
@@ -177,7 +179,7 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 // Divide
 // ==================
 
-template<unit_like A, unit_like B>
+template<unit_value_like A, unit_value_like B>
 struct divided_dimensions
 {
     // This is the result:
@@ -199,7 +201,7 @@ struct underlying_divide_operation
     }
 };
 
-template<unit_like A, unit_like B>
+template<unit_value_like A, unit_value_like B>
 STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
@@ -213,10 +215,10 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
     return choose_return_type<resulting_unit>(res);
 }
 
-template<has_dimensions A, has_dimensions B>
+template<unit_like A, unit_like B>
 using divide_t = decltype(value_of_unit_t<A, int>() / value_of_unit_t<B, int>())::unit_t;
 
-template<typename T, unit_like B>
+template<typename T, unit_value_like B>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
@@ -224,18 +226,18 @@ constexpr auto operator/(const T& a, const B& b) noexcept
     using new_dimensions = typename B::unit_t::dimensions_t::negate_t;
     using underlying_type = decltype(a / b.template unwrap<B>());
     using new_unit = typename unit_lookup<new_dimensions>::type;
-    using new_unit_value = new_unit::template Value<underlying_type>;
+    using new_unit_value = new_unit::template value<underlying_type>;
     return new_unit_value {res};
 }
 
-template<unit_like A, typename T>
+template<unit_value_like A, typename T>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() / b};
 }
 
-template<unit_like A, typename T>
+template<unit_value_like A, typename T>
     requires(std::floating_point<T> || std::integral<T>)
 constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
