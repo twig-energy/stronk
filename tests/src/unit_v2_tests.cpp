@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include <gtest/gtest.h>
+#include <stronk/extensions/gtest.h>
 #include <stronk/stronk.h>
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
@@ -182,13 +183,13 @@ TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basi
 TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
 {
     auto m_int = make<meters>(1) + make<meters>(1);
-    auto m_double = make<meters>(1.0);
+    auto m_double = make<meters>(2.1);
     static_assert(!std::same_as<decltype(m_int), decltype(m_double)>);
+
     auto m_int_converted = static_cast<meters::value<int>>(m_double);
     static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
-    auto equal = m_int == m_int_converted;
 
-    EXPECT_TRUE(equal);
+    EXPECT_EQ(m_int, m_int_converted);
 }
 
 }  // namespace twig::unit_v2::unit_tests
