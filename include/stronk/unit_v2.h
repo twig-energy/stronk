@@ -153,21 +153,21 @@ template<unit_like A, unit_like B>
 using multiply_t = decltype(value_of_unit_t<A, int>() * value_of_unit_t<B, int>())::unit_t;
 
 template<typename T, unit_value_like B>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator*(const T& a, const B& b) noexcept -> B
 {
     return B {a * b.template unwrap<B>()};
 }
 
 template<unit_value_like A, typename T>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator*(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() * b};
 }
 
 template<unit_value_like A, typename T>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() *= b;
@@ -230,14 +230,14 @@ constexpr auto operator/(const T& a, const B& b) noexcept
 }
 
 template<unit_value_like A, typename T>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator/(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() / b};
 }
 
 template<unit_value_like A, typename T>
-    requires(std::floating_point<T> || std::integral<T>)
+    requires(!unit_value_like<T>)
 constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
