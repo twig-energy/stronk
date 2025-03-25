@@ -70,8 +70,8 @@ struct new_stronk_unit
     };
 };
 
-template<unit_like UniT, typename UnderlyingT>
-using value_of_unit_t = typename UniT::template value<UnderlyingT>;
+template<unit_like UnitT, typename UnderlyingT>
+using unit_value_t = typename UnitT::template value<UnderlyingT>;
 
 /**
  * @brief Lookup which specific type is the type for the given Dimensions.
@@ -218,6 +218,12 @@ constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
     return a;
+}
+
+template<unit_like UnitT, typename UnderlyingT>
+constexpr auto make(UnderlyingT&& value)
+{
+    return unit_value_t<UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
 }  // namespace twig::unit_v2
