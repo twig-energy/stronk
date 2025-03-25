@@ -14,7 +14,7 @@ namespace twig::unit_v2
 template<typename T>
 concept unit_like = requires {
     typename T::dimensions_t;
-    typename T::template value<int>;  // dont know how to express this without int
+    typename T::template value<void>;
 };
 
 template<typename T>
