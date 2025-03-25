@@ -24,6 +24,8 @@ struct Distance : unit<Distance>
         using stronk_base_t::stronk_base_t;
     };
 };
+template<typename T>
+using distance_t = Distance::template value<T>;
 
 struct Time : unit<Time>
 {
@@ -37,6 +39,8 @@ struct Time : unit<Time>
     };
     using unit_t = Time;
 };
+template<typename T>
+using time_t = Time::template value<T>;
 
 struct Mass : unit<Mass>
 {
@@ -49,6 +53,8 @@ struct Mass : unit<Mass>
         using stronk_base_t::stronk_base_t;
     };
 };
+template<typename T>
+using mass_t = Mass::template value<T>;
 
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
 // nice.
@@ -65,7 +71,7 @@ struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 };
 
 // Testing the concepts
-static_assert(unit_value_like<Mass::value<int32_t>>);
+static_assert(unit_value_like<mass_t<int32_t>>);
 static_assert(unit_value_like<Speed::value<int32_t>>);
 static_assert(unit_value_like<Acceleration::value<int32_t>>);
 static_assert(!unit_value_like<a_regular_stronk_type>);
@@ -94,10 +100,10 @@ TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(Mass::value<int> {i * j},
-                      Mass::value<int> {i} * j);  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
-            EXPECT_EQ(Mass::value<int> {i * j},
-                      j * Mass::value<int> {i});  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
+            EXPECT_EQ(mass_t<int> {i * j},
+                      mass_t<int> {i} * j);  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
+            EXPECT_EQ(mass_t<int> {i * j},
+                      j * mass_t<int> {i});  // NOLINT(bugprone-implicit-widening-of-multiplication-result)
         }
     }
 }
@@ -108,7 +114,7 @@ TEST(stronk_units_v2,
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(TimeSquared::value<int> {i * j}, Time::value<int> {i} * Time::value<int> {j});  // NOLINT
+            EXPECT_EQ(TimeSquared::value<int> {i * j}, time_t<int> {i} * time_t<int> {j});  // NOLINT
         }
     }
 }
@@ -118,10 +124,10 @@ TEST(stronk_units_v2, when_dividing_out_a_type_the_result_corrosponds_to_dividin
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
             if (j != 0) {
-                EXPECT_EQ(Time::value<int> {i}, TimeSquared::value<int> {i * j} / Time::value<int> {j});
+                EXPECT_EQ(time_t<int> {i}, TimeSquared::value<int> {i * j} / time_t<int> {j});
             }
             if (i != 0) {
-                EXPECT_EQ(Time::value<int> {j}, TimeSquared::value<int> {i * j} / Time::value<int> {i});
+                EXPECT_EQ(time_t<int> {j}, TimeSquared::value<int> {i * j} / time_t<int> {i});
             }
         }
     }
@@ -133,12 +139,10 @@ TEST(stronk_units_v2, one_over_unit_times_unit_is_one)  // NOLINT
         if (i == 0) {
             continue;
         }
-        EXPECT_DOUBLE_EQ(1.0,
-                         (1.0 / Distance::value<double> {static_cast<double>(i)})
-                             * Distance::value<double> {static_cast<double>(i)});
-        EXPECT_DOUBLE_EQ(2.0,
-                         (2.0 / Distance::value<double> {static_cast<double>(i)})
-                             * Distance::value<double> {static_cast<double>(i)});
+        EXPECT_DOUBLE_EQ(
+            1.0, (1.0 / distance_t<double> {static_cast<double>(i)}) * distance_t<double> {static_cast<double>(i)});
+        EXPECT_DOUBLE_EQ(
+            2.0, (2.0 / distance_t<double> {static_cast<double>(i)}) * distance_t<double> {static_cast<double>(i)});
     }
 }
 
@@ -150,7 +154,7 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_another_the_result_is_a_new_type_w
                 continue;
             }
             EXPECT_EQ(Speed::value<double> {static_cast<double>(i) / j},
-                      Distance::value<double> {static_cast<double>(i)} / Time::value<double> {j});
+                      distance_t<double> {static_cast<double>(i)} / time_t<double> {j});
         }
     }
 }
@@ -167,9 +171,9 @@ TEST(stronk_units_v2,
                 if (k == 0) {
                     continue;
                 }
-                TimeSquared::value<int> time_squared = Time::value<int> {j} * Time::value<int> {k};
+                TimeSquared::value<int> time_squared = time_t<int> {j} * time_t<int> {k};
                 EXPECT_EQ(Acceleration::value<double> {static_cast<double>(i) / (j * k)},
-                          Distance::value<double> {static_cast<double>(i)} / time_squared);
+                          distance_t<double> {static_cast<double>(i)} / time_squared);
             }
         }
     }
