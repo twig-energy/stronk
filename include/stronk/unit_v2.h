@@ -114,6 +114,9 @@ struct unit_lookup<DimensionsT>
 template<unit_like A, unit_like B>
 using multiplied_dimensions_t = typename A::dimensions_t::template multiply_t<typename B::dimensions_t>;
 
+template<unit_like A, unit_like B>
+using multiplied_unit_t = typename unit_lookup<multiplied_dimensions_t<A, B>>::type;
+
 // You can specialize this struct if you want another underlying multiply operation
 template<::twig::stronk_like T1, ::twig::stronk_like T2>
 struct underlying_multiply_operation
@@ -177,6 +180,9 @@ constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 
 template<unit_like A, unit_like B>
 using divided_dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
+
+template<unit_like A, unit_like B>
+using divided_unit_t = typename unit_lookup<divided_dimensions_t<A, B>>::type;
 
 // You can specialize this struct if you want another underlying divide operation
 template<::twig::stronk_like T1, ::twig::stronk_like T2>

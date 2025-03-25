@@ -52,10 +52,10 @@ struct Mass : unit<Mass>
 
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
 // nice.
-using Speed = decltype(Distance::value<double> {} / Time::value<double> {})::unit_t;
-using Acceleration = decltype(Speed::value<double> {} / Time::value<double> {})::unit_t;
-using TimeSquared = decltype(Time::value<double> {} * Time::value<double> {})::unit_t;
-using Force = decltype(Mass::value<double> {} * Acceleration::value<double> {})::unit_t;
+using Speed = divided_unit_t<Distance, Time>;
+using Acceleration = divided_unit_t<Speed, Time>;
+using TimeSquared = multiplied_unit_t<Time, Time>;
+using Force = multiplied_unit_t<Mass, Acceleration>;
 
 struct a_regular_type
 {
