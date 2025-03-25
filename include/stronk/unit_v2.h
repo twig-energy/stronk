@@ -27,19 +27,7 @@ struct identity_unit
     using dimensions_t = ::twig::create_dimensions_t<>;
 
     template<typename UnderlyingT>
-    struct value
-    {
-        UnderlyingT val;
-
-        constexpr operator UnderlyingT() const  // NOLINT
-        {
-            return val;
-        }
-
-        constexpr auto operator<=>(const value& other) const = default;
-
-        using unit_t = identity_unit;
-    };
+    using value = UnderlyingT;
 };
 
 template<typename DimensionT>
