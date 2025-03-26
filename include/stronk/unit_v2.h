@@ -236,4 +236,11 @@ constexpr auto make(UnderlyingT&& value)
     return unit_value_t<UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
+// TODO(anders.wind) move to prefab once we replace old style of units.
+template<typename Tag, template<typename> typename... Skills>
+struct stronk_default_unit
+    : unit<Tag, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>
+{
+};
+
 }  // namespace twig::unit_v2

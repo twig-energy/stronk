@@ -1,8 +1,9 @@
 #include <concepts>
 #include <cstdint>
 
+#include <fmt/format.h>
 #include <gtest/gtest.h>
-#include <stronk/extensions/gtest.h>
+#include <stronk/extensions/fmt.h>  // IWYU pragma: keep
 #include <stronk/stronk.h>
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
@@ -190,6 +191,22 @@ TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
     static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
 
     EXPECT_EQ(m_int, m_int_converted);
+}
+
+struct using_default_unit : stronk_default_unit<using_default_unit>
+{
+};
+
+TEST(stronk_units_v2, default_unit_can_do_all_the_usual_stuff)
+{
+    auto val = make<using_default_unit>(1);
+    EXPECT_EQ(make<using_default_unit>(2), val * 2);
+    EXPECT_EQ(make<using_default_unit>(2), val + val);
+    EXPECT_EQ(make<using_default_unit>(2), val * 3 - val);
+    EXPECT_EQ(make<using_default_unit>(2), -val * -2);
+    EXPECT_EQ("1", fmt::to_string(val));
+    EXPECT_LT(val, val * 2);
+    EXPECT_GT(val, -val);
 }
 
 }  // namespace twig::unit_v2::unit_tests
