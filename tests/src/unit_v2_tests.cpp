@@ -186,6 +186,7 @@ TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
     auto m_int = make<meters>(1) + make<meters>(1);
     auto m_double = make<meters>(2.1);
     static_assert(!std::same_as<decltype(m_int), decltype(m_double)>);
+    static_assert(std::same_as<decltype(m_int)::unit_t, decltype(m_double)::unit_t>);
 
     auto m_int_converted = static_cast<meters::value<int>>(m_double);
     static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
