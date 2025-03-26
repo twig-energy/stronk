@@ -35,6 +35,7 @@ add_executable(
     src/specializers_tests.cpp
     src/stronk_tests.cpp
     src/unit_tests.cpp
+    src/unit_v2_tests.cpp
     src/utilities/dimensions_tests.cpp
 )
 
