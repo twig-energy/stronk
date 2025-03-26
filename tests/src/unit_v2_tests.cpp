@@ -3,7 +3,9 @@
 
 #include <fmt/format.h>
 #include <gtest/gtest.h>
-#include <stronk/extensions/fmt.h>  // IWYU pragma: keep
+#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
+#    include <stronk/extensions/fmt.h>  // IWYU pragma: keep
+#endif
 #include <stronk/stronk.h>
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
@@ -26,7 +28,7 @@ struct kilogram : unit<kilogram, can_equate>
 {
 };
 
-// The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
+// The name of the generated type for `meters` over `seconds` is not really reader-friendly so making an alias can be
 // nice.
 using meters_per_second = divided_unit_t<meters, seconds>;
 using acceleration_m_per_s2 = divided_unit_t<meters_per_second, seconds>;
@@ -71,6 +73,7 @@ static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, new_stronk_u
 static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
 static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
 static_assert(std::same_as<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::same_as<force, new_stronk_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -2>>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
@@ -97,7 +100,7 @@ TEST(stronk_units_v2,
     }
 }
 
-TEST(stronk_units_v2, when_dividing_out_a_type_the_result_corrosponds_to_dividing_out_that_factor)
+TEST(stronk_units_v2, when_dividing_out_a_type_the_result_corresponds_to_dividing_out_that_factor)
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
@@ -205,7 +208,9 @@ TEST(stronk_units_v2, default_unit_can_do_all_the_usual_stuff)
     EXPECT_EQ(make<using_default_unit>(2), val + val);
     EXPECT_EQ(make<using_default_unit>(2), val * 3 - val);
     EXPECT_EQ(make<using_default_unit>(2), -val * -2);
+#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
     EXPECT_EQ("1", fmt::to_string(val));
+#endif
     EXPECT_LT(val, val * 2);
     EXPECT_GT(val, -val);
 }
