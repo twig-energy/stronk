@@ -116,7 +116,7 @@ template<unit_like A, unit_like B>
 using multiplied_unit_t = typename unit_lookup<multiplied_dimensions_t<A, B>>::type;
 
 // You can specialize this struct if you want another underlying multiply operation
-template<::twig::stronk_like T1, ::twig::stronk_like T2>
+template<unit_value_like T1, unit_value_like T2>
 struct underlying_multiply_operation
 {
     using res_type =
@@ -176,7 +176,7 @@ template<unit_like A, unit_like B>
 using divided_unit_t = typename unit_lookup<divided_dimensions_t<A, B>>::type;
 
 // You can specialize this struct if you want another underlying divide operation
-template<::twig::stronk_like T1, ::twig::stronk_like T2>
+template<unit_value_like T1, unit_value_like T2>
 struct underlying_divide_operation
 {
     using res_type =
