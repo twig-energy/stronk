@@ -232,13 +232,13 @@ struct D : unit<divided_dimensions_t<A, B>, can_equate>
 template<>
 struct unit_lookup<multiplied_dimensions_t<A, B>>
 {
-    using type = C;
+    using unit_t = C;
 };
 
 template<>
 struct unit_lookup<divided_dimensions_t<A, B>>
 {
-    using type = D;
+    using unit_t = D;
 };
 
 TEST(stronk_units_v2, can_override_units)
