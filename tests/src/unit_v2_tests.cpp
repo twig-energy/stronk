@@ -10,7 +10,7 @@
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
 
-namespace twig::unit_v2::unit_tests
+namespace twig::unit_v2
 {
 
 // Example code:
@@ -215,4 +215,56 @@ TEST(stronk_units_v2, default_unit_can_do_all_the_usual_stuff)
     EXPECT_GT(val, -val);
 }
 
-}  // namespace twig::unit_v2::unit_tests
+struct A : unit<A, can_equate>
+{
+};
+struct B : unit<B, can_equate>
+{
+};
+struct C : unit<multiplied_dimensions_t<A, B>, can_equate>
+{
+};
+
+struct D : unit<divided_dimensions_t<A, B>, can_equate>
+{
+};
+
+template<>
+struct unit_lookup<multiplied_dimensions_t<A, B>>
+{
+    using type = C;
+};
+
+template<>
+struct unit_lookup<divided_dimensions_t<A, B>>
+{
+    using type = D;
+};
+
+TEST(stronk_units_v2, can_override_units)
+{
+    auto a = make<A, int>(4);
+    auto b = make<B, int>(2);
+    auto c = a * b;
+
+    static_assert(std::same_as<decltype(c), C::value<int>>);
+    auto expected_c = make<C, int>(8);
+    EXPECT_EQ(c, expected_c);
+
+    auto back_to_a = c / b;
+    EXPECT_EQ(back_to_a, a);
+    auto back_to_b = c / a;
+    EXPECT_EQ(back_to_b, b);
+
+    auto d = a / b;
+    static_assert(std::same_as<decltype(d), D::value<int>>);
+    auto expected_d = make<D, int>(2);
+    EXPECT_EQ(d, expected_d);
+
+    back_to_a = d * b;
+    EXPECT_EQ(back_to_a, a);
+    back_to_b = a / d;
+    EXPECT_EQ(back_to_b, b);
+}
+
+}  // namespace twig::unit_v2

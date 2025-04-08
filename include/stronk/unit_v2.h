@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 #include <utility>
 
 #include <stronk/stronk.h>
@@ -31,14 +32,14 @@ struct identity_unit
 template<typename Tag, template<typename StronkT> typename... SkillTs>
 struct unit
 {
-    using dimensions_t = ::twig::create_dimensions_t<dimension<Tag, 1>>;
+    using dimensions_t = std::conditional_t<dimensions_like<Tag>, Tag, twig::create_dimensions_t<dimension<Tag, 1>>>;
 
     unit() = delete;  // Do not construct this type
 
     template<typename UnderlyingT>
     struct value : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
     {
-        using unit_t = Tag;
+        using unit_t = unit;
         using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
 
