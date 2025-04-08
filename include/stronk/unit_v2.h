@@ -53,7 +53,6 @@ struct unit
     };
 };
 
-// TODO(anders.wind) move to prefab once we replace old style of units.
 template<typename Tag, template<typename> typename... Skills>
 using stronk_default_unit =
     unit<Tag, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>;
