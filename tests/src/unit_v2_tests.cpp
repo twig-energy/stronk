@@ -59,21 +59,21 @@ static_assert(!unit_value_like<a_regular_type>);
 // Testing the generated types
 
 // clang-format off
-using example_1 = new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilogram, -1>>>;
-using example_2 = new_stronk_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -1>>>;
+using example_1 = stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilogram, -1>>>;
+using example_2 = stronk_default_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -1>>>;
 static_assert(kilogram::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(std::same_as<kilogram::dimensions_t::first_t::unit_t, kilogram>);
-static_assert(std::same_as<multiplied_unit_t<meters, seconds>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>>>);
-static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, new_stronk_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>>>);
+static_assert(std::same_as<multiplied_unit_t<meters, seconds>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>>>);
+static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>>>);
 static_assert(std::same_as<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
 static_assert(std::same_as<divided_unit_t<example_1, example_1>, identity_unit>);
-static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
-static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
-static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, new_stronk_unit<create_dimensions_t<dimension<meters, 3>>>>);
-static_assert(std::same_as<divided_unit_t<example_1, example_2>, new_stronk_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
-static_assert(std::same_as<force, new_stronk_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -2>>>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>>>);
+static_assert(std::same_as<divided_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>>>);
+static_assert(std::same_as<force, stronk_default_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -2>>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)

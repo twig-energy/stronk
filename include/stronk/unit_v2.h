@@ -29,6 +29,7 @@ struct identity_unit
     using value = UnderlyingT;
 };
 
+// Tag should either be the unit itself, or a dimensions_like type defining the dimensions of the unit.
 template<typename Tag, template<typename StronkT> typename... SkillTs>
 struct unit
 {
@@ -52,34 +53,10 @@ struct unit
     };
 };
 
-template<::twig::dimensions_like DimensionsT>
-struct new_stronk_unit
-{
-    using dimensions_t = DimensionsT;
-
-    // You can specialize this type if you want to add other skills to your dynamic types.
-    template<typename UnderlyingT>
-    struct value
-        : ::twig::stronk<value<UnderlyingT>,
-                         UnderlyingT,
-                         ::twig::can_order,
-                         ::twig::can_add,
-                         ::twig::can_subtract,
-                         ::twig::can_negate,
-                         ::twig::can_equate_underlying_type_specific>
-    {
-        using unit_t = new_stronk_unit;
-
-        using stronk_base_t = ::twig::stronk<value<UnderlyingT>,
-                                             UnderlyingT,
-                                             ::twig::can_order,
-                                             ::twig::can_add,
-                                             ::twig::can_subtract,
-                                             ::twig::can_negate,
-                                             ::twig::can_equate_underlying_type_specific>;
-        using stronk_base_t::stronk_base_t;
-    };
-};
+// TODO(anders.wind) move to prefab once we replace old style of units.
+template<typename Tag, template<typename> typename... Skills>
+using stronk_default_unit =
+    unit<Tag, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>;
 
 template<unit_like UnitT, typename UnderlyingT>
 using unit_value_t = typename UnitT::template value<UnderlyingT>;
@@ -90,7 +67,7 @@ using unit_value_t = typename UnitT::template value<UnderlyingT>;
 template<::twig::dimensions_like DimensionsT>
 struct unit_lookup
 {
-    using type = new_stronk_unit<DimensionsT>;
+    using type = stronk_default_unit<DimensionsT>;
 };
 
 template<>
@@ -236,12 +213,5 @@ constexpr auto make(UnderlyingT&& value)
 {
     return unit_value_t<UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
-
-// TODO(anders.wind) move to prefab once we replace old style of units.
-template<typename Tag, template<typename> typename... Skills>
-struct stronk_default_unit
-    : unit<Tag, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>
-{
-};
 
 }  // namespace twig::unit_v2
