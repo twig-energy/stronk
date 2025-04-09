@@ -61,6 +61,28 @@ struct stronk : public Skills<Tag>...
         return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 
+    template<typename ExpectedT, typename ExpectedUnderlyingT>
+    [[nodiscard]]
+    constexpr auto unwrap_as() noexcept -> ExpectedUnderlyingT&
+    {
+        if constexpr (std::same_as<underlying_type, ExpectedUnderlyingT>) {
+            return this->unwrap<ExpectedT>();
+        } else {
+            return this->unwrap<ExpectedT>().template unwrap_as<underlying_type, ExpectedUnderlyingT>();
+        }
+    }
+
+    template<typename ExpectedT, typename ExpectedUnderlyingT>
+    [[nodiscard]]
+    constexpr auto unwrap_as() const noexcept -> const ExpectedUnderlyingT&
+    {
+        if constexpr (std::same_as<underlying_type, ExpectedUnderlyingT>) {
+            return this->unwrap<ExpectedT>();
+        } else {
+            return this->unwrap<ExpectedT>().template unwrap_as<underlying_type, ExpectedUnderlyingT>();
+        }
+    }
+
     constexpr friend void swap(stronk& a, stronk& b) noexcept
     {
         using std::swap;
@@ -85,6 +107,32 @@ concept stronk_like = requires(T v) {
     {
         v.template unwrap<T>()
     } -> std::convertible_to<typename T::underlying_type>;
+};
+
+template<typename StronkT>
+struct can_be_underlying_type
+{
+    template<typename T>
+    constexpr auto as() const -> const T&
+    {
+        auto& self = static_cast<const StronkT&>(*this);
+        if constexpr (std::same_as<T, typename StronkT::underlying_type>) {
+            return self.template unwrap<StronkT>();
+        } else {
+            return self.template as<T>();
+        }
+    }
+
+    template<typename T>
+    constexpr auto as() -> T&
+    {
+        auto& self = static_cast<StronkT&>(*this);
+        if constexpr (std::same_as<T, typename StronkT::underlying_type>) {
+            return self.template unwrap<StronkT>();
+        } else {
+            return self.template as<T>();
+        }
+    }
 };
 
 template<typename StronkT>
@@ -143,6 +191,30 @@ struct can_multiply
     }
 };
 
+template<typename T>
+struct can_multiply_with
+{
+    template<typename StronkT>
+    struct skill
+    {
+        constexpr friend auto operator*=(StronkT& lhs, const T& rhs) noexcept -> StronkT
+        {
+            lhs.template unwrap<StronkT>() *= rhs;
+            return lhs;
+        }
+
+        constexpr friend auto operator*(const StronkT& lhs, const T& rhs) noexcept -> StronkT
+        {
+            return StronkT {lhs.template unwrap<StronkT>() * rhs};
+        }
+
+        constexpr friend auto operator*(const T& lhs, const StronkT& rhs) noexcept -> StronkT
+        {
+            return StronkT {lhs * rhs.template unwrap<StronkT>()};
+        }
+    };
+};
+
 template<typename StronkT>
 struct can_divide
 {
@@ -158,6 +230,25 @@ struct can_divide
     {
         return StronkT {lhs.template unwrap<StronkT>() / rhs.template unwrap<StronkT>()};
     }
+};
+
+template<typename T>
+struct can_divide_with
+{
+    template<typename StronkT>
+    struct skill
+    {
+        constexpr friend auto operator/=(StronkT& lhs, const T& rhs) noexcept -> StronkT
+        {
+            lhs.template unwrap<StronkT>() /= rhs;
+            return lhs;
+        }
+
+        constexpr friend auto operator/(const StronkT& lhs, const T& rhs) noexcept -> StronkT
+        {
+            return StronkT {lhs.template unwrap<StronkT>() / rhs};
+        }
+    };
 };
 
 // The skills can_divide and can_multiply are different from the unit system -
@@ -501,6 +592,18 @@ struct can_index : can_const_index<StronkT>
     constexpr auto at(const auto& indexer) -> auto&
     {
         return static_cast<StronkT&>(*this).template unwrap<StronkT>().at(indexer);
+    }
+};
+
+template<typename StronkT>
+struct transform_skill
+{
+    // unwraps the type and returns a new StronkT with the result of the function
+    template<typename FunctorT>
+    [[nodiscard]]
+    constexpr auto transform(const FunctorT& transformer) -> StronkT
+    {
+        return StronkT {transformer(static_cast<const StronkT&>(*this).template unwrap<StronkT>())};
     }
 };
 

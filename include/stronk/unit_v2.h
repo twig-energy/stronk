@@ -21,14 +21,6 @@ concept unit_value_like = ::twig::stronk_like<T> && requires { typename T::unit_
 
 // Implementations
 
-struct identity_unit
-{
-    using dimensions_t = ::twig::create_dimensions_t<>;
-
-    template<typename UnderlyingT>
-    using value = UnderlyingT;
-};
-
 // Tag should either be the unit itself, or a dimensions_like type defining the dimensions of the unit.
 template<typename Tag, template<typename StronkT> typename... SkillTs>
 struct unit
@@ -53,9 +45,27 @@ struct unit
     };
 };
 
+template<>
+struct unit<::twig::create_dimensions_t<>>
+{
+    using dimensions_t = ::twig::create_dimensions_t<>;
+
+    unit() = delete;  // Do not construct this type
+
+    template<typename UnderlyingT>
+    using value = UnderlyingT;
+};
+using identity_unit = unit<::twig::create_dimensions_t<>>;
+
 template<typename Tag, template<typename> typename... Skills>
-using stronk_default_unit =
-    unit<Tag, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>;
+using stronk_default_unit = unit<Tag,
+                                 can_add,
+                                 can_subtract,
+                                 can_negate,
+                                 can_order,
+                                 can_equate_underlying_type_specific,
+                                 transform_skill,
+                                 Skills...>;
 
 template<unit_like UnitT, typename UnderlyingT>
 using unit_value_t = typename UnitT::template value<UnderlyingT>;

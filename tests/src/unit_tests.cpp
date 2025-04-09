@@ -73,7 +73,7 @@ struct an_identity_unit_type : stronk<an_identity_unit_type, int32_t, identity_u
 TEST(stronk_units, example)  // NOLINT
 {
     Time two_hours = make<Hours>(2);
-    EXPECT_EQ(two_hours.unwrap_as<Minutes>(), 120);
+    EXPECT_EQ(two_hours.unwrap_as_ratio<Minutes>(), 120);
 
     Distance ten_km = make<Kilometers>(10.);
     Time forty_minutes = make<Minutes>(40);
@@ -93,7 +93,7 @@ TEST(stronk_units, identity_unit)
     Distance thirty_km = make<Meters>(30.) * 1000;
     Distance sixty_km = thirty_km * an_identity_unit_type {2};
     Distance twenty_km = sixty_km / an_identity_unit_type {3};
-    EXPECT_EQ(twenty_km.unwrap_as<Kilometers>(), 20);
+    EXPECT_EQ(twenty_km.unwrap_as_ratio<Kilometers>(), 20);
 }
 
 // Testing the concepts
