@@ -14,6 +14,7 @@ struct stronk_default_unit
              can_subtract,
              can_negate,
              can_order,
+             transform_skill,
              default_can_equate_builder<T>::template skill,
              Skills...>
 {
@@ -24,6 +25,7 @@ struct stronk_default_unit
                  can_subtract,
                  can_negate,
                  can_order,
+                 transform_skill,
                  default_can_equate_builder<T>::template skill,
                  Skills...>::stronk;
 };

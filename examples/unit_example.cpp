@@ -58,7 +58,7 @@ using Force = decltype(Mass {} * Acceleration {});
 void example()
 {
     Time two_hours = make<Hours>(2);
-    std::cout << two_hours.unwrap_as<Minutes>() << " should be " << 120 << std::endl;
+    std::cout << two_hours.unwrap_as_ratio<Minutes>() << " should be " << 120 << std::endl;
 
     Distance ten_km = make<Kilometers>(10.);
     Time forty_minutes = make<Minutes>(40);
