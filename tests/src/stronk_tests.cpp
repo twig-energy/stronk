@@ -35,6 +35,13 @@ TEST(unwrap, when_unwrapping_it_works_with_its_own_argument)
     EXPECT_EQ(b.unwrap<a_float_test_type>(), 42.1F);
 }
 
+TEST(transform, transform_gets_called_on_the_underlying_type_and_returns_a_new_copy)
+{
+    auto val = an_int_test_type {2};
+    val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
+    EXPECT_EQ(val, has_transform_skill_type {42});
+}
+
 template<an_int_test_type Val>
 struct type_which_requires_stronk_none_type_template_param
 {
@@ -692,18 +699,6 @@ TEST(is_a, is_a_works_at_multiple_levels)
     func(second_level.unwrap_as<wrapping_is_a_type, type_which_is_an_underlying_type>()
              .unwrap_as<type_which_is_an_underlying_type, int>());
 };
-
-struct has_transform_skill_type : stronk<has_transform_skill_type, int, can_equate, transform_skill>
-{
-    using stronk::stronk;
-};
-
-TEST(transform_skill, can_transform)
-{
-    auto val = has_transform_skill_type {2};
-    val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
-    EXPECT_EQ(val, has_transform_skill_type {42});
-}
 
 struct a_can_multiply_with_int_and_double_type
     : stronk<a_can_multiply_with_int_and_double_type,

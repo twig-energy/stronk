@@ -61,6 +61,8 @@ struct stronk : public Skills<Tag>...
         return this->_you_should_not_be_using_this_but_rather_unwrap;
     }
 
+    // useful for recursively getting an underlying type - in case of stronk types of stronk types, or to ensure that
+    // the underlying type is what you expect.
     template<typename ExpectedT, typename ExpectedUnderlyingT>
     [[nodiscard]]
     constexpr auto unwrap_as() noexcept -> ExpectedUnderlyingT&
@@ -72,6 +74,8 @@ struct stronk : public Skills<Tag>...
         }
     }
 
+    // useful for recursively getting an underlying type - in case of stronk types of stronk types, or to ensure that
+    // the underlying type is what you expect.
     template<typename ExpectedT, typename ExpectedUnderlyingT>
     [[nodiscard]]
     constexpr auto unwrap_as() const noexcept -> const ExpectedUnderlyingT&
@@ -81,6 +85,15 @@ struct stronk : public Skills<Tag>...
         } else {
             return this->unwrap<ExpectedT>().template unwrap_as<underlying_type, ExpectedUnderlyingT>();
         }
+    }
+
+    // unwraps the type and returns a new StronkT with the result of the function
+    template<typename FunctorT>
+        requires(std::is_invocable_r_v<FunctorT, underlying_type, underlying_type>)
+    [[nodiscard]]
+    constexpr auto transform(const FunctorT& functor) -> stronk
+    {
+        return stronk {functor(this->val())};
     }
 
     constexpr friend void swap(stronk& a, stronk& b) noexcept
@@ -107,32 +120,6 @@ concept stronk_like = requires(T v) {
     {
         v.template unwrap<T>()
     } -> std::convertible_to<typename T::underlying_type>;
-};
-
-template<typename StronkT>
-struct can_be_underlying_type
-{
-    template<typename T>
-    constexpr auto as() const -> const T&
-    {
-        auto& self = static_cast<const StronkT&>(*this);
-        if constexpr (std::same_as<T, typename StronkT::underlying_type>) {
-            return self.template unwrap<StronkT>();
-        } else {
-            return self.template as<T>();
-        }
-    }
-
-    template<typename T>
-    constexpr auto as() -> T&
-    {
-        auto& self = static_cast<StronkT&>(*this);
-        if constexpr (std::same_as<T, typename StronkT::underlying_type>) {
-            return self.template unwrap<StronkT>();
-        } else {
-            return self.template as<T>();
-        }
-    }
 };
 
 template<typename StronkT>
@@ -598,13 +585,6 @@ struct can_index : can_const_index<StronkT>
 template<typename StronkT>
 struct transform_skill
 {
-    // unwraps the type and returns a new StronkT with the result of the function
-    template<typename FunctorT>
-    [[nodiscard]]
-    constexpr auto transform(const FunctorT& transformer) -> StronkT
-    {
-        return StronkT {transformer(static_cast<const StronkT&>(*this).template unwrap<StronkT>())};
-    }
 };
 
 }  // namespace twig
