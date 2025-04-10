@@ -108,5 +108,6 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "twig-energy",
         "projectKey": "twig-energy_stronk"
-    }
+    },
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }

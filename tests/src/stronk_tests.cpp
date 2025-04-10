@@ -39,7 +39,7 @@ TEST(transform, transform_gets_called_on_the_underlying_type_and_returns_a_new_c
 {
     auto val = an_int_test_type {2};
     val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
-    EXPECT_EQ(val, has_transform_skill_type {42});
+    EXPECT_EQ(val.unwrap<an_int_test_type>(), 42);
 }
 
 template<an_int_test_type Val>

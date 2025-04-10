@@ -89,11 +89,10 @@ struct stronk : public Skills<Tag>...
 
     // unwraps the type and returns a new StronkT with the result of the function
     template<typename FunctorT>
-        requires(std::is_invocable_r_v<FunctorT, underlying_type, underlying_type>)
     [[nodiscard]]
-    constexpr auto transform(const FunctorT& functor) -> stronk
+    constexpr auto transform(const FunctorT& functor) const -> Tag
     {
-        return stronk {functor(this->val())};
+        return Tag {functor(this->val())};
     }
 
     constexpr friend void swap(stronk& a, stronk& b) noexcept
