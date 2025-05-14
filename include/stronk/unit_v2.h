@@ -1,4 +1,5 @@
 #pragma once
+#include <ratio>
 #include <type_traits>
 #include <utility>
 
@@ -13,7 +14,7 @@ namespace twig::unit_v2
 template<typename T>
 concept unit_like = requires {
     typename T::dimensions_t;
-    typename T::template value<void>;
+    typename T::template value<std::ratio<1>, void>;
 };
 
 template<typename T>
@@ -29,18 +30,22 @@ struct unit
 
     unit() = delete;  // Do not construct this type
 
-    template<typename UnderlyingT>
-    struct value : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
+    template<typename ScaleT, typename UnderlyingT>
+    struct value : ::twig::stronk<value<ScaleT, UnderlyingT>, UnderlyingT, SkillTs...>
     {
         using unit_t = unit;
-        using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
+        using base_t = ::twig::stronk<value<ScaleT, UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
+        using scale_t = ScaleT;
 
-        // can convert to same unit with different underlying type
-        template<typename T>
-        constexpr explicit operator value<T>() const
+        // can convert to same unit with different underlying type, or different scale
+        template<typename NewScaleT, typename NewUnderlyingT>
+            requires(!std::same_as<NewUnderlyingT, UnderlyingT> || !std::same_as<ScaleT, NewScaleT>)
+        constexpr explicit operator value<NewScaleT, NewUnderlyingT>() const
         {
-            return value<T> {static_cast<T>(this->val())};
+            using converter = std::ratio_divide<ScaleT, NewScaleT>;
+            return value<NewScaleT, NewUnderlyingT> {static_cast<NewUnderlyingT>(this->val()) * converter::num
+                                                     / converter::den};
         }
     };
 };
@@ -52,7 +57,8 @@ struct unit<::twig::create_dimensions_t<>>
 
     unit() = delete;  // Do not construct this type
 
-    template<typename UnderlyingT>
+    template<typename ScaleT, typename UnderlyingT>
+        requires(std::same_as<ScaleT, std::ratio<1>>)  // identity does not expose scale so we require it to be 1
     using value = UnderlyingT;
 };
 using identity_unit = unit<::twig::create_dimensions_t<>>;
@@ -68,7 +74,10 @@ using stronk_default_unit = unit<Tag,
                                  Skills...>;
 
 template<unit_like UnitT, typename UnderlyingT>
-using unit_value_t = typename UnitT::template value<UnderlyingT>;
+using unit_value_t = typename UnitT::template value<std::ratio<1>, UnderlyingT>;
+
+template<typename ScaleT, unit_like UnitT, typename UnderlyingT>
+using unit_scaled_value_t = typename UnitT::template value<ScaleT, UnderlyingT>;
 
 /**
  * @brief Lookup which specific type is the type for the given Dimensions.
@@ -125,8 +134,9 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
     using dimensions_t = multiplied_dimensions_t<typename A::unit_t, typename B::unit_t>;
     using resulting_unit = typename unit_lookup<dimensions_t>::unit_t;
     using underlying_t = decltype(res);
+    using scale_t = std::ratio_multiply<typename A::scale_t, typename B::scale_t>;
 
-    using value_t = typename resulting_unit::template value<underlying_t>;
+    using value_t = typename resulting_unit::template value<scale_t, underlying_t>;
     return value_t {res};
 }
 
@@ -185,8 +195,9 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
     using dimensions_t = divided_dimensions_t<typename A::unit_t, typename B::unit_t>;
     using resulting_unit = typename unit_lookup<dimensions_t>::unit_t;
     using underlying_t = decltype(res);
+    using scale_t = std::ratio_divide<typename A::scale_t, typename B::scale_t>;
 
-    using value_t = typename resulting_unit::template value<underlying_t>;
+    using value_t = typename resulting_unit::template value<scale_t, underlying_t>;
     return value_t {res};
 }
 
@@ -195,11 +206,13 @@ template<typename T, unit_value_like B>
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
     auto res = a / b.template unwrap<B>();
-    using new_dimensions = typename B::unit_t::dimensions_t::negate_t;
-    using underlying_type = decltype(res);
-    using new_unit = typename unit_lookup<new_dimensions>::unit_t;
-    using new_unit_value = new_unit::template value<underlying_type>;
-    return new_unit_value {res};
+    using dimensions_t = typename B::unit_t::dimensions_t::negate_t;
+    using resulting_unit = typename unit_lookup<dimensions_t>::unit_t;
+    using underlying_t = decltype(res);
+    using scale_t = typename B::scale_t;
+
+    using value_t = resulting_unit::template value<scale_t, underlying_t>;
+    return value_t {res};
 }
 
 template<unit_value_like A, typename T>
@@ -221,6 +234,27 @@ template<unit_like UnitT, typename UnderlyingT>
 constexpr auto make(UnderlyingT&& value)
 {
     return unit_value_t<UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
+}
+
+template<typename ScaleT, unit_like UnitT, typename UnderlyingT>
+constexpr auto make(UnderlyingT&& value)
+{
+    static_assert(UnitT::dimensions_t::size() == 1,
+                  "this function semantically does not seem right with multiple units");
+
+    constexpr auto abs = [](auto val) constexpr { return val < 0 ? -val : val; };
+    constexpr auto constexpr_pow = [](auto val, auto rank) consteval
+    {
+        for (auto r = 1; r < rank; ++r) {
+            val *= val;
+        }
+        return val;
+    };
+    constexpr auto rank = abs(UnitT::dimensions_t::first_t::rank);
+    using raw_ratio = std::ratio<constexpr_pow(ScaleT::num, rank), constexpr_pow(ScaleT::den, rank)>;
+
+    return unit_scaled_value_t<std::ratio<raw_ratio::num, raw_ratio::den>, UnitT, UnderlyingT> {
+        std::forward<UnderlyingT>(value)};
 }
 
 }  // namespace twig::unit_v2

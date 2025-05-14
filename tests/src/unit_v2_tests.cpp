@@ -1,11 +1,14 @@
 #include <concepts>
 #include <cstdint>
+#include <functional>
+#include <ratio>
 
 #include <fmt/format.h>
 #include <gtest/gtest.h>
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 #    include <stronk/extensions/fmt.h>  // IWYU pragma: keep
 #endif
+#include <stronk/extensions/gtest.h>
 #include <stronk/stronk.h>
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
@@ -30,6 +33,8 @@ struct kilogram : unit<kilogram, can_equate>
 
 // The name of the generated type for `meters` over `seconds` is not really reader-friendly so making an alias can be
 // nice.
+using per_meter = divided_unit_t<identity_unit, meters>;
+using meters_squared = multiplied_unit_t<meters, meters>;
 using meters_per_second = divided_unit_t<meters, seconds>;
 using acceleration_m_per_s2 = divided_unit_t<meters_per_second, seconds>;
 using seconds_sq = multiplied_unit_t<seconds, seconds>;
@@ -191,7 +196,7 @@ TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
     static_assert(!std::same_as<decltype(m_int), decltype(m_double)>);
     static_assert(std::same_as<decltype(m_int)::unit_t, decltype(m_double)::unit_t>);
 
-    auto m_int_converted = static_cast<meters::value<int>>(m_double);
+    auto m_int_converted = static_cast<meters::value<std::ratio<1>, int>>(m_double);
     static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
 
     EXPECT_EQ(m_int, m_int_converted);
@@ -247,7 +252,7 @@ TEST(stronk_units_v2, can_override_units)
     auto b = make<B, int>(2);
     auto c = a * b;
 
-    static_assert(std::same_as<decltype(c), C::value<int>>);
+    static_assert(std::same_as<decltype(c), C::value<std::ratio<1>, int>>);
     auto expected_c = make<C, int>(8);
     EXPECT_EQ(c, expected_c);
 
@@ -257,7 +262,7 @@ TEST(stronk_units_v2, can_override_units)
     EXPECT_EQ(back_to_b, b);
 
     auto d = a / b;
-    static_assert(std::same_as<decltype(d), D::value<int>>);
+    static_assert(std::same_as<decltype(d), D::value<std::ratio<1>, int>>);
     auto expected_d = make<D, int>(2);
     EXPECT_EQ(d, expected_d);
 
@@ -265,6 +270,86 @@ TEST(stronk_units_v2, can_override_units)
     EXPECT_EQ(back_to_a, a);
     back_to_b = a / d;
     EXPECT_EQ(back_to_b, b);
+}
+
+TEST(stronk_units_v2, scales_creates_the_right_types)
+{
+    auto m = make<meters, double>(1'000.0);
+    auto km = make<std::kilo, meters, double>(4.0);
+    auto um = make<std::micro, meters, double>(1'000.0);
+
+    static_assert(std::same_as<decltype(m), meters::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(km), meters::value<std::kilo, double>>);
+    static_assert(std::same_as<decltype(um), meters::value<std::micro, double>>);
+
+    static_assert(std::same_as<decltype(m * m), meters_squared::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(m * km), meters_squared::value<std::kilo, double>>);
+    static_assert(std::same_as<decltype(m * um), meters_squared::value<std::micro, double>>);
+
+    static_assert(std::same_as<decltype(km * km), meters_squared::value<std::mega, double>>);
+    static_assert(std::same_as<decltype(km * um), meters_squared::value<std::milli, double>>);
+
+    static_assert(std::same_as<decltype(um * um), meters_squared::value<std::pico, double>>);
+
+    static_assert(std::same_as<decltype(m / m), double>);
+    // static_assert(std::same_as<decltype(m / km), double>); // fails compiling on purpose
+    // static_assert(std::same_as<decltype(m / um), double>); // fails compiling on purpose
+
+    auto m_2 = make<meters_squared, double>(1'000.0);
+    auto km_2 = make<std::kilo, meters_squared, double>(1'000.0);
+    auto um_2 = make<std::micro, meters_squared, double>(1'000.0);
+
+    static_assert(std::same_as<decltype(m_2), meters_squared::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(km_2), meters_squared::value<std::mega, double>>);
+    static_assert(std::same_as<decltype(um_2), meters_squared::value<std::pico, double>>);
+
+    static_assert(std::same_as<decltype(m_2 / m), meters::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(m_2 / km), meters::value<std::milli, double>>);
+    static_assert(std::same_as<decltype(m_2 / um), meters::value<std::mega, double>>);
+
+    static_assert(std::same_as<decltype(km_2 / m), meters::value<std::mega, double>>);
+    static_assert(std::same_as<decltype(km_2 / km), meters::value<std::kilo, double>>);
+    static_assert(std::same_as<decltype(km_2 / um), meters::value<std::tera, double>>);
+
+    static_assert(std::same_as<decltype(um_2 / m), meters::value<std::pico, double>>);
+    static_assert(std::same_as<decltype(um_2 / km), meters::value<std::femto, double>>);
+    static_assert(std::same_as<decltype(um_2 / um), meters::value<std::micro, double>>);
+
+    // now divide by squared
+    static_assert(std::same_as<decltype(m / m_2), per_meter::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(km / m_2), per_meter::value<std::kilo, double>>);
+    static_assert(std::same_as<decltype(um / m_2), per_meter::value<std::micro, double>>);
+
+    static_assert(std::same_as<decltype(m / km_2), per_meter::value<std::micro, double>>);
+    static_assert(std::same_as<decltype(km / km_2), per_meter::value<std::milli, double>>);
+    static_assert(std::same_as<decltype(um / km_2), per_meter::value<std::pico, double>>);
+
+    static_assert(std::same_as<decltype(m / um_2), per_meter::value<std::tera, double>>);
+    static_assert(std::same_as<decltype(km / um_2), per_meter::value<std::peta, double>>);
+    static_assert(std::same_as<decltype(um / um_2), per_meter::value<std::mega, double>>);
+}
+
+TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
+{
+    auto m = make<meters, double>(2.0);
+    using km_t = unit_scaled_value_t<std::kilo, meters, double>;
+    using um_t = unit_scaled_value_t<std::micro, meters, double>;
+
+    auto km = static_cast<km_t>(m);
+    auto expected_km = km_t(2.0 / 1'000.0);
+    EXPECT_EQ(km, expected_km);
+
+    auto um = static_cast<um_t>(m);
+    auto expected_um = um_t(2'000'000.0);
+    EXPECT_EQ(um, expected_um);
+
+    um = static_cast<um_t>(km_t {3});
+    expected_um = um_t(3'000'000'000.0);
+    EXPECT_EQ(um, expected_um);
+
+    km = static_cast<km_t>(um_t {4});
+    expected_km = km_t(4.0 / 1'000'000'000.0);
+    EXPECT_EQ(km, expected_km);
 }
 
 }  // namespace twig::unit_v2
