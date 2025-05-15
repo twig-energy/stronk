@@ -30,7 +30,7 @@ concept ratio_with_base_unit_like = ratio_like<T> && requires(T v) { typename T:
 // Implementations
 
 template<typename StronkT>
-struct unit
+struct [[deprecated("Use unit_v2 instead")]] unit
 {
     using dimensions_t = create_dimensions_t<dimension<StronkT, 1>>;
 
