@@ -26,6 +26,7 @@ struct seconds : unit<seconds, std::ratio<1>, can_equate_underlying_type_specifi
 {
 };
 
+// ISO defines kg as the base scale of mass
 struct kilogram : unit<kilogram, std::ratio<1>, can_equate>
 {
 };
@@ -385,16 +386,24 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
 
     km = make<km_t>(8.0);
     auto s = make<seconds>(7200.0);
-    auto speed = km / s;
-    auto expected_speed = unit_scaled_value_t<std::ratio<1000, 1>, meters_per_second, double>(0.00111111111111);
+    auto km_per_s = km / s;
+    auto expected_speed = unit_scaled_value_t<std::kilo, meters_per_second, double>(0.00111111111111);
 
-    EXPECT_EQ(speed, expected_speed);
+    EXPECT_EQ(km_per_s, expected_speed);
 
-    auto km_per_hr = speed.to<std::ratio<5, 18>>();
-    auto expected_km_per_hr = unit_scaled_value_t<std::ratio<5, 18>, meters_per_second, double>(4.0);
+    using hr_t = seconds::scaled_t<std::ratio<60UL * 60>>;
+    using km_per_hr_t = meters_per_second::scaled_t<std::ratio<1000, 60UL * 60>>;
+
+    auto hr = s.to<std::ratio<60UL * 60>>();
+    auto expected_hr = make<hr_t>(2.0);
+    EXPECT_EQ(hr, expected_hr);
+
+    auto km_per_hr = km / hr;
+    auto expected_km_per_hr = unit_value_t<km_per_hr_t, double>(4.0);
 
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
-    EXPECT_EQ(km / s.to<std::ratio<60UL * 60>>(), expected_km_per_hr);
+    auto converted_to_km_per_hr = km_per_s.to<std::ratio<5, 18>>();
+    EXPECT_EQ(converted_to_km_per_hr, expected_km_per_hr);
 }
 
 }  // namespace twig::unit_v2
