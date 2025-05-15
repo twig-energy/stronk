@@ -1,6 +1,5 @@
 #include <concepts>
 #include <cstdint>
-#include <functional>
 #include <ratio>
 
 #include <fmt/format.h>
@@ -8,7 +7,7 @@
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 #    include <stronk/extensions/fmt.h>  // IWYU pragma: keep
 #endif
-#include <stronk/extensions/gtest.h>
+#include <stronk/extensions/gtest.h>  // IWYU pragma: keep for printing values in assertions
 #include <stronk/stronk.h>
 #include <stronk/unit_v2.h>
 #include <stronk/utilities/dimensions.h>
@@ -31,8 +30,6 @@ struct kilogram : unit<kilogram, can_equate>
 {
 };
 
-// The name of the generated type for `meters` over `seconds` is not really reader-friendly so making an alias can be
-// nice.
 using per_meter = divided_unit_t<identity_unit, meters>;
 using meters_squared = multiplied_unit_t<meters, meters>;
 using meters_per_second = divided_unit_t<meters, seconds>;
@@ -294,8 +291,9 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(std::same_as<decltype(um * um), meters_squared::value<std::pico, double>>);
 
     static_assert(std::same_as<decltype(m / m), double>);
-    // static_assert(std::same_as<decltype(m / km), double>); // fails compiling on purpose
-    // static_assert(std::same_as<decltype(m / um), double>); // fails compiling on purpose
+    // fails compiling on purpose because the ratio would be lost
+    // static_assert(std::same_as<decltype(m / km), double>);
+    // static_assert(std::same_as<decltype(m / um), double>);
 
     auto m_2 = make<meters_squared, double>(1'000.0);
     auto km_2 = make<std::kilo, meters_squared, double>(1'000.0);
@@ -341,6 +339,21 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(std::same_as<decltype(km / d), meters_per_second::value<std::ratio<5, 432>, double>>);
     static_assert(std::same_as<decltype(um / ms), meters_per_second::value<std::ratio<1, 1000>, double>>);
     static_assert(std::same_as<decltype(ms / um), seconds_per_meter::value<std::ratio<1000, 1>, double>>);
+
+    [[maybe_unused]]
+    auto per_m = 1 / m;
+    [[maybe_unused]]
+    auto per_km = 1 / km;
+    [[maybe_unused]]
+    auto per_um = 1 / um;
+
+    static_assert(std::same_as<decltype(per_m), per_meter::value<std::ratio<1>, double>>);
+    static_assert(std::same_as<decltype(per_km), per_meter::value<std::ratio<1, 1'000>, double>>);
+    static_assert(std::same_as<decltype(per_um), per_meter::value<std::ratio<1'000'000, 1>, double>>);
+
+    static_assert(std::same_as<decltype(m * per_m), double>);
+    static_assert(std::same_as<decltype(km * per_km), double>);
+    static_assert(std::same_as<decltype(um * per_um), double>);
 }
 
 TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
@@ -348,6 +361,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto m = make<meters, double>(2.0);
     using km_t = unit_scaled_value_t<std::kilo, meters, double>;
     using um_t = unit_scaled_value_t<std::micro, meters, double>;
+    using hr_t = unit_scaled_value_t<std::ratio<60UL * 60, 1>, seconds, double>;
 
     auto km = static_cast<km_t>(m);
     auto expected_km = km_t(2.0 / 1'000.0);
@@ -377,6 +391,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_km_per_hr = unit_scaled_value_t<std::ratio<5, 18>, meters_per_second, double>(4.0);
 
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
+    EXPECT_EQ(km / static_cast<hr_t>(s), expected_km_per_hr);
 }
 
 }  // namespace twig::unit_v2

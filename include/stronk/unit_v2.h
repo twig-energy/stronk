@@ -1,4 +1,5 @@
 #pragma once
+#include <concepts>
 #include <ratio>
 #include <type_traits>
 #include <utility>
@@ -209,7 +210,7 @@ constexpr auto operator/(const T& a, const B& b) noexcept
     using dimensions_t = typename B::unit_t::dimensions_t::negate_t;
     using resulting_unit = typename unit_lookup<dimensions_t>::unit_t;
     using underlying_t = decltype(res);
-    using scale_t = typename B::scale_t;
+    using scale_t = std::ratio_divide<std::ratio<1>, typename B::scale_t>;
 
     using value_t = resulting_unit::template value<scale_t, underlying_t>;
     return value_t {res};
