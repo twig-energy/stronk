@@ -28,6 +28,7 @@ template<typename Tag, typename ScaleT, template<typename StronkT> typename... S
 struct unit
 {
     using dimensions_t = std::conditional_t<dimensions_like<Tag>, Tag, twig::create_dimensions_t<dimension<Tag, 1>>>;
+    using scale_t = ScaleT;
 
     unit() = delete;  // Do not construct this type
 
@@ -41,7 +42,6 @@ struct unit
         using unit_t = unit;
         using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
-        using scale_t = ScaleT;
 
         // can convert to same unit with different underlying type, or different scale
         template<typename NewUnderlyingT>
@@ -69,6 +69,8 @@ template<>
 struct unit<::twig::create_dimensions_t<>, std::ratio<1>>
 {
     using dimensions_t = ::twig::create_dimensions_t<>;
+    using scale_t = std::ratio<1>;
+    using unit_t = unit;
 
     unit() = delete;  // Do not construct this type
 
@@ -103,20 +105,25 @@ using unit_scaled_value_t = typename UnitT::template scaled_t<ScaleT>::template 
 template<::twig::dimensions_like DimensionsT>
 struct unit_lookup
 {
-    using unit_t = stronk_default_unit<DimensionsT, std::ratio<1>>;
+    template<typename ScaleT>
+    using unit_t = stronk_default_unit<DimensionsT, ScaleT>;
 };
 
 template<>
 struct unit_lookup<::twig::create_dimensions_t<>>
 {
-    using unit_t = identity_unit;
+    template<typename ScaleT>
+    using unit_t = identity_unit::scaled_t<ScaleT>;
 };
 
 template<::twig::dimensions_like DimensionsT>
     requires(DimensionsT::is_pure())
 struct unit_lookup<DimensionsT>
 {
-    using unit_t = typename DimensionsT::first_t::unit_t;
+    template<typename ScaleT>
+    using unit_t = typename std::conditional_t<std::is_same_v<ScaleT, std::ratio<1>>,
+                                               typename DimensionsT::first_t::unit_t,
+                                               typename DimensionsT::first_t::unit_t::template scaled_t<ScaleT>>;
 };
 
 // ==================
@@ -127,7 +134,8 @@ template<unit_like A, unit_like B>
 using multiplied_dimensions_t = typename A::dimensions_t::template multiply_t<typename B::dimensions_t>;
 
 template<unit_like A, unit_like B>
-using multiplied_unit_t = typename unit_lookup<multiplied_dimensions_t<A, B>>::unit_t;
+using multiplied_unit_t = typename unit_lookup<multiplied_dimensions_t<A, B>>::template unit_t<
+    std::ratio_multiply<typename A::scale_t, typename B::scale_t>>;
 
 // You can specialize this struct if you want another underlying multiply operation
 template<unit_value_like T1, unit_value_like T2>
@@ -149,9 +157,7 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using dimensions_t = multiplied_dimensions_t<typename A::unit_t, typename B::unit_t>;
-    using scale_t = std::ratio_multiply<typename A::scale_t, typename B::scale_t>;
-    using resulting_unit = typename unit_lookup<dimensions_t>::unit_t::template scaled_t<scale_t>;
+    using resulting_unit = multiplied_unit_t<typename A::unit_t, typename B::unit_t>;
     using underlying_t = decltype(res);
 
     using value_t = typename resulting_unit::template value<underlying_t>;
@@ -188,7 +194,8 @@ template<unit_like A, unit_like B>
 using divided_dimensions_t = typename A::dimensions_t::template divide_t<typename B::dimensions_t>;
 
 template<unit_like A, unit_like B>
-using divided_unit_t = typename unit_lookup<divided_dimensions_t<A, B>>::unit_t;
+using divided_unit_t = typename unit_lookup<divided_dimensions_t<A, B>>::template unit_t<
+    std::ratio_divide<typename A::scale_t, typename B::scale_t>>;
 
 // You can specialize this struct if you want another underlying divide operation
 template<unit_value_like T1, unit_value_like T2>
@@ -210,9 +217,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
-    using dimensions_t = divided_dimensions_t<typename A::unit_t, typename B::unit_t>;
-    using scale_t = std::ratio_divide<typename A::scale_t, typename B::scale_t>;
-    using resulting_unit = typename unit_lookup<dimensions_t>::unit_t::template scaled_t<scale_t>;
+    using resulting_unit = divided_unit_t<typename A::unit_t, typename B::unit_t>;
     using underlying_t = decltype(res);
 
     using value_t = typename resulting_unit::template value<underlying_t>;
@@ -224,10 +229,7 @@ template<typename T, unit_value_like B>
 constexpr auto operator/(const T& a, const B& b) noexcept
 {
     auto res = a / b.template unwrap<B>();
-    using dimensions_t = typename B::unit_t::dimensions_t::negate_t;
-    using scale_t = std::ratio_divide<std::ratio<1>, typename B::scale_t>;
-    using resulting_unit = typename unit_lookup<dimensions_t>::unit_t::template scaled_t<scale_t>;
-
+    using resulting_unit = divided_unit_t<identity_unit, typename B::unit_t>;
     using underlying_t = decltype(res);
 
     using value_t = resulting_unit::template value<underlying_t>;

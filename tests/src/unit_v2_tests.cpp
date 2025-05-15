@@ -236,13 +236,15 @@ struct D : unit<divided_dimensions_t<A, B>, std::ratio<1>, can_equate>
 template<>
 struct unit_lookup<multiplied_dimensions_t<A, B>>
 {
-    using unit_t = C;
+    template<typename ScaleT>
+    using unit_t = C::scaled_t<ScaleT>;
 };
 
 template<>
 struct unit_lookup<divided_dimensions_t<A, B>>
 {
-    using unit_t = D;
+    template<typename ScaleT>
+    using unit_t = D::scaled_t<ScaleT>;
 };
 
 TEST(stronk_units_v2, can_override_units)
