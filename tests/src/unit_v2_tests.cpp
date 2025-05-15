@@ -376,7 +376,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_um = make<um_t>(2'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    um = make<km_t>(3.0).to<std::micro>();
+    um = make<std::kilo, meters>(3.0).to<std::micro>();
     expected_um = make<um_t>(3'000'000'000.0);
     EXPECT_EQ(um, expected_um);
 
