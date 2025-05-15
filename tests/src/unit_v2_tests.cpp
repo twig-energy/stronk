@@ -298,11 +298,11 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(!std::same_as<decltype(m / km), double>);
     static_assert(!std::same_as<decltype(m / um), double>);
 
-    auto m_2 = make<meters_squared, double>(1'000.0);
+    auto m_2 = m * m;
     [[maybe_unused]]
-    auto km_2 = m_2.to<std::mega>();  // km*km = mega m^2
+    auto km_2 = km * km;
     [[maybe_unused]]
-    auto um_2 = m_2.to<std::pico>();  // um*um = pico m^2
+    auto um_2 = um * um;
 
     static_assert(std::same_as<decltype(m_2), meters_squared::value<double>>);
     static_assert(std::same_as<decltype(km_2), meters_squared::scaled_t<std::mega>::value<double>>);
@@ -364,27 +364,27 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
 TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
 {
     auto m = make<meters, double>(2.0);
-    using km_t = unit_scaled_value_t<std::kilo, meters, double>;
-    using um_t = unit_scaled_value_t<std::micro, meters, double>;
+    using km_t = meters::scaled_t<std::kilo>;
+    using um_t = meters::scaled_t<std::micro>;
 
     auto km = m.to<std::kilo>();
-    auto expected_km = km_t(2.0 / 1'000.0);
+    auto expected_km = make<km_t>(2.0 / 1'000.0);
     EXPECT_EQ(km, expected_km);
 
     auto um = m.to<std::micro>();
-    auto expected_um = um_t(2'000'000.0);
+    auto expected_um = make<um_t>(2'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    um = km_t {3}.to<std::micro>();
-    expected_um = um_t(3'000'000'000.0);
+    um = make<km_t>(3.0).to<std::micro>();
+    expected_um = make<um_t>(3'000'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    km = um_t {4}.to<std::kilo>();
-    expected_km = km_t(4.0 / 1'000'000'000.0);
+    km = make<um_t>(4.0).to<std::kilo>();
+    expected_km = make<km_t>(4.0 / 1'000'000'000.0);
     EXPECT_EQ(km, expected_km);
 
-    km = make<std::kilo, meters, double>(8.0);
-    auto s = make<seconds, double>(7200.0);
+    km = make<km_t>(8.0);
+    auto s = make<seconds>(7200.0);
     auto speed = km / s;
     auto expected_speed = unit_scaled_value_t<std::ratio<1000, 1>, meters_per_second, double>(0.00111111111111);
 
