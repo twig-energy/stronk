@@ -52,7 +52,7 @@ struct unit
         }
 
         template<typename NewScaleT, typename NewUnderlyingT = UnderlyingT>
-        constexpr auto to() const
+        constexpr auto to() const -> scaled_t<NewScaleT>::template value<NewUnderlyingT>
         {
             if constexpr (std::same_as<NewScaleT, ScaleT>) {
                 return static_cast<value<NewUnderlyingT>>(*this);
@@ -262,20 +262,9 @@ constexpr auto make(UnderlyingT&& value)
 {
     static_assert(UnitT::dimensions_t::size() == 1,
                   "this function semantically does not seem right with multiple units");
+    static_assert(UnitT::dimensions_t::first_t::rank == 1, "this function is ambiguous for none rank 1");
 
-    constexpr auto abs = [](auto val) constexpr { return val < 0 ? -val : val; };
-    constexpr auto constexpr_pow = [](auto val, auto rank) consteval
-    {
-        for (auto r = 1; r < rank; ++r) {
-            val *= val;
-        }
-        return val;
-    };
-    constexpr auto rank = abs(UnitT::dimensions_t::first_t::rank);
-    using raw_ratio = std::ratio<constexpr_pow(ScaleT::num, rank), constexpr_pow(ScaleT::den, rank)>;
-
-    return unit_scaled_value_t<std::ratio<raw_ratio::num, raw_ratio::den>, UnitT, UnderlyingT> {
-        std::forward<UnderlyingT>(value)};
+    return unit_scaled_value_t<ScaleT, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
 }  // namespace twig::unit_v2

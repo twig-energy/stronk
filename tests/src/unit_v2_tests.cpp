@@ -299,8 +299,10 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(!std::same_as<decltype(m / um), double>);
 
     auto m_2 = make<meters_squared, double>(1'000.0);
-    auto km_2 = make<std::kilo, meters_squared, double>(1'000.0);
-    auto um_2 = make<std::micro, meters_squared, double>(1'000.0);
+    [[maybe_unused]]
+    auto km_2 = m_2.to<std::mega>();  // km*km = mega m^2
+    [[maybe_unused]]
+    auto um_2 = m_2.to<std::pico>();  // um*um = pico m^2
 
     static_assert(std::same_as<decltype(m_2), meters_squared::value<double>>);
     static_assert(std::same_as<decltype(km_2), meters_squared::scaled_t<std::mega>::value<double>>);
