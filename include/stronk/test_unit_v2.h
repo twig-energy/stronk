@@ -7,11 +7,16 @@
 
 #include <stronk/unit_v2.h>
 
-namespace twig::unit_v2::tests {
+namespace twig::unit_v2::tests
+{
 
 // Basic unit types for testing
-struct meters_tag {};
-struct seconds_tag {};
+struct meters_tag
+{
+};
+struct seconds_tag
+{
+};
 
 using meters = stronk_default_unit<meters_tag, std::ratio<1>>;
 using seconds = stronk_default_unit<seconds_tag, std::ratio<1>>;
@@ -41,38 +46,33 @@ static_assert(unit_value_like<seconds_d>);
 // ==================
 // Multiplication tests
 // ==================
-static_assert(std::same_as<
-    multiplied_dimensions_t<meters, seconds>, 
-    twig::create_dimensions_t<dimension<meters_tag, 1>, dimension<seconds_tag, 1>>
->);
+static_assert(std::same_as<multiplied_dimensions_t<meters, seconds>,
+                           twig::create_dimensions_t<dimension<meters_tag, 1>, dimension<seconds_tag, 1>>>);
 
-static_assert(std::same_as<
-    multiplied_dimensions_t<meters, meters>, 
-    twig::create_dimensions_t<dimension<meters_tag, 2>>
->);
+static_assert(
+    std::same_as<multiplied_dimensions_t<meters, meters>, twig::create_dimensions_t<dimension<meters_tag, 2>>>);
 
 // Key fix needed: ensure original unit types are preserved through operations
 // Verify that dimension multiplication followed by division gets back to original unit
 using meters_times_seconds = multiplied_unit_t<meters, seconds>;
 
-// The error suggests that divided_unit_t<multiplied_unit_t<meters, seconds>, meters> 
+// The error suggests that divided_unit_t<multiplied_unit_t<meters, seconds>, meters>
 // should be seconds, but it's not matching exactly
 
 // ==================
 // Division tests
 // ==================
-static_assert(std::same_as<
-    divided_dimensions_t<meters, seconds>, 
-    twig::create_dimensions_t<dimension<meters_tag, 1>, dimension<seconds_tag, -1>>
->);
+static_assert(std::same_as<divided_dimensions_t<meters, seconds>,
+                           twig::create_dimensions_t<dimension<meters_tag, 1>, dimension<seconds_tag, -1>>>);
 
 // ==================
 // Runtime tests
 // ==================
-inline void test_unit_v2() {
+inline void test_unit_v2()
+{
     // Test unit creation
-    meters_d m1{5.0};
-    seconds_d s1{2.0};
+    meters_d m1 {5.0};
+    seconds_d s1 {2.0};
 
     // Test unit multiplication
     auto area = m1 * m1;
@@ -90,12 +90,17 @@ inline void test_unit_v2() {
     assert(m2.val() == 10.0);
 
     // Test conversion
-    using centimeters = unit<meters_tag, std::ratio<1, 100>, 
-                            can_add, can_subtract, can_negate, can_order,
-                            can_equate_underlying_type_specific, transform_skill>;
+    using centimeters = unit<meters_tag,
+                             std::ratio<1, 100>,
+                             can_add,
+                             can_subtract,
+                             can_negate,
+                             can_order,
+                             can_equate_underlying_type_specific,
+                             transform_skill>;
     using centimeters_d = unit_value_t<centimeters, double>;
-    
-    centimeters_d cm1{250.0};
+
+    centimeters_d cm1 {250.0};
     auto m3 = cm1.to<std::ratio<1>>();
     assert(std::abs(m3.val() - 2.5) < 1e-10);
 
@@ -117,32 +122,23 @@ using should_be_seconds = divided_unit_t<meters_times_seconds_unit, meters>;
 // It's likely creating a different but equivalent unit type
 // Let's check their dimensions to see if they're equivalent:
 
-static_assert(std::same_as<
-    should_be_seconds::dimensions_t,
-    seconds::dimensions_t
->);
+static_assert(std::same_as<should_be_seconds::dimensions_t, seconds::dimensions_t>);
 
 // Let's examine the full unit types:
 // print typenames for debugging
-template <typename T>
-struct type_identity { using type = T; };
+template<typename T>
+struct type_identity
+{
+    using type = T;
+};
 
 // This test passes if the dimensions match but the types don't match exactly
-static_assert(std::same_as<
-    should_be_seconds::dimensions_t,
-    twig::create_dimensions_t<dimension<seconds_tag, 1>>
->);
+static_assert(std::same_as<should_be_seconds::dimensions_t, twig::create_dimensions_t<dimension<seconds_tag, 1>>>);
 
-static_assert(std::same_as<
-    seconds::dimensions_t,
-    twig::create_dimensions_t<dimension<seconds_tag, 1>>
->);
+static_assert(std::same_as<seconds::dimensions_t, twig::create_dimensions_t<dimension<seconds_tag, 1>>>);
 
 // The issue is likely that the resulting unit doesn't preserve the original template params
 // This is a more accurate test that ensures unit division works correctly dimensionally:
-static_assert(std::same_as<
-    divided_unit_t<meters_times_seconds_unit, meters>::dimensions_t,
-    seconds::dimensions_t
->);
+static_assert(std::same_as<divided_unit_t<meters_times_seconds_unit, meters>::dimensions_t, seconds::dimensions_t>);
 
-} // namespace twig::unit_v2::tests
+}  // namespace twig::unit_v2::tests
