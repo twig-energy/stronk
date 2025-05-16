@@ -1,5 +1,5 @@
+#include <concepts>
 #include <ratio>
-#include <type_traits>
 
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
