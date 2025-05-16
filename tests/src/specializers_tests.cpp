@@ -100,8 +100,8 @@ TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
 // clang-format off
 
 static_assert(std::same_as<specializer_type_d::value<int>, decltype(specializer_type_a::value<int> {} * specializer_type_c::value<int> {})>);
-static_assert(std::same_as<unit_lookup<typename specializer_type_a_divided_by_b::unit_t::dimensions_t>::unit_t<std::ratio<1>>::value<long>, specializer_type_a_divided_by_b>);
-static_assert(std::same_as<unit_lookup<typename specializer_type_a_times_b::unit_t::dimensions_t>::unit_t<std::ratio<1>>::value<long>, specializer_type_a_times_b>);
+static_assert(std::same_as<unit_lookup<typename specializer_type_a_divided_by_b::unit_t::dimensions_t>::unit_t<std::ratio<1>>::value<int64_t>, specializer_type_a_divided_by_b>);
+static_assert(std::same_as<unit_lookup<typename specializer_type_a_times_b::unit_t::dimensions_t>::unit_t<std::ratio<1>>::value<int64_t>, specializer_type_a_times_b>);
 static_assert(std::same_as<unit_lookup<typename multiplied_unit_t<specializer_type_a, specializer_type_c>::dimensions_t>::unit_t<std::ratio<1>>, specializer_type_d>);
 static_assert(std::same_as<unit_lookup<typename specializer_type_d::dimensions_t>::unit_t<std::ratio<1>>, specializer_type_d>);
 // clang-format on
