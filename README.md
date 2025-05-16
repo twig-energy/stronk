@@ -63,8 +63,8 @@ auto main() -> int
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=26
+#include <concepts>
 #include <ratio>
-#include <type_traits>
 
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
@@ -225,10 +225,10 @@ In case you want to specialize the resulting type of unit multiplication and div
 By default the units are generated with the `stronk_default_prefab` type.
 
 ```cpp :file=./examples/specializers_example.cpp:line_end=33
+#include <concepts>
 #include <cstdint>
-#include <type_traits>
+#include <ratio>
 
-#include <stronk/stronk.h>
 #include <stronk/unit.h>
 
 // Let's consider the following units:
