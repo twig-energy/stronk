@@ -2,32 +2,26 @@
 #include <cstdint>
 #include <limits>
 #include <random>
+#include <ratio>
 #include <sstream>
 #include <string>
 #include <type_traits>
 
-#include <stronk/prefabs.h>
 #include <stronk/stronk.h>
+#include <stronk/unit.h>
 #include <stronk/utilities/constexpr_helpers.h>
 
-struct int8_t_wrapping_type : twig::stronk_default_unit<int8_t_wrapping_type, int8_t>
+struct a_unit : twig::stronk_default_unit<a_unit, std::ratio<1>>
 {
-    using stronk_default_unit::stronk_default_unit;
 };
 
-struct int64_t_wrapping_type : twig::stronk_default_unit<int64_t_wrapping_type, int64_t>
-{
-    using stronk_default_unit::stronk_default_unit;
-};
+using int8_t_wrapping_type = a_unit::value<int8_t>;
+using int64_t_wrapping_type = a_unit::value<int64_t>;
+using double_wrapping_type = a_unit::value<double>;
 
-struct double_wrapping_type : twig::stronk_default_unit<double_wrapping_type, double>
+struct string_wrapping_type : twig::stronk<string_wrapping_type, std::string>
 {
-    using stronk_default_unit::stronk_default_unit;
-};
-
-struct string_wrapping_type : twig::stronk_default_unit<string_wrapping_type, std::string>
-{
-    using stronk_default_unit::stronk_default_unit;
+    using stronk::stronk;
 };
 
 namespace details

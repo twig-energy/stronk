@@ -21,6 +21,9 @@ concept unit_like = requires {
 template<typename T>
 concept unit_value_like = ::twig::stronk_like<T> && requires { typename T::unit_t; };
 
+template<typename T, typename ValueT>
+concept is_unit = std::same_as<typename T::unit_t::dimensions_t, typename ValueT::dimensions_t>;
+
 template<typename T>
 concept scale_like = requires {
     T::num;
@@ -72,7 +75,16 @@ struct unit
         {
             using converter = std::ratio_divide<ScaleT, NewScaleT>;
             using result_value_t = scaled_t<NewScaleT>::template value<NewUnderlyingT>;
-            return result_value_t {static_cast<NewUnderlyingT>(this->val()) * converter::num / converter::den};
+            return result_value_t {static_cast<NewUnderlyingT>(this->val() * converter::num / converter::den)};
+        }
+
+        template<unit_value_like NewUnitValueT>
+            requires(std::same_as<typename NewUnitValueT::unit_t::dimensions_t, dimensions_t>)
+        constexpr auto as() const -> NewUnitValueT
+        {
+            using new_scale_t = typename NewUnitValueT::unit_t::scale_t;
+            using new_underlying_t = typename NewUnitValueT::underlying_type;
+            return this->to<new_scale_t, new_underlying_t>();
         }
     };
 };
@@ -93,6 +105,12 @@ struct unit<::twig::create_dimensions_t<>, std::ratio<1>>
     using scaled_t = unit<::twig::create_dimensions_t<>, OtherScaleT>;
 };
 using identity_unit = unit<::twig::create_dimensions_t<>, std::ratio<1>>;
+
+template<scale_like ScaleT>
+using identity_unit_t = unit<::twig::create_dimensions_t<>, ScaleT>;
+
+template<scale_like ScaleT, typename UnderlyingT>
+using identity_value_t = identity_unit_t<ScaleT>::template value<UnderlyingT>;
 
 template<typename Tag, scale_like ScaleT, template<typename> typename... Skills>
 using stronk_default_unit = unit<Tag,
