@@ -21,10 +21,19 @@ concept unit_like = requires {
 template<typename T>
 concept unit_value_like = ::twig::stronk_like<T> && requires { typename T::unit_t; };
 
+template<typename T>
+concept scale_like = requires {
+    T::num;
+    T::den;
+};
+
+template<typename T>
+concept canonical_scale_like = std::same_as<typename T::type, T> /*ratio is fully reduced*/ && scale_like<T>;
+
 // Implementations
 
 // Tag should either be the unit itself, or a dimensions_like type defining the dimensions of the unit.
-template<typename Tag, typename ScaleT, template<typename StronkT> typename... SkillTs>
+template<typename Tag, canonical_scale_like ScaleT, template<typename StronkT> typename... SkillTs>
 struct unit
 {
     using dimensions_t = std::conditional_t<dimensions_like<Tag>, Tag, twig::create_dimensions_t<dimension<Tag, 1>>>;
@@ -33,8 +42,8 @@ struct unit
     unit() = delete;  // Do not construct this type
 
     // we recreate ratio to make sure we have the gcd version of the scale.
-    template<typename OtherScaleT>
-    using scaled_t = unit<Tag, std::ratio<OtherScaleT::num, OtherScaleT::den>, SkillTs...>;
+    template<scale_like OtherScaleT>
+    using scaled_t = unit<Tag, typename OtherScaleT::type, SkillTs...>;
 
     template<typename UnderlyingT>
     struct value : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
@@ -43,7 +52,7 @@ struct unit
         using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
 
-        // can convert to same unit with different underlying type, or different scale
+        // can static_cast to same unit with different underlying type
         template<typename NewUnderlyingT>
             requires(!std::same_as<NewUnderlyingT, UnderlyingT>)
         constexpr explicit operator value<NewUnderlyingT>() const
@@ -51,16 +60,19 @@ struct unit
             return value<NewUnderlyingT> {static_cast<NewUnderlyingT>(this->val())};
         }
 
+        /**
+         * @brief Convert the value to another scale, potentially with a different underlying type
+         *
+         * @tparam NewScaleT The new scale to use
+         * @tparam NewUnderlyingT the new underlying type to use
+         * @return a new unit with same dimensions, but with the specified scale and underlying type
+         */
         template<typename NewScaleT, typename NewUnderlyingT = UnderlyingT>
         constexpr auto to() const -> scaled_t<NewScaleT>::template value<NewUnderlyingT>
         {
-            if constexpr (std::same_as<NewScaleT, ScaleT>) {
-                return static_cast<value<NewUnderlyingT>>(*this);
-            } else {
-                using converter = std::ratio_divide<ScaleT, NewScaleT>;
-                using result_value_t = scaled_t<NewScaleT>::template value<NewUnderlyingT>;
-                return result_value_t {static_cast<NewUnderlyingT>(this->val()) * converter::num / converter::den};
-            }
+            using converter = std::ratio_divide<ScaleT, NewScaleT>;
+            using result_value_t = scaled_t<NewScaleT>::template value<NewUnderlyingT>;
+            return result_value_t {static_cast<NewUnderlyingT>(this->val()) * converter::num / converter::den};
         }
     };
 };
@@ -82,7 +94,7 @@ struct unit<::twig::create_dimensions_t<>, std::ratio<1>>
 };
 using identity_unit = unit<::twig::create_dimensions_t<>, std::ratio<1>>;
 
-template<typename Tag, typename ScaleT, template<typename> typename... Skills>
+template<typename Tag, scale_like ScaleT, template<typename> typename... Skills>
 using stronk_default_unit = unit<Tag,
                                  ScaleT,
                                  can_add,
@@ -264,7 +276,7 @@ constexpr auto make(UnderlyingT&& value)
                   "this function semantically does not seem right with multiple units");
     static_assert(UnitT::dimensions_t::first_t::rank == 1, "this function is ambiguous for none rank 1");
 
-    return unit_scaled_value_t<ScaleT, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
+    return unit_scaled_value_t<typename ScaleT::type, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
 }  // namespace twig::unit_v2

@@ -27,17 +27,17 @@ struct seconds : unit<seconds, std::ratio<1>, can_equate_underlying_type_specifi
 };
 
 // ISO defines kg as the base scale of mass
-struct kilogram : unit<kilogram, std::ratio<1>, can_equate>
+struct kilograms : unit<kilograms, std::ratio<1>, can_equate>
 {
 };
 
 using per_meter = divided_unit_t<identity_unit, meters>;
-using meters_squared = multiplied_unit_t<meters, meters>;
+using square_meters = multiplied_unit_t<meters, meters>;
 using meters_per_second = divided_unit_t<meters, seconds>;
 using seconds_per_meter = divided_unit_t<seconds, meters>;
 using acceleration_m_per_s2 = divided_unit_t<meters_per_second, seconds>;
 using seconds_sq = multiplied_unit_t<seconds, seconds>;
-using force = multiplied_unit_t<kilogram, acceleration_m_per_s2>;
+using force = multiplied_unit_t<kilograms, acceleration_m_per_s2>;
 
 struct a_regular_type
 {
@@ -47,14 +47,14 @@ struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 };
 
 // Testing the concepts
-static_assert(unit_like<kilogram>);
+static_assert(unit_like<kilograms>);
 static_assert(unit_like<meters_per_second>);
 static_assert(unit_like<acceleration_m_per_s2>);
 static_assert(!unit_like<a_regular_stronk_type>);
 static_assert(!unit_like<a_regular_type>);
 static_assert(!unit_like<unit_value_t<meters_per_second, int32_t>>);
 
-static_assert(unit_value_like<unit_value_t<kilogram, int32_t>>);
+static_assert(unit_value_like<unit_value_t<kilograms, int32_t>>);
 static_assert(unit_value_like<unit_value_t<meters_per_second, int32_t>>);
 static_assert(unit_value_like<unit_value_t<acceleration_m_per_s2, int32_t>>);
 static_assert(!unit_value_like<a_regular_stronk_type>);
@@ -63,29 +63,29 @@ static_assert(!unit_value_like<a_regular_type>);
 // Testing the generated types
 
 // clang-format off
-using example_1 = stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilogram, -1>>, std::ratio<1>>;
-using example_2 = stronk_default_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -1>>, std::ratio<1>>;
-static_assert(kilogram::dimensions_t::is_pure());
+using example_1 = stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilograms, -1>>, std::ratio<1>>;
+using example_2 = stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -1>>, std::ratio<1>>;
+static_assert(kilograms::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
-static_assert(std::same_as<kilogram::dimensions_t::first_t::unit_t, kilogram>);
+static_assert(std::same_as<kilograms::dimensions_t::first_t::unit_t, kilograms>);
 static_assert(std::same_as<multiplied_unit_t<meters, seconds>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>, std::ratio<1>>>);
 static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>,std::ratio<1>>>);
 static_assert(std::same_as<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
 static_assert(std::same_as<divided_unit_t<example_1, example_1>, identity_unit>);
 static_assert(std::same_as<multiplied_unit_t<meters_per_second, seconds_per_meter>, identity_unit>);
-static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilogram, -2>>,std::ratio<1>>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilograms, -2>>,std::ratio<1>>>);
 static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,std::ratio<1>>>);
 static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,std::ratio<1>>>);
-static_assert(std::same_as<divided_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilogram, -2>>,std::ratio<1>>>);
-static_assert(std::same_as<force, stronk_default_unit<create_dimensions_t<dimension<kilogram, 1>, dimension<meters, 1>, dimension<seconds, -2>>,std::ratio<1>>>);
+static_assert(std::same_as<divided_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilograms, -2>>,std::ratio<1>>>);
+static_assert(std::same_as<force, stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -2>>,std::ratio<1>>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            using kg_int = unit_value_t<kilogram, int>;
+            using kg_int = unit_value_t<kilograms, int>;
             EXPECT_EQ(kg_int(i * j), kg_int(i) * j);
             EXPECT_EQ(kg_int(i * j), j * kg_int(i));
         }
@@ -284,14 +284,14 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(std::same_as<decltype(km), meters::scaled_t<std::kilo>::value<double>>);
     static_assert(std::same_as<decltype(um), meters::scaled_t<std::micro>::value<double>>);
 
-    static_assert(std::same_as<decltype(m * m), meters_squared::value<double>>);
-    static_assert(std::same_as<decltype(m * km), meters_squared::scaled_t<std::kilo>::value<double>>);
-    static_assert(std::same_as<decltype(m * um), meters_squared::scaled_t<std::micro>::value<double>>);
+    static_assert(std::same_as<decltype(m * m), square_meters::value<double>>);
+    static_assert(std::same_as<decltype(m * km), square_meters::scaled_t<std::kilo>::value<double>>);
+    static_assert(std::same_as<decltype(m * um), square_meters::scaled_t<std::micro>::value<double>>);
 
-    static_assert(std::same_as<decltype(km * km), meters_squared::scaled_t<std::mega>::value<double>>);
-    static_assert(std::same_as<decltype(km * um), meters_squared::scaled_t<std::milli>::value<double>>);
+    static_assert(std::same_as<decltype(km * km), square_meters::scaled_t<std::mega>::value<double>>);
+    static_assert(std::same_as<decltype(km * um), square_meters::scaled_t<std::milli>::value<double>>);
 
-    static_assert(std::same_as<decltype(um * um), meters_squared::scaled_t<std::pico>::value<double>>);
+    static_assert(std::same_as<decltype(um * um), square_meters::scaled_t<std::pico>::value<double>>);
 
     static_assert(std::same_as<decltype(m / m), double>);
     static_assert(std::same_as<decltype(m / km), identity_unit::scaled_t<std::ratio<1, 1000>>::value<double>>);
@@ -305,9 +305,9 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     [[maybe_unused]]
     auto um_2 = um * um;
 
-    static_assert(std::same_as<decltype(m_2), meters_squared::value<double>>);
-    static_assert(std::same_as<decltype(km_2), meters_squared::scaled_t<std::mega>::value<double>>);
-    static_assert(std::same_as<decltype(um_2), meters_squared::scaled_t<std::pico>::value<double>>);
+    static_assert(std::same_as<decltype(m_2), square_meters::value<double>>);
+    static_assert(std::same_as<decltype(km_2), square_meters::scaled_t<std::mega>::value<double>>);
+    static_assert(std::same_as<decltype(um_2), square_meters::scaled_t<std::pico>::value<double>>);
 
     static_assert(std::same_as<decltype(m_2 / m), meters::value<double>>);
     static_assert(std::same_as<decltype(m_2 / km), meters::scaled_t<std::milli>::value<double>>);
@@ -402,7 +402,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_km_per_hr = unit_value_t<km_per_hr_t, double>(4.0);
 
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
-    auto converted_to_km_per_hr = km_per_s.to<std::ratio<5, 18>>();
+    auto converted_to_km_per_hr = km_per_s.to<std::ratio<1000, 60UL * 60>>();
     EXPECT_EQ(converted_to_km_per_hr, expected_km_per_hr);
 }
 
