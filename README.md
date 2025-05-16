@@ -195,11 +195,6 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_increment` adds both `operator++` operators.
 - `can_decrement` adds both `operator--` operators.
 
-### Units
-
-- `unit`: enables unit behavior for multiplication and division.
-- `identity_unit`: enables unit behavior, but does not affect the type of multiplication and division.
-
 ### Third Party Library extensions (see `stronk/extensions/<library>.h`)
 
 - `can_absl_hash`: implements the `AbslHashValue` friend function.
@@ -220,9 +215,9 @@ Often you might just need a group of skills for your specific types. For this yo
 
 ### Specializers
 
-In case you want to specialize the resulting type of unit multiplication and division you can utilize the `stronk/specializer.h` header.
+Specialization of unit multiplication and division is possible
 
-By default the units are generated with the `stronk_default_prefab` type.
+By default the units are generated with the `stronk_default_unit` type.
 
 ```cpp :file=./examples/specializers_example.cpp:line_end=33
 #include <concepts>
@@ -273,7 +268,7 @@ target_link_libraries(
 )
 ```
 
-### Requirements
+# Requirements
 
 A c++20 compatible compiler and standard library with concepts support.
 
