@@ -202,6 +202,8 @@ TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
     static_assert(std::same_as<decltype(m_int), decltype(m_int_converted)>);
 
     EXPECT_EQ(m_int, m_int_converted);
+    m_int_converted = m_double.cast<int>();
+    EXPECT_EQ(m_int, m_int_converted);
 }
 
 struct using_default_unit : stronk_default_unit<using_default_unit, std::ratio<1>>
