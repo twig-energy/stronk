@@ -2,12 +2,11 @@
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
-#include <limits>
 #include <type_traits>
 #include <utility>
 
-#include <stronk/utilities/equality.hpp>
-#include <stronk/utilities/macros.hpp>
+#include "stronk/utilities/equality.hpp"
+#include "stronk/utilities/macros.hpp"
 
 namespace twig
 {
@@ -45,7 +44,7 @@ struct stronk : public Skills<Tag>...
     [[nodiscard]]
     constexpr auto unwrap() noexcept -> underlying_type&
     {
-        static_assert(std::is_same_v<ExpectedT, Tag>,
+        static_assert(std::same_as<ExpectedT, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
         return this->_you_should_not_be_using_this_but_rather_unwrap;
@@ -55,7 +54,7 @@ struct stronk : public Skills<Tag>...
     [[nodiscard]]
     constexpr auto unwrap() const noexcept -> const underlying_type&
     {
-        static_assert(std::is_same_v<ExpectedT, Tag>,
+        static_assert(std::same_as<ExpectedT, Tag>,
                       "To access the underlying type you need to provide the stronk type you expect to be querying. By "
                       "doing so you will be protected from unsafe accesses if you chose to change the type");
         return this->_you_should_not_be_using_this_but_rather_unwrap;
@@ -159,91 +158,6 @@ struct can_subtract
         return StronkT {lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>()};
     }
 };
-
-template<typename StronkT>
-struct can_multiply
-{
-    using can_multiply_with_self = std::true_type;
-
-    constexpr friend auto operator*=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
-    {
-        lhs.template unwrap<StronkT>() *= rhs.template unwrap<StronkT>();
-        return lhs;
-    }
-
-    constexpr friend auto operator*(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
-    {
-        return StronkT {lhs.template unwrap<StronkT>() * rhs.template unwrap<StronkT>()};
-    }
-};
-
-template<typename T>
-struct can_multiply_with
-{
-    template<typename StronkT>
-    struct skill
-    {
-        constexpr friend auto operator*=(StronkT& lhs, const T& rhs) noexcept -> StronkT
-        {
-            lhs.template unwrap<StronkT>() *= rhs;
-            return lhs;
-        }
-
-        constexpr friend auto operator*(const StronkT& lhs, const T& rhs) noexcept -> StronkT
-        {
-            return StronkT {lhs.template unwrap<StronkT>() * rhs};
-        }
-
-        constexpr friend auto operator*(const T& lhs, const StronkT& rhs) noexcept -> StronkT
-        {
-            return StronkT {lhs * rhs.template unwrap<StronkT>()};
-        }
-    };
-};
-
-template<typename StronkT>
-struct can_divide
-{
-    using can_divide_with_self = std::true_type;
-
-    constexpr friend auto operator/=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
-    {
-        lhs.template unwrap<StronkT>() /= rhs.template unwrap<StronkT>();
-        return lhs;
-    }
-
-    constexpr friend auto operator/(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
-    {
-        return StronkT {lhs.template unwrap<StronkT>() / rhs.template unwrap<StronkT>()};
-    }
-};
-
-template<typename T>
-struct can_divide_with
-{
-    template<typename StronkT>
-    struct skill
-    {
-        constexpr friend auto operator/=(StronkT& lhs, const T& rhs) noexcept -> StronkT
-        {
-            lhs.template unwrap<StronkT>() /= rhs;
-            return lhs;
-        }
-
-        constexpr friend auto operator/(const StronkT& lhs, const T& rhs) noexcept -> StronkT
-        {
-            return StronkT {lhs.template unwrap<StronkT>() / rhs};
-        }
-    };
-};
-
-// The skills can_divide and can_multiply are different from the unit system -
-// multiplying two A*A with can_multiply results in type 'A', where with units
-// it results in an 'A^2' type. Therefore the two systems cannot be mixed. We
-// recommend using units.
-template<typename StronkT>
-concept is_none_unit_behaving = (std::same_as<typename StronkT::can_multiply_with_self, std::true_type>
-                                 || std::same_as<typename StronkT::can_divide_with_self, std::true_type>);
 
 template<typename StronkT>
 struct can_equate
@@ -393,98 +307,6 @@ struct can_order
 };
 
 template<typename StronkT>
-struct can_abs
-{
-    [[nodiscard]]
-    constexpr auto abs() const noexcept -> StronkT
-    {
-        return StronkT {std::abs(static_cast<const StronkT&>(*this).template unwrap<StronkT>())};
-    }
-};
-
-template<typename T>
-concept can_abs_like = stronk_like<T> && requires(T v) {
-    {
-        v.abs()
-    } -> std::same_as<T>;
-};
-
-[[nodiscard]]
-constexpr auto abs(can_abs_like auto elem) noexcept
-{
-    return elem.abs();
-}
-
-template<typename StronkT>
-struct can_isnan
-{
-    [[nodiscard]]
-    constexpr auto isnan() const noexcept -> bool
-    {
-        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
-        return std::isnan(static_cast<const StronkT&>(*this).template unwrap<StronkT>());
-    }
-
-    [[nodiscard]]
-    constexpr static auto quiet_NaN() -> StronkT  // NOLINT(readability-identifier-naming)
-    {
-        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
-        return StronkT {std::numeric_limits<typename StronkT::underlying_type>::quiet_NaN()};
-    }
-
-    [[nodiscard]]
-    constexpr static auto signaling_NaN() -> StronkT  // NOLINT(readability-identifier-naming)
-    {
-        static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
-        return StronkT {std::numeric_limits<typename StronkT::underlying_type>::signaling_NaN()};
-    }
-};
-
-template<typename T>
-concept can_isnan_like = stronk_like<T> && requires(T v) {
-    {
-        v.isnan()
-    } -> std::same_as<bool>;
-};
-
-[[nodiscard]]
-constexpr auto isnan(can_isnan_like auto elem) noexcept -> bool
-{
-    return elem.isnan();
-}
-
-template<typename StronkT>
-struct can_be_used_as_flag
-{
-    [[nodiscard]]
-    constexpr auto is_on() const noexcept -> bool
-    {
-        static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>();
-    }
-
-    [[nodiscard]]
-    constexpr auto is_off() const noexcept -> bool
-    {
-        return !this->is_on();
-    }
-
-    [[nodiscard]]
-    static constexpr auto on() noexcept -> StronkT
-    {
-        static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT {true};
-    }
-
-    [[nodiscard]]
-    static constexpr auto off() noexcept -> StronkT
-    {
-        static_assert(std::is_same_v<typename StronkT::underlying_type, bool>);
-        return StronkT {false};
-    }
-};
-
-template<typename StronkT>
 struct can_size
 {
     [[nodiscard]]
@@ -499,87 +321,14 @@ struct can_size
     }
 };
 
-template<typename StronkT>
-struct can_const_iterate
-{
-    [[nodiscard]]
-    constexpr auto begin() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
-    }
-    [[nodiscard]]
-    constexpr auto end() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
-    }
-
-    [[nodiscard]]
-    constexpr auto cbegin() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().begin();
-    }
-    [[nodiscard]]
-    constexpr auto cend() const noexcept
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().end();
-    }
-};
-
-template<typename StronkT>
-struct can_iterate : can_const_iterate<StronkT>
-{
-    using can_const_iterate<StronkT>::begin;
-    using can_const_iterate<StronkT>::end;
-
-    using can_const_iterate<StronkT>::cbegin;
-    using can_const_iterate<StronkT>::cend;
-
-    [[nodiscard]]
-    constexpr auto begin() noexcept
-    {
-        return static_cast<StronkT&>(*this).template unwrap<StronkT>().begin();
-    }
-    [[nodiscard]]
-    constexpr auto end() noexcept
-    {
-        return static_cast<StronkT&>(*this).template unwrap<StronkT>().end();
-    }
-};
-
-template<typename StronkT>
-struct can_const_index
-{
-    [[nodiscard]]
-    constexpr auto operator[](const auto& indexer) const noexcept -> const auto&
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>()[indexer];
-    }
-
-    [[nodiscard]]
-    constexpr auto at(const auto& indexer) const -> const auto&
-    {
-        return static_cast<const StronkT&>(*this).template unwrap<StronkT>().at(indexer);
-    }
-};
-
-template<typename StronkT>
-struct can_index : can_const_index<StronkT>
-{
-    using can_const_index<StronkT>::operator[];
-    using can_const_index<StronkT>::at;
-
-    [[nodiscard]]
-    constexpr auto operator[](const auto& indexer) noexcept -> auto&
-    {
-        return static_cast<StronkT&>(*this).template unwrap<StronkT>()[indexer];
-    }
-
-    [[nodiscard]]
-    constexpr auto at(const auto& indexer) -> auto&
-    {
-        return static_cast<StronkT&>(*this).template unwrap<StronkT>().at(indexer);
-    }
-};
-
-
 }  // namespace twig
+
+// TODO(anders.wind) remove
+// here because we want to be backwards compatible, fix when downstream has been updated to import these directly
+#include "stronk/can_abs.hpp"              // IWYU pragma: keep
+#include "stronk/can_be_used_as_flag.hpp"  // IWYU pragma: keep
+#include "stronk/can_divide.hpp"           // IWYU pragma: keep
+#include "stronk/can_index.hpp"            // IWYU pragma: keep
+#include "stronk/can_isnan.hpp"            // IWYU pragma: keep
+#include "stronk/can_iterate.hpp"          // IWYU pragma: keep
+#include "stronk/can_multiply.hpp"         // IWYU pragma: keep

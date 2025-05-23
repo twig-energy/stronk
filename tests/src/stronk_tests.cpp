@@ -92,6 +92,7 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
         [[maybe_unused]]
         auto copy = val;
         EXPECT_FALSE(marker);
+        [[maybe_unused]]
         auto moved = std::move(val);
         EXPECT_TRUE(marker);
     }
@@ -167,9 +168,9 @@ struct a_type_with_multiple_members
     int a;
     double b;
 
-    a_type_with_multiple_members(int a, double b)
-        : a(a)
-        , b(b)
+    a_type_with_multiple_members(int a_, double b_)
+        : a(a_)
+        , b(b_)
     {
     }
 };
