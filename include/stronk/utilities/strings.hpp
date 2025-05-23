@@ -11,14 +11,14 @@ namespace twig::stronk_details::str
 template<size_t N>
 struct string_literal
 {
-    std::array<char, N> value {};  // NOLINT
+    std::array<char, N> value {};
 
     consteval explicit(false) string_literal(const char (&str)[N]) noexcept  // NOLINT
     {
-        std::copy_n(static_cast<const char*>(str), N, this->value.data());  // NOLINT
+        std::copy_n(static_cast<const char*>(str), N, this->value.data());
     }
 
-    constexpr explicit operator std::string_view() const noexcept  // NOLINT
+    constexpr explicit operator std::string_view() const noexcept
     {
         return std::string_view {this->value.data(), N - 1};
     }
