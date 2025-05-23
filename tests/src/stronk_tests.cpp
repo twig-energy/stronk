@@ -14,7 +14,12 @@
 
 #include <gtest/gtest.h>
 
-#include "stronk/prefabs.hpp"
+#include "stronk/skills/can_abs.hpp"
+#include "stronk/skills/can_divide.hpp"
+#include "stronk/skills/can_index.hpp"
+#include "stronk/skills/can_isnan.hpp"
+#include "stronk/skills/can_iterate.hpp"
+#include "stronk/skills/can_multiply.hpp"
 
 namespace twig
 {

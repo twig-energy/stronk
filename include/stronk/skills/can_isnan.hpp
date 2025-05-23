@@ -1,4 +1,6 @@
 #pragma once
+#include <concepts>
+#include <limits>
 #include <type_traits>
 
 #include "stronk/stronk.hpp"

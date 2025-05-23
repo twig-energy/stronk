@@ -27,6 +27,7 @@ add_executable(
     src/extensions/glaze_tests.cpp
     src/extensions/gtest_tests.cpp
     src/extensions/nlohmann_json_tests.cpp
+    src/prefabs/stronk_flag_tests.cpp
     src/skills/can_decrement_tests.cpp
     src/skills/can_format_tests.cpp
     src/skills/can_hash_tests.cpp
