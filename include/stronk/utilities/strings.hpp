@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <string_view>
@@ -15,7 +14,9 @@ struct string_literal
 
     consteval explicit(false) string_literal(const char (&str)[N]) noexcept  // NOLINT
     {
-        std::copy_n(static_cast<const char*>(str), N, this->value.data());
+        for (auto i = 0; i < N; i++) {
+            value[i] = str[i];
+        }
     }
 
     constexpr explicit operator std::string_view() const noexcept

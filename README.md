@@ -204,7 +204,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 
 Adding new skills is easy so feel free to add more.
 
-## Prefabs: (see `stronk/prefabs/<prefab>.h`)
+## Prefabs: (see `stronk/prefabs/<prefab>.hpp`)
 
 Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
