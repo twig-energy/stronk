@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-#include <limits>
-#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,13 +11,6 @@
 #include "stronk/stronk.hpp"
 
 #include <gtest/gtest.h>
-
-#include "stronk/skills/can_abs.hpp"
-#include "stronk/skills/can_divide.hpp"
-#include "stronk/skills/can_index.hpp"
-#include "stronk/skills/can_isnan.hpp"
-#include "stronk/skills/can_iterate.hpp"
-#include "stronk/skills/can_multiply.hpp"
 
 namespace twig
 {
@@ -411,57 +402,6 @@ TEST(can_subtract, subtracting_behaves_similar_to_integers)
     }
 }
 
-struct a_multiplying_type : stronk<a_multiplying_type, int, can_multiply, can_equate>
-{
-    using stronk::stronk;
-};
-
-TEST(can_multiply, can_multiply_numbers_correctly)
-{
-    auto val_1 = a_multiplying_type {5};
-    auto val_2 = a_multiplying_type {2};
-    EXPECT_EQ(val_1 * val_2, a_multiplying_type {10});
-    val_1 *= val_2;
-
-    EXPECT_EQ(val_1 * val_2, a_multiplying_type {20});
-}
-
-TEST(can_multiply, multiplying_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(a_multiplying_type {i * j}, a_multiplying_type {i} * a_multiplying_type {j});
-        }
-    }
-}
-
-struct a_dividing_type : stronk<a_dividing_type, int, can_divide, can_equate>
-{
-    using stronk::stronk;
-};
-
-TEST(can_divide, can_divide_numbers_correctly)
-{
-    auto divideable1 = a_dividing_type {8};
-    auto divideable2 = a_dividing_type {2};
-    EXPECT_EQ(divideable1 / divideable2, a_dividing_type {4});
-    divideable1 /= divideable2;
-
-    EXPECT_EQ(divideable1 / divideable2, a_dividing_type {2});
-}
-
-TEST(can_divide, dividing_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            if (j == 0) {
-                continue;
-            }
-            EXPECT_EQ(a_dividing_type {i / j}, a_dividing_type {i} / a_dividing_type {j});
-        }
-    }
-}
-
 struct a_fuzzy_equal_float_type : stronk<a_fuzzy_equal_float_type, double, can_equate_with_is_close_abs_tol_only>
 {
     using stronk::stronk;
@@ -474,53 +414,6 @@ TEST(can_equate_with_is_close, is_close_is_applied_so_we_get_fuzzy_equal)
     EXPECT_EQ(a_fuzzy_equal_float_type {10 + 1e-9}, a_fuzzy_equal_float_type {10});
     EXPECT_NE(a_fuzzy_equal_float_type {10}, a_fuzzy_equal_float_type {-10});
     EXPECT_NE(a_fuzzy_equal_float_type {10 + 1e-7}, a_fuzzy_equal_float_type {10});
-}
-
-struct an_abs_min_max_type : stronk<an_abs_min_max_type, int, can_order, can_equate, can_abs>
-{
-    using stronk::stronk;
-};
-
-TEST(can_abs, abs_is_applied_correctly)
-{
-    EXPECT_EQ(twig::abs(an_abs_min_max_type {10}), an_abs_min_max_type {10});
-    EXPECT_EQ(twig::abs(an_abs_min_max_type {-10}), an_abs_min_max_type {10});
-
-    EXPECT_EQ(an_abs_min_max_type {10}.abs(), an_abs_min_max_type {10});
-    EXPECT_EQ(an_abs_min_max_type {-10}.abs(), an_abs_min_max_type {10});
-}
-
-TEST(can_abs, abs_behaves_similar_to_integer_abs)
-{
-    for (auto i = -16; i < 16; i++) {
-        EXPECT_EQ(an_abs_min_max_type {std::abs(i)}, twig::abs(an_abs_min_max_type {i}));
-    }
-}
-
-struct an_isnan_type : stronk<an_isnan_type, float, can_isnan>
-{
-    using stronk::stronk;
-};
-
-TEST(can_isnan, isnan_works)
-{
-    EXPECT_FALSE(twig::isnan(an_isnan_type {0.F}));
-    EXPECT_FALSE(twig::isnan(an_isnan_type {1.F}));
-    EXPECT_FALSE(twig::isnan(an_isnan_type {-1.1F}));
-    EXPECT_TRUE(twig::isnan(an_isnan_type {std::numeric_limits<float>::quiet_NaN()}));
-    EXPECT_TRUE(twig::isnan(an_isnan_type {-std::numeric_limits<float>::quiet_NaN()}));
-    EXPECT_TRUE(twig::isnan(an_isnan_type {std::numeric_limits<float>::signaling_NaN()}));
-    EXPECT_TRUE(twig::isnan(an_isnan_type {-std::numeric_limits<float>::signaling_NaN()}));
-}
-
-TEST(can_isnan, quiet_NaN_isnan)
-{
-    EXPECT_TRUE(twig::isnan(an_isnan_type::quiet_NaN()));
-}
-
-TEST(can_isnan, signaling_NaN_isnan)
-{
-    EXPECT_TRUE(twig::isnan(an_isnan_type::signaling_NaN()));
 }
 
 struct a_negatable_type : stronk<a_negatable_type, int32_t, can_negate, can_equate>
@@ -580,89 +473,6 @@ TEST(can_size, can_size_works_for_vectors)
     }
 }
 
-struct a_can_iterate_vector_type : stronk<a_can_iterate_vector_type, std::vector<int>, can_iterate>
-{
-    using stronk::stronk;
-};
-
-TEST(can_const_iterate, can_const_iterate_works_for_vectors)
-{
-    for (size_t i = 0; i < 16; i++) {
-        const auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_iterate_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (const auto& val : vector) {
-            EXPECT_EQ(val, curr);
-            curr++;
-        }
-    }
-}
-
-TEST(can_iterate, can_iterate_works_for_vectors)
-{
-    for (size_t i = 0; i < 16; i++) {
-        auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_iterate_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (auto& val : vector) {
-            val++;
-            EXPECT_EQ(val, curr + 1);
-            curr++;
-        }
-    }
-}
-
-struct a_can_index_vector_type : stronk<a_can_index_vector_type, std::vector<int>, can_index>
-{
-    using stronk::stronk;
-};
-
-TEST(can_const_index, can_const_index_works_for_vectors)
-{
-    for (size_t i = 0; i < 16; i++) {
-        const auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_index_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (size_t j = 0; j < i; j++) {
-            EXPECT_EQ(vector.at(j), curr);
-            EXPECT_EQ(vector[j], curr);
-            curr++;
-        }
-    }
-}
-
-TEST(can_index, can_index_works_for_vectors)
-{
-    for (size_t i = 0; i < 16; i++) {
-        auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_index_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (size_t j = 0; j < i; j++) {
-            vector.at(j)++;
-            vector[j]++;
-            EXPECT_EQ(vector.at(j), curr + 2);
-            EXPECT_EQ(vector[j], curr + 2);
-            curr++;
-        }
-    }
-}
-
 struct type_which_is_an_underlying_type : stronk<type_which_is_an_underlying_type, int>
 {
     using stronk::stronk;
@@ -683,49 +493,5 @@ TEST(is_a, is_a_works_at_multiple_levels)
     func(second_level.unwrap_as<wrapping_is_a_type, type_which_is_an_underlying_type>()
              .unwrap_as<type_which_is_an_underlying_type, int>());
 };
-
-struct a_can_multiply_with_int_and_double_type
-    : stronk<a_can_multiply_with_int_and_double_type,
-             double,
-             can_multiply_with<int>::skill,
-             can_multiply_with<double>::skill,
-             can_equate_underlying_type_specific>
-{
-    using stronk::stronk;
-};
-
-TEST(can_multiply_with, can_multiply_with_integers_and_other_types)
-{
-    auto val = a_can_multiply_with_int_and_double_type {2};
-    val *= 10;
-    val = 10 * val;
-    val = val * 10;
-    EXPECT_EQ(val, a_can_multiply_with_int_and_double_type {2000});
-    val *= 0.1;
-    val = 0.1 * val;
-    val = val * 0.1;
-    EXPECT_EQ(val, a_can_multiply_with_int_and_double_type {2});
-}
-
-struct a_can_divide_with_int_and_double_type
-    : stronk<a_can_divide_with_int_and_double_type,
-             double,
-             can_divide_with<int>::skill,
-             can_divide_with<double>::skill,
-             can_equate_underlying_type_specific>
-{
-    using stronk::stronk;
-};
-
-TEST(can_divide_with, can_divide_with_integers_and_other_types)
-{
-    auto val = a_can_divide_with_int_and_double_type {200};
-    val /= 10;
-    val = val / 10;
-    EXPECT_EQ(val, a_can_divide_with_int_and_double_type {2}) << val.unwrap<a_can_divide_with_int_and_double_type>();
-    val /= 0.1;
-    val = val / 0.1;
-    EXPECT_EQ(val, a_can_divide_with_int_and_double_type {200});
-}
 
 }  // namespace twig

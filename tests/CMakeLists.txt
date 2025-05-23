@@ -28,10 +28,16 @@ add_executable(
     src/extensions/gtest_tests.cpp
     src/extensions/nlohmann_json_tests.cpp
     src/prefabs/stronk_flag_tests.cpp
+    src/skills/can_abs_tests.cpp
     src/skills/can_decrement_tests.cpp
+    src/skills/can_divide_tests.cpp
     src/skills/can_format_tests.cpp
     src/skills/can_hash_tests.cpp
     src/skills/can_increment_tests.cpp
+    src/skills/can_index_tests.cpp
+    src/skills/can_isnan_tests.cpp
+    src/skills/can_iterate_tests.cpp
+    src/skills/can_multiply_tests.cpp
     src/skills/can_stream_tests.cpp
     src/specializers_tests.cpp
     src/stronk_tests.cpp
