@@ -1,4 +1,5 @@
 #include <sstream>
+#include <vector>
 
 #include "stronk/extensions/gtest.hpp"
 

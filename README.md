@@ -33,8 +33,8 @@
 #include <iostream>
 #include <string>
 
-#include <stronk/can_stream.h>
-#include <stronk/stronk.h>
+#include <stronk/can_stream.hpp>
+#include <stronk/stronk.hpp>
 
 struct FirstName : twig::stronk<FirstName, std::string, twig::can_ostream>
 {
@@ -66,8 +66,8 @@ On top of providing strong type utilities, `stronk` also enables unit-like behav
 #include <concepts>
 #include <ratio>
 
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include <stronk/stronk.hpp>
+#include <stronk/unit.hpp>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
 struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>
@@ -224,7 +224,7 @@ By default the units are generated with the `stronk_default_unit` type.
 #include <cstdint>
 #include <ratio>
 
-#include <stronk/unit.h>
+#include <stronk/unit.hpp>
 
 // Let's consider the following units:
 struct meters_unit : twig::unit<meters_unit, std::ratio<1>>

@@ -1,10 +1,10 @@
+#include <fmt/format.h>
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
-
-#    include "stronk/extensions/fmt.hpp"
 
 #    include <fmt/core.h>
 #    include <gtest/gtest.h>
 
+#    include "stronk/extensions/fmt.hpp"
 #    include "stronk/stronk.hpp"
 
 namespace twig
