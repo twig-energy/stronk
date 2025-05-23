@@ -224,7 +224,7 @@ By default the units are generated with the `stronk_default_unit` type.
 #include <cstdint>
 #include <ratio>
 
-#include <stronk/unit.hpp>
+#include "stronk/unit.hpp"
 
 // Let's consider the following units:
 struct meters_unit : twig::unit<meters_unit, std::ratio<1>>
