@@ -195,7 +195,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_increment` adds both `operator++` operators.
 - `can_decrement` adds both `operator--` operators.
 
-### Third Party Library extensions (see `stronk/extensions/<library>.h`)
+### Third Party Library extensions (see `stronk/extensions/<library>.hpp`)
 
 - `can_absl_hash`: implements the `AbslHashValue` friend function.
 - `can_gtest_print`: for printing the values in gtest check macros
@@ -204,11 +204,10 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 
 Adding new skills is easy so feel free to add more.
 
-## Prefabs: (see `stronk/prefabs.h`)
+## Prefabs: (see `stronk/prefabs/<prefab>.h`)
 
 Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
-- `stronk_default_unit`: arithmetic unit with most of the regular operations
 - `stronk_flag`: flag like boolean with equal operators etc.
 
 ## Examples
