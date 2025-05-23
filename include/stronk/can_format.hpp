@@ -1,7 +1,7 @@
 #pragma once
 #include <format>
 
-#include <stronk/stronk.h>
+#include "stronk/stronk.hpp"
 
 template<twig::stronk_like StronkT>
 struct std::formatter<StronkT> : std::formatter<typename StronkT::underlying_type>

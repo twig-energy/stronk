@@ -1,9 +1,11 @@
 #include <cstdint>
 #include <functional>
 
+#include "stronk/can_hash.hpp"
+
 #include <gtest/gtest.h>
-#include <stronk/can_hash.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

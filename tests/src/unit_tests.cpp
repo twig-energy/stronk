@@ -2,15 +2,17 @@
 #include <cstdint>
 #include <ratio>
 
+#include "stronk/unit.hpp"
+
 #include <fmt/format.h>
 #include <gtest/gtest.h>
+
+#include "stronk/stronk.hpp"
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
-#    include <stronk/extensions/fmt.h>  // IWYU pragma: keep
+#    include "stronk/extensions/fmt.h"  // IWYU pragma: keep
 #endif
-#include <stronk/extensions/gtest.h>  // IWYU pragma: keep for printing values in assertions
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
-#include <stronk/utilities/dimensions.hpp>
+#include "stronk/extensions/gtest.h"  // IWYU pragma: keep for printing values in assertions
+#include "stronk/utilities/dimensions.hpp"
 
 namespace twig
 {

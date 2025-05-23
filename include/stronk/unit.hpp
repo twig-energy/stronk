@@ -4,9 +4,10 @@
 #include <type_traits>
 #include <utility>
 
-#include <stronk/stronk.h>
 #include <stronk/utilities/dimensions.hpp>
 #include <stronk/utilities/macros.hpp>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

@@ -2,7 +2,8 @@
 // IWYU pragma: always_keep
 
 #include <glaze/core/meta.hpp>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 template<twig::stronk_like StronkT>
 struct glz::meta<StronkT>

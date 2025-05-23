@@ -4,7 +4,8 @@
 #include <concepts>
 
 #include <doctest/doctest.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

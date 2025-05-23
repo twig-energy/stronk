@@ -1,5 +1,5 @@
 #pragma once
-#include <stronk/stronk.h>
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

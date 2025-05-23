@@ -2,8 +2,9 @@
 #include <iostream>
 #include <ratio>
 
-#include <stronk/can_stream.h>
-#include <stronk/unit.h>
+#include "stronk/unit.hpp"
+
+#include "stronk/can_stream.hpp"
 
 namespace twig
 {

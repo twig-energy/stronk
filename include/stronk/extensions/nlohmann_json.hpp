@@ -4,7 +4,8 @@
 #include <nlohmann/adl_serializer.hpp>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 template<twig::stronk_like T>
 struct nlohmann::adl_serializer<T>

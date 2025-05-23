@@ -1,8 +1,8 @@
 #include <concepts>
 #include <ratio>
 
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include <stronk/stronk.hpp>
+#include <stronk/unit.hpp>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
 struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>

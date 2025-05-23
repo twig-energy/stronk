@@ -1,2 +1,2 @@
 #pragma once
-#include <stronk/can_increment.h>  // IWYU pragma: keep
+#include "stronk/can_increment.hpp"  // IWYU pragma: keep

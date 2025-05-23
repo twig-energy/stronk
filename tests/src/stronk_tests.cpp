@@ -10,9 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "stronk/stronk.hpp"
+
 #include <gtest/gtest.h>
-#include <stronk/prefabs.h>
-#include <stronk/stronk.h>
+
+#include "stronk/prefabs.hpp"
 
 namespace twig
 {

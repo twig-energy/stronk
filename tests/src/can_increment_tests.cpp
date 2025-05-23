@@ -1,8 +1,10 @@
 #include <cstdint>
 
+#include "stronk/can_increment.hpp"
+
 #include <gtest/gtest.h>
-#include <stronk/can_increment.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

@@ -1,8 +1,6 @@
 #pragma once
 #include <utility>
 
-#include <absl/hash/hash.h>
-
 namespace twig
 {
 template<class StronkT>
