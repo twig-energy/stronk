@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include <boost/type_index/ctti_type_index.hpp>
-#include <stronk/utilities/constexpr_helpers.h>
+#include <stronk/utilities/constexpr_helpers.hpp>
 
 namespace twig
 {

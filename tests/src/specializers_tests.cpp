@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
-#include <stronk/utilities/macros.h>
+#include <stronk/utilities/macros.hpp>
 
 namespace twig::tests
 {

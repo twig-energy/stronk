@@ -2,7 +2,7 @@
 #include <cmath>
 #include <concepts>
 
-#include <stronk/utilities/constexpr_helpers.h>
+#include <stronk/utilities/constexpr_helpers.hpp>
 
 namespace twig::stronk_details
 {

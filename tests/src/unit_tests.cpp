@@ -10,7 +10,7 @@
 #include <stronk/extensions/gtest.h>  // IWYU pragma: keep for printing values in assertions
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
-#include <stronk/utilities/dimensions.h>
+#include <stronk/utilities/dimensions.hpp>
 
 namespace twig
 {

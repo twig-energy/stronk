@@ -9,7 +9,7 @@
 
 #include <stronk/stronk.h>
 #include <stronk/unit.h>
-#include <stronk/utilities/constexpr_helpers.h>
+#include <stronk/utilities/constexpr_helpers.hpp>
 
 struct a_unit : twig::stronk_default_unit<a_unit, std::ratio<1>>
 {

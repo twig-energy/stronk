@@ -1,6 +1,6 @@
 #include <concepts>
 
-#include <stronk/utilities/dimensions.h>
+#include <stronk/utilities/dimensions.hpp>
 
 namespace twig::details
 {
