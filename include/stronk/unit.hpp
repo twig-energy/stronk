@@ -64,28 +64,28 @@ struct unit
             return value<NewUnderlyingT> {static_cast<NewUnderlyingT>(this->val())};
         }
 
+        // utility function for static casting to same unit with different underlying type
+        template<typename NewUnderlyingT>
+        constexpr auto cast() const -> scaled_t<ScaleT>::template value<NewUnderlyingT>
+        {
+            return static_cast<value<NewUnderlyingT>>(*this);
+        }
+
         /**
          * @brief Convert the value to another scale, potentially with a different underlying type
          *
-         * @tparam NewScaleT The new scale to use
-         * @tparam NewUnderlyingT the new underlying type to use
-         * @return a new unit with same dimensions, but with the specified scale and underlying type
+         * @tparam NewUnitValueT The new unit value type to convert to with same dimensions and underlying type
+         * @return a new unit with same dimensions and underlying type, but with the specified scale
          */
-        template<typename NewScaleT, typename NewUnderlyingT = UnderlyingT>
-        constexpr auto to() const -> scaled_t<NewScaleT>::template value<NewUnderlyingT>
-        {
-            using converter = std::ratio_divide<ScaleT, NewScaleT>;
-            using result_value_t = scaled_t<NewScaleT>::template value<NewUnderlyingT>;
-            return result_value_t {static_cast<NewUnderlyingT>(this->val() * converter::num / converter::den)};
-        }
-
         template<unit_value_like NewUnitValueT>
-            requires(std::same_as<typename NewUnitValueT::unit_t::dimensions_t, dimensions_t>)
-        constexpr auto as() const -> NewUnitValueT
+            requires(std::same_as<typename NewUnitValueT::unit_t::dimensions_t, dimensions_t>
+                     && std::same_as<UnderlyingT, typename NewUnitValueT::underlying_type>)
+        constexpr auto to() const -> NewUnitValueT
         {
             using new_scale_t = typename NewUnitValueT::unit_t::scale_t;
-            using new_underlying_t = typename NewUnitValueT::underlying_type;
-            return this->to<new_scale_t, new_underlying_t>();
+            using converter = std::ratio_divide<ScaleT, new_scale_t>;
+            using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
+            return result_value_t {static_cast<UnderlyingT>(this->val() * converter::num / converter::den)};
         }
     };
 };

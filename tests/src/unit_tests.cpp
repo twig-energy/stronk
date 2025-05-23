@@ -370,19 +370,19 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     using km_t = meters::scaled_t<std::kilo>;
     using um_t = meters::scaled_t<std::micro>;
 
-    auto km = m.to<std::kilo>();
+    is_unit<meters> auto km = m.to<km_t::value<double>>();
     auto expected_km = make<km_t>(2.0 / 1'000.0);
     EXPECT_EQ(km, expected_km);
 
-    auto um = m.to<std::micro>();
+    auto um = m.to<um_t::value<double>>();
     auto expected_um = make<um_t>(2'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    um = make<std::kilo, meters>(3.0).to<std::micro>();
+    um = make<std::kilo, meters>(3.0).to<um_t::value<double>>();
     expected_um = make<um_t>(3'000'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    km = make<um_t>(4.0).to<std::kilo>();
+    km = make<um_t>(4.0).to<km_t::value<double>>();
     expected_km = make<km_t>(4.0 / 1'000'000'000.0);
     EXPECT_EQ(km, expected_km);
 
@@ -396,7 +396,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     using hr_t = seconds::scaled_t<std::ratio<60UL * 60>>;
     using km_per_hr_t = meters_per_second::scaled_t<std::ratio<1000, 60UL * 60>>;
 
-    auto hr = s.to<std::ratio<60UL * 60>>();
+    auto hr = s.to<hr_t::value<double>>();
     auto expected_hr = make<hr_t>(2.0);
     EXPECT_EQ(hr, expected_hr);
 
@@ -404,7 +404,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_km_per_hr = unit_value_t<km_per_hr_t, double>(4.0);
 
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
-    auto converted_to_km_per_hr = km_per_s.to<std::ratio<1000, 60UL * 60>>();
+    auto converted_to_km_per_hr = km_per_s.to<km_per_hr_t::value<double>>();
     EXPECT_EQ(converted_to_km_per_hr, expected_km_per_hr);
 }
 

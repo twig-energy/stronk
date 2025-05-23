@@ -56,7 +56,7 @@ using force_unit = multiplied_unit_t<kilograms_unit, acceleration_unit>;
 void example()
 {
     auto two_hours = hours<int64_t> {2};
-    std::cout << two_hours.as<minutes<int64_t>>() << " should be " << 120 << std::endl;
+    std::cout << two_hours.to<minutes<int64_t>>() << " should be " << 120 << std::endl;
 
     is_unit<meters_unit> auto ten_km = kilo_meters<double> {10.};
     is_unit<seconds_unit> auto forty_minutes = minutes<int> {40};
@@ -69,7 +69,7 @@ void example()
 
     // units can be multiplied and divided by IdentityUnits (values without units)
     is_unit<meters_unit> auto thirty_km = meters<double> {30.} * 1000;
-    std::cout << distance_moved_over_2_hours_at_speed.as<meters<int64_t>>() << " should be " << thirty_km << std::endl;
+    std::cout << distance_moved_over_2_hours_at_speed.to<meters<double>>() << " should be " << thirty_km << std::endl;
 }
 
 }  // namespace twig
