@@ -1,5 +1,7 @@
 
 
+#include <cstdlib>
+
 #include "stronk/skills/can_abs.hpp"
 
 #include <gtest/gtest.h>

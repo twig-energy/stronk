@@ -1,5 +1,7 @@
 
+#include <cstddef>
 #include <numeric>
+#include <vector>
 
 #include "stronk/skills/can_iterate.hpp"
 

@@ -1,5 +1,7 @@
 
 
+#include <limits>
+
 #include "stronk/skills/can_isnan.hpp"
 
 #include <gtest/gtest.h>
