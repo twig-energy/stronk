@@ -34,19 +34,17 @@ struct can_fmt_format
 template<typename T>
 concept can_special_fmt_format_like = stronk_like<T> && requires(T v) {
     {
-        T::fmt_string.value
-    } -> std::convertible_to<std::string_view>;
+        static_cast<std::string_view>(T::fmt_string)
+    } -> std::same_as<std::string_view>;
 };
 
 }  // namespace twig
 
 template<twig::can_special_fmt_format_like T>
 struct fmt::formatter<T>
-    : std::conditional_t<std::string_view(T::fmt_string.value) == "{}",
-                         formatter<typename T::underlying_type>,
-                         formatter<fmt::string_view>>
+    : std::conditional_t<T::fmt_string == "{}", formatter<typename T::underlying_type>, formatter<fmt::string_view>>
 {
-    constexpr static auto fmt_string = std::string_view(T::fmt_string.value);
+    constexpr static auto fmt_string = static_cast<std::string_view>(T::fmt_string);
 
     template<typename FormatContext>
     auto format(const T& val, FormatContext& ctx) const

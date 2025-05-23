@@ -15,6 +15,9 @@ struct a_formattable_type : stronk<a_formattable_type, int, can_fmt_format_build
     using stronk::stronk;
 };
 
+static_assert(a_formattable_type::fmt_string == "a_formattable_type({})");
+static_assert(can_special_fmt_format_like<a_formattable_type>);
+
 TEST(can_fmt_format_builder, format_string_is_correctly_applied_via_can_fmt_format_builder)  // NOLINT
 {
     EXPECT_EQ(fmt::format("{}", a_formattable_type {5}), "a_formattable_type(5)");

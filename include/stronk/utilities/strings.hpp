@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <string_view>
 
 namespace twig::stronk_details::str
 {
@@ -15,6 +16,16 @@ struct string_literal
     consteval explicit(false) string_literal(const char (&str)[N]) noexcept  // NOLINT
     {
         std::copy_n(static_cast<const char*>(str), N, this->value.data());  // NOLINT
+    }
+
+    constexpr explicit operator std::string_view() const noexcept  // NOLINT
+    {
+        return std::string_view {this->value.data(), N - 1};
+    }
+
+    constexpr auto operator==(std::string_view other) const noexcept -> bool
+    {
+        return static_cast<std::string_view>(*this) == other;
     }
 };
 
