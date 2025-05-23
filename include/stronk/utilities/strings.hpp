@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <array>
 #include <cstddef>
 
 namespace twig::stronk_details::str
@@ -9,7 +10,7 @@ namespace twig::stronk_details::str
 template<size_t N>
 struct string_literal
 {
-    std::array<char, N> value;  // NOLINT
+    std::array<char, N> value {};  // NOLINT
 
     consteval explicit(false) string_literal(const char (&str)[N]) noexcept  // NOLINT
     {

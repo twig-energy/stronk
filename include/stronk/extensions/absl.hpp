@@ -1,6 +1,8 @@
 #pragma once
 #include <utility>
 
+#include <absl/hash/hash.h>  // IWYU pragma: keep
+
 namespace twig
 {
 template<class StronkT>
