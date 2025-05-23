@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "stronk/can_hash.hpp"
+#include "stronk/skills/can_hash.hpp"
 
 #include <gtest/gtest.h>
 

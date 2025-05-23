@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "stronk/can_stream.hpp"
+#include "stronk/skills/can_stream.hpp"
 
 #include <gtest/gtest.h>
 

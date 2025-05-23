@@ -33,7 +33,7 @@
 #include <iostream>
 #include <string>
 
-#include <stronk/can_stream.hpp>
+#include <stronk/skills/can_stream.hpp>
 #include <stronk/stronk.hpp>
 
 struct FirstName : twig::stronk<FirstName, std::string, twig::can_ostream>

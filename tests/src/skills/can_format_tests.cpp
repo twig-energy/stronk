@@ -1,7 +1,7 @@
 #if __has_include(<format>)
 #    include <format>
 
-#    include "stronk/can_format.hpp"
+#    include "stronk/skills/can_format.hpp"
 
 #    include <gtest/gtest.h>
 

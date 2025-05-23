@@ -4,7 +4,7 @@
 
 #include "stronk/unit.hpp"
 
-#include "stronk/can_stream.hpp"
+#include "stronk/skills/can_stream.hpp"
 
 namespace twig
 {

@@ -1,3 +1,3 @@
 #pragma once
-
-#include "stronk/prefabs.hpp"  // IWYU pragma: keep
+// TODO(anders.wind) remove once downstream includes the right headers
+#include "stronk/prefabs/stronk_flags.hpp"  // IWYU pragma: keep

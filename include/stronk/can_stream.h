@@ -1,3 +1,4 @@
 #pragma once
 
-#include "stronk/can_stream.hpp"  // IWYU pragma: keep
+// TODO(anders.wind) remove once upgraded downstream
+#include "stronk/skills/can_stream.hpp"  // IWYU pragma: keep

@@ -1,6 +1,6 @@
 #include <cstdint>
 
-#include "stronk/can_increment.hpp"
+#include "stronk/skills/can_increment.hpp"
 
 #include <gtest/gtest.h>
 

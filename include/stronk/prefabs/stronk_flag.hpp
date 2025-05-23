@@ -1,4 +1,6 @@
 #pragma once
+
+#include "stronk/skills/can_be_used_as_flag.hpp"
 #include "stronk/stronk.hpp"
 
 namespace twig

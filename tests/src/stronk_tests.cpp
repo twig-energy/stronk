@@ -93,7 +93,7 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
         auto copy = val;
         EXPECT_FALSE(marker);
         [[maybe_unused]]
-        auto moved = std::move(val);
+        auto moved = std::move(val);  // has side effect
         EXPECT_TRUE(marker);
     }
 
@@ -545,30 +545,6 @@ TEST(can_clamp, clamping_behaves_similar_to_integers)
             }
         }
     }
-}
-
-struct a_flag_type : stronk_flag<a_flag_type>
-{
-    using stronk_flag::stronk_flag;
-};
-
-static_assert(a_flag_type::on().is_on());
-static_assert(!a_flag_type::on().is_off());
-static_assert(!a_flag_type::off().is_on());
-static_assert(a_flag_type::off().is_off());
-
-TEST(flag, flag_values_corrosponds_to_bool_values)
-{
-    EXPECT_FALSE(a_flag_type {false}.is_on());
-    EXPECT_TRUE(a_flag_type {false}.is_off());
-    EXPECT_TRUE(a_flag_type {true}.is_on());
-    EXPECT_FALSE(a_flag_type {true}.is_off());
-
-    EXPECT_FALSE(a_flag_type::off().is_on());
-    EXPECT_TRUE(a_flag_type::off().is_off());
-
-    EXPECT_TRUE(a_flag_type::on().is_on());
-    EXPECT_FALSE(a_flag_type::on().is_off());
 }
 
 struct a_size_string_type : stronk<a_size_string_type, std::string, can_size>

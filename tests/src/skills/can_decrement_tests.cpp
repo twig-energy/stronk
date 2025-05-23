@@ -1,4 +1,4 @@
-#include "stronk/can_decrement.hpp"
+#include "stronk/skills/can_decrement.hpp"
 
 #include <gtest/gtest.h>
 
