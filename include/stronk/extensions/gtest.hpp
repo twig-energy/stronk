@@ -16,7 +16,7 @@ concept is_stronk_and_can_ostream = stronk_like<T> && requires(T v, std::ostream
 };
 
 template<twig::is_stronk_and_can_ostream StronkT>
-void PrintTo(const StronkT& val, std::ostream* os)
+void PrintTo(const StronkT& val, std::ostream* os)  // NOLINT(readability-identifier-naming)
 {
     *os << val.template unwrap<StronkT>();
 }
