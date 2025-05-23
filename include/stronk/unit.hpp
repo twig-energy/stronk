@@ -114,15 +114,8 @@ template<scale_like ScaleT, typename UnderlyingT>
 using identity_value_t = identity_unit_t<ScaleT>::template value<UnderlyingT>;
 
 template<typename Tag, scale_like ScaleT, template<typename> typename... Skills>
-using stronk_default_unit = unit<Tag,
-                                 ScaleT,
-                                 can_add,
-                                 can_subtract,
-                                 can_negate,
-                                 can_order,
-                                 can_equate_underlying_type_specific,
-                                 transform_skill,
-                                 Skills...>;
+using stronk_default_unit =
+    unit<Tag, ScaleT, can_add, can_subtract, can_negate, can_order, can_equate_underlying_type_specific, Skills...>;
 
 template<unit_like UnitT, typename UnderlyingT>
 using unit_value_t = typename UnitT::template value<UnderlyingT>;

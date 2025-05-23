@@ -581,9 +581,5 @@ struct can_index : can_const_index<StronkT>
     }
 };
 
-template<typename StronkT>
-struct transform_skill
-{
-};
 
 }  // namespace twig
