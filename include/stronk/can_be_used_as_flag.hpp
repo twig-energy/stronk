@@ -21,14 +21,14 @@ struct can_be_used_as_flag
     }
 
     [[nodiscard]]
-    static constexpr auto on() noexcept -> StronkT
+    constexpr static auto on() noexcept -> StronkT
     {
         static_assert(std::same_as<typename StronkT::underlying_type, bool>);
         return StronkT {true};
     }
 
     [[nodiscard]]
-    static constexpr auto off() noexcept -> StronkT
+    constexpr static auto off() noexcept -> StronkT
     {
         static_assert(std::same_as<typename StronkT::underlying_type, bool>);
         return StronkT {false};
