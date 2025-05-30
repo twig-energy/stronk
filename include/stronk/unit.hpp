@@ -72,7 +72,7 @@ struct unit
         }
 
         /**
-         * @brief Convert the value to another scale, potentially with a different underlying type
+         * @brief Convert the value to another scale
          *
          * @tparam NewUnitValueT The new unit value type to convert to with same dimensions and underlying type
          * @return a new unit with same dimensions and underlying type, but with the specified scale

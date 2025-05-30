@@ -8,7 +8,7 @@ namespace twig
 
 struct a_flag_type : stronk_flag<a_flag_type>
 {
-    using stronk_flag::stronk_flag;
+    using stronk::stronk;
 };
 
 static_assert(a_flag_type::on().is_on());
