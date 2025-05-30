@@ -1,9 +1,11 @@
+#include <fmt/format.h>
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 
 #    include <fmt/core.h>
 #    include <gtest/gtest.h>
-#    include <stronk/extensions/fmt.h>
-#    include <stronk/stronk.h>
+
+#    include "stronk/extensions/fmt.hpp"
+#    include "stronk/stronk.hpp"
 
 namespace twig
 {
@@ -12,6 +14,9 @@ struct a_formattable_type : stronk<a_formattable_type, int, can_fmt_format_build
 {
     using stronk::stronk;
 };
+
+static_assert(a_formattable_type::fmt_string == "a_formattable_type({})");
+static_assert(can_special_fmt_format_like<a_formattable_type>);
 
 TEST(can_fmt_format_builder, format_string_is_correctly_applied_via_can_fmt_format_builder)  // NOLINT
 {

@@ -21,21 +21,27 @@ find_package(doctest CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(
     stronk_test
-    src/can_decrement_tests.cpp
-    src/can_format_tests.cpp
-    src/can_hash_tests.cpp
-    src/can_increment_tests.cpp
-    src/can_stream_tests.cpp
     src/extensions/absl_tests.cpp
     src/extensions/doctest_tests.cpp
     src/extensions/fmt_tests.cpp
     src/extensions/glaze_tests.cpp
     src/extensions/gtest_tests.cpp
     src/extensions/nlohmann_json_tests.cpp
+    src/prefabs/stronk_flag_tests.cpp
+    src/skills/can_abs_tests.cpp
+    src/skills/can_decrement_tests.cpp
+    src/skills/can_divide_tests.cpp
+    src/skills/can_format_tests.cpp
+    src/skills/can_hash_tests.cpp
+    src/skills/can_increment_tests.cpp
+    src/skills/can_index_tests.cpp
+    src/skills/can_isnan_tests.cpp
+    src/skills/can_iterate_tests.cpp
+    src/skills/can_multiply_tests.cpp
+    src/skills/can_stream_tests.cpp
     src/specializers_tests.cpp
     src/stronk_tests.cpp
     src/unit_tests.cpp
-    src/unit_v2_tests.cpp
     src/utilities/dimensions_tests.cpp
 )
 

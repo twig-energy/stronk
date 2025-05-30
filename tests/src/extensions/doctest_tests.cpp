@@ -1,9 +1,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 
+#include "stronk/extensions/doctest.hpp"
+
 #include <doctest/doctest.h>
 #include <gtest/gtest.h>
-#include <stronk/extensions/doctest.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

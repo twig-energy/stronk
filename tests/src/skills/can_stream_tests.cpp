@@ -1,8 +1,10 @@
 #include <sstream>
 
+#include "stronk/skills/can_stream.hpp"
+
 #include <gtest/gtest.h>
-#include <stronk/can_stream.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

@@ -2,75 +2,74 @@
 #include <iostream>
 #include <ratio>
 
-#include <stronk/can_stream.h>
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include "stronk/unit.hpp"
+
+#include "stronk/skills/can_stream.hpp"
 
 namespace twig
 {
 
-// First we define our stronk types:
-struct Distance : stronk<Distance, double, unit, can_equate_with_is_close, can_ostream>
+// Distance
+
+struct meters_unit : twig::unit<meters_unit, std::ratio<1>, can_ostream>
 {
-    using stronk::stronk;
 };
 
-struct Time : stronk<Time, int64_t, unit, can_equate, can_ostream>
+template<typename T>
+using meters = meters_unit::value<T>;
+
+template<typename T>
+using kilo_meters = meters_unit::scaled_t<std::kilo>::value<T>;
+
+// TIME
+
+struct seconds_unit : twig::unit<seconds_unit, std::ratio<1>, can_ostream>
 {
-    using stronk::stronk;
 };
 
-struct Mass : stronk<Mass, int64_t, unit, can_equate, can_ostream>
+template<typename T>
+using seconds = seconds_unit::value<T>;
+
+template<typename T>
+using minutes = seconds_unit::scaled_t<std::ratio<60>>::value<T>;
+
+template<typename T>
+using hours = seconds_unit::scaled_t<std::ratio<3600>>::value<T>;
+
+// MASS
+
+struct kilograms_unit : twig::unit<kilograms_unit, std::ratio<1>, can_ostream>
 {
-    using stronk::stronk;
 };
 
-// Some systems might want to create a stronk type for `Meters`, `Kilometers`, `LightYears`, etc. but we can also
-// utilize the std::ratio system to have a single type for `Distance`.
-struct Meters : std::ratio<1, 1>
-{
-    using base_unit_t = Distance;
-};
-
-struct Kilometers : std::kilo
-{
-    using base_unit_t = Distance;
-};
-
-struct Minutes : std::ratio<1'000'000'000ULL * 60, 1>
-{
-    using base_unit_t = Time;
-};
-
-struct Hours : std::ratio<1'000'000'000ULL * 60 * 60, 1>
-{
-    using base_unit_t = Time;
-};
+template<typename T>
+using kilograms = kilograms_unit::value<T>;
 
 // The name of the generated type for `Distance` over `Time` is not really reader-friendly so making an alias can be
 // nice.
-using Speed = decltype(Distance {} / Time {});
-using Acceleration = decltype(Speed {} / Time {});
-using TimeSquared = decltype(Time {} * Time {});
-using Force = decltype(Mass {} * Acceleration {});
+using meters_per_second_unit = divided_unit_t<meters_unit, seconds_unit>;
+using acceleration_unit = divided_unit_t<meters_per_second_unit, seconds_unit>;
+using time_squared_unit = multiplied_unit_t<seconds_unit, seconds_unit>;
+using force_unit = multiplied_unit_t<kilograms_unit, acceleration_unit>;
 
 // Now we have it all set up
 void example()
 {
-    Time two_hours = make<Hours>(2);
-    std::cout << two_hours.unwrap_as_ratio<Minutes>() << " should be " << 120 << std::endl;
+    auto two_hours = hours<int64_t> {2};
+    std::cout << two_hours.to<minutes<int64_t>>() << " should be " << 120 << std::endl;
 
-    Distance ten_km = make<Kilometers>(10.);
-    Time forty_minutes = make<Minutes>(40);
+    is_unit<meters_unit> auto ten_km = kilo_meters<double> {10.};
+    is_unit<seconds_unit> auto forty_minutes = minutes<int> {40};
 
     // Dividing different units will generate a new type (Distance/Time)
-    Speed fifteen_km_per_hour = ten_km / forty_minutes;
+    is_unit<meters_per_second_unit> auto fifteen_km_per_hour = (ten_km / forty_minutes);
+
     // And you get your original type out once there's only one type left
-    Distance distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
+    is_unit<meters_unit> auto distance_moved_over_2_hours_at_speed = two_hours * fifteen_km_per_hour;
 
     // units can be multiplied and divided by IdentityUnits (values without units)
-    Distance thirty_km = make<Meters>(30.) * 1000;
-    std::cout << distance_moved_over_2_hours_at_speed << " should be " << thirty_km << std::endl;
+    is_unit<meters_unit> auto thirty_km = meters<double> {30.} * 1000;
+    std::cout << distance_moved_over_2_hours_at_speed.to<meters<double>>() << " should be " << thirty_km << std::endl;
 }
 
 }  // namespace twig

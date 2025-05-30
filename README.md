@@ -33,8 +33,8 @@
 #include <iostream>
 #include <string>
 
-#include <stronk/can_stream.h>
-#include <stronk/stronk.h>
+#include <stronk/skills/can_stream.hpp>
+#include <stronk/stronk.hpp>
 
 struct FirstName : twig::stronk<FirstName, std::string, twig::can_ostream>
 {
@@ -62,81 +62,101 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=25
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=26
+#include <concepts>
 #include <ratio>
-#include <type_traits>
 
-#include <stronk/prefabs.h>
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include <stronk/stronk.hpp>
+#include <stronk/unit.hpp>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct Watt : twig::stronk_default_unit<Watt, double>
+struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>
 {
-    using stronk_default_unit::stronk_default_unit;
 };
 
-void watts_and_identity_units()
+template<typename T>
+using joules = joules_unit::value<T>;
+
+void joules_and_identity_units()
 {
-    Watt watt = Watt {30.};
-    watt += Watt {4.} - Watt {2.};  // we can add and subtract units
+    auto energy = joules<double> {30.};
+    energy += joules<double> {4.} - joules<double> {2.};  // we can add and subtract units
 
     // Multiplying and dividing with an identity_unit (such as floats and integers) does not change the type.
-    watt *= 2.;
+    energy *= 2.;
 
     // However an identity_unit divided by a regular unit results in a new unit type.
-    auto one_over_watt = 1.0 / watt;
-    static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
+    auto one_over_joules = 1.0 / energy;
+    static_assert(!std::same_as<decltype(one_over_joules), joules<double>>);
 }
 ```
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=26:line_end=47
-// Let's introduce hours as a new unit_like type
-struct Hours : twig::stronk<Hours, double, twig::unit>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=28:line_end=63
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
 
+template<typename T>
+using seconds = seconds_unit::value<T>;
+
+// We can define ratios of a specific unit - these scaled units have the same dimension
+template<typename T>
+using hours = seconds_unit::scaled_t<std::ratio<60 * 60>>::value<T>;
+
 // We can now dynamically generate a new type!
-using WattHours = decltype(Watt {} * Hours {});
+using watt_unit = twig::divided_unit_t<joules_unit, seconds_unit>;
+
+template<typename T>
+using watt = watt_unit::value<T>;
+
+// or make custom names for already known types (joules) with specific scale
+using watt_hours_unit = decltype(watt<double> {} * hours<double> {})::unit_t;
+
+template<typename T>
+using watt_hours = watt_hours_unit::value<T>;
 
 void watt_hours_and_generating_new_units()
 {
     // Multiplying the right units together will automatically produce the new type
-    WattHours watt_hours = Hours {3.} * Watt {25.};
+    watt_hours<double> watt_hours_val = hours<double> {3.} * watt<double> {25.};
 
     // The new type supports adding, subtracting, comparing etc by default.
-    watt_hours -= WattHours {10.} + WattHours {2.};
+    watt_hours_val -= watt_hours<double> {10.} + watt_hours<double> {2.};
 
     // We can get back to Hours or Watt by dividing the opposite out.
-    Hours hours = watt_hours / Watt {25.};
-    Watt watt = watt_hours / Hours {3.};
+    hours<double> hours_val = watt_hours_val / watt<double> {25.};
+    watt<double> watt_val = watt_hours_val / hours<double> {3.};
 }
 ```
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=48:line_end=67
-// Let's introduce a type for euros, and start combining more types.
-struct Euro : twig::stronk<Euro, double, twig::unit>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=65:line_end=89
+struct euro_unit : twig::stronk_default_unit<euro_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
+template<typename T>
+using euro = euro_unit::value<T>;
+
+template<typename T>
+using mega_watt_hours =
+    joules_unit::scaled_t<std::ratio_multiply<std::mega, typename watt_hours_unit::scale_t>>::value<T>;
 
 void introducing_another_type()
 {
     // twig::make allows you to scale the input value but it does not change the resulting type
-    WattHours one_mega_watt_hour = twig::make<std::mega, WattHours>(1.);
+    mega_watt_hours<double> one_mega_watt_hour = mega_watt_hours<double> {1.};
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    auto euros_per_mega_watt_hour = Euro {300.} / one_mega_watt_hour;
+    auto euros_per_mega_watt_hour = euro<double> {300.} / one_mega_watt_hour;
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
-    Euro price_for_buying_5_mega_watt_hours = euros_per_mega_watt_hour * twig::make<std::mega, WattHours>(5.);
+    euro<double> price_for_buying_5_mega_watt_hours =
+        euros_per_mega_watt_hour * (twig::identity_value_t<std::mega, double> {1} * watt_hours<double> {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
-    WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
+    mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
 }
 ```
 
@@ -175,12 +195,7 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_increment` adds both `operator++` operators.
 - `can_decrement` adds both `operator--` operators.
 
-### Units
-
-- `unit`: enables unit behavior for multiplication and division.
-- `identity_unit`: enables unit behavior, but does not affect the type of multiplication and division.
-
-### Third Party Library extensions (see `stronk/extensions/<library>.h`)
+### Third Party Library extensions (see `stronk/extensions/<library>.hpp`)
 
 - `can_absl_hash`: implements the `AbslHashValue` friend function.
 - `can_gtest_print`: for printing the values in gtest check macros
@@ -189,53 +204,52 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 
 Adding new skills is easy so feel free to add more.
 
-## Prefabs: (see `stronk/prefabs.h`)
+## Prefabs: (see `stronk/prefabs/<prefab>.hpp`)
 
 Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
-- `stronk_default_unit`: arithmetic unit with most of the regular operations
 - `stronk_flag`: flag like boolean with equal operators etc.
 
 ## Examples
 
 ### Specializers
 
-In case you want to specialize the resulting type of unit multiplication and division you can utilize the `stronk/specializer.h` header.
+Specialization of unit multiplication and division is possible
 
-By default the units are generated with the `stronk_default_prefab` type.
+By default the units are generated with the `stronk_default_unit` type.
 
 ```cpp :file=./examples/specializers_example.cpp:line_end=33
+#include <concepts>
 #include <cstdint>
-#include <type_traits>
+#include <ratio>
 
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include "stronk/unit.hpp"
 
 // Let's consider the following units:
-struct Distance : twig::stronk<Distance, double, twig::unit>
+struct meters_unit : twig::unit<meters_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
 
-struct Time : twig::stronk<Time, double, twig::unit>
+struct seconds_unit : twig::unit<seconds_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct Speed : twig::stronk<Speed, double, twig::divided_unit<Distance, Time>::skill>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, std::ratio<1>>
 {
-    using stronk::stronk;
 };
-// Notice we are adding the twig::divided_unit skill instead of twig::unit
+// Notice we are using twig::divided_dimensions_t instead of the regular tag
 
 // To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::divided_unit<Distance, Time>::dimensions_t, double>
+struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds_unit>>
 {
-    using type = Speed;
+    template<scale_like ScaleT>  // scale is to support kilo meters / second, or nano meters / second
+    using unit_t = twig::unit_scaled_or_base_t<meters_per_second_unit, ScaleT>;
 };
+
+// Now the automatically generated stronk unit for seconds^2 is meters_per_second
 
 // The above of course also works for `multiplied_unit` and `unit_multiplied_resulting_unit_type`
 ```
@@ -253,7 +267,7 @@ target_link_libraries(
 )
 ```
 
-### Requirements
+# Requirements
 
 A c++20 compatible compiler and standard library with concepts support.
 

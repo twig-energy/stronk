@@ -1,8 +1,11 @@
 #include <sstream>
+#include <vector>
+
+#include "stronk/extensions/gtest.hpp"
 
 #include <gtest/gtest.h>
-#include <stronk/extensions/gtest.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

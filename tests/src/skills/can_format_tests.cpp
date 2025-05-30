@@ -1,9 +1,11 @@
 #if __has_include(<format>)
 #    include <format>
 
+#    include "stronk/skills/can_format.hpp"
+
 #    include <gtest/gtest.h>
-#    include <stronk/can_format.h>
-#    include <stronk/stronk.h>
+
+#    include "stronk/stronk.hpp"
 
 namespace twig
 {

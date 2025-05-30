@@ -1,10 +1,12 @@
 #include <string>
 
+#include "stronk/extensions/nlohmann_json.hpp"
+
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
-#include <stronk/extensions/nlohmann_json.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {

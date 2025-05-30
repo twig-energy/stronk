@@ -1,75 +1,97 @@
+#include <concepts>
 #include <ratio>
-#include <type_traits>
 
-#include <stronk/prefabs.h>
-#include <stronk/stronk.h>
-#include <stronk/unit.h>
+#include <stronk/stronk.hpp>
+#include <stronk/unit.hpp>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct Watt : twig::stronk_default_unit<Watt, double>
+struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>
 {
-    using stronk_default_unit::stronk_default_unit;
 };
 
-void watts_and_identity_units()
+template<typename T>
+using joules = joules_unit::value<T>;
+
+void joules_and_identity_units()
 {
-    Watt watt = Watt {30.};
-    watt += Watt {4.} - Watt {2.};  // we can add and subtract units
+    auto energy = joules<double> {30.};
+    energy += joules<double> {4.} - joules<double> {2.};  // we can add and subtract units
 
     // Multiplying and dividing with an identity_unit (such as floats and integers) does not change the type.
-    watt *= 2.;
+    energy *= 2.;
 
     // However an identity_unit divided by a regular unit results in a new unit type.
-    auto one_over_watt = 1.0 / watt;
-    static_assert(!std::is_same_v<decltype(one_over_watt), Watt>);
+    auto one_over_joules = 1.0 / energy;
+    static_assert(!std::same_as<decltype(one_over_joules), joules<double>>);
 }
 
-// Let's introduce hours as a new unit_like type
-struct Hours : twig::stronk<Hours, double, twig::unit>
+// Let's introduce seconds as a new unit
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
 
+template<typename T>
+using seconds = seconds_unit::value<T>;
+
+// We can define ratios of a specific unit - these scaled units have the same dimension
+template<typename T>
+using hours = seconds_unit::scaled_t<std::ratio<60 * 60>>::value<T>;
+
 // We can now dynamically generate a new type!
-using WattHours = decltype(Watt {} * Hours {});
+using watt_unit = twig::divided_unit_t<joules_unit, seconds_unit>;
+
+template<typename T>
+using watt = watt_unit::value<T>;
+
+// or make custom names for already known types (joules) with specific scale
+using watt_hours_unit = decltype(watt<double> {} * hours<double> {})::unit_t;
+
+template<typename T>
+using watt_hours = watt_hours_unit::value<T>;
 
 void watt_hours_and_generating_new_units()
 {
     // Multiplying the right units together will automatically produce the new type
-    WattHours watt_hours = Hours {3.} * Watt {25.};
+    watt_hours<double> watt_hours_val = hours<double> {3.} * watt<double> {25.};
 
     // The new type supports adding, subtracting, comparing etc by default.
-    watt_hours -= WattHours {10.} + WattHours {2.};
+    watt_hours_val -= watt_hours<double> {10.} + watt_hours<double> {2.};
 
     // We can get back to Hours or Watt by dividing the opposite out.
-    Hours hours = watt_hours / Watt {25.};
-    Watt watt = watt_hours / Hours {3.};
+    hours<double> hours_val = watt_hours_val / watt<double> {25.};
+    watt<double> watt_val = watt_hours_val / hours<double> {3.};
 }
 
 // Let's introduce a type for euros, and start combining more types.
-struct Euro : twig::stronk<Euro, double, twig::unit>
+struct euro_unit : twig::stronk_default_unit<euro_unit, std::ratio<1>>
 {
-    using stronk::stronk;
 };
+template<typename T>
+using euro = euro_unit::value<T>;
+
+template<typename T>
+using mega_watt_hours =
+    joules_unit::scaled_t<std::ratio_multiply<std::mega, typename watt_hours_unit::scale_t>>::value<T>;
 
 void introducing_another_type()
 {
     // twig::make allows you to scale the input value but it does not change the resulting type
-    WattHours one_mega_watt_hour = twig::make<std::mega, WattHours>(1.);
+    mega_watt_hours<double> one_mega_watt_hour = mega_watt_hours<double> {1.};
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    auto euros_per_mega_watt_hour = Euro {300.} / one_mega_watt_hour;
+    auto euros_per_mega_watt_hour = euro<double> {300.} / one_mega_watt_hour;
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
-    Euro price_for_buying_5_mega_watt_hours = euros_per_mega_watt_hour * twig::make<std::mega, WattHours>(5.);
+    euro<double> price_for_buying_5_mega_watt_hours =
+        euros_per_mega_watt_hour * (twig::identity_value_t<std::mega, double> {1} * watt_hours<double> {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
-    WattHours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * Euro {500.};
+    mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
 }
 
 auto main() -> int
 {
-    watts_and_identity_units();
+    joules_and_identity_units();
     watt_hours_and_generating_new_units();
     introducing_another_type();
 }
-static_assert(__LINE__ == 75UL, "update readme if this changes");
+static_assert(__LINE__ == 97UL, "update readme if this changes");

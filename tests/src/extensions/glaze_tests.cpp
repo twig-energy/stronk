@@ -1,13 +1,15 @@
-#include <string>
-
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
+
+#    include <string>
+
+#    include "stronk/extensions/glaze.hpp"
 
 #    include <glaze/core/common.hpp>
 #    include <glaze/json/read.hpp>
 #    include <glaze/json/write.hpp>
 #    include <gtest/gtest.h>
-#    include <stronk/extensions/glaze.h>
-#    include <stronk/stronk.h>
+
+#    include "stronk/stronk.hpp"
 
 namespace twig
 {

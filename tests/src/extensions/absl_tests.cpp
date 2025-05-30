@@ -1,7 +1,9 @@
+#include "stronk/extensions/absl.hpp"
+
 #include <absl/hash/hash.h>
 #include <gtest/gtest.h>
-#include <stronk/extensions/absl.h>
-#include <stronk/stronk.h>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {
