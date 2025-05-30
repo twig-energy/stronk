@@ -80,8 +80,8 @@ using joules = joules_unit::value<T>;
 
 void joules_and_identity_units()
 {
-    auto energy = joules<double> {30.};
-    energy += joules<double> {4.} - joules<double> {2.};  // we can add and subtract units
+    auto energy = joules {30.};
+    energy += joules {4.} - joules {2.};  // we can add and subtract units
 
     // Multiplying and dividing with an identity_unit (such as floats and integers) does not change the type.
     energy *= 2.;
@@ -121,14 +121,14 @@ using watt_hours = watt_hours_unit::value<T>;
 void watt_hours_and_generating_new_units()
 {
     // Multiplying the right units together will automatically produce the new type
-    watt_hours<double> watt_hours_val = hours<double> {3.} * watt<double> {25.};
+    watt_hours watt_hours_val = hours {3.} * watt {25.};
 
     // The new type supports adding, subtracting, comparing etc by default.
-    watt_hours_val -= watt_hours<double> {10.} + watt_hours<double> {2.};
+    watt_hours_val -= watt_hours {10.} + watt_hours {2.};
 
     // We can get back to Hours or Watt by dividing the opposite out.
-    hours<double> hours_val = watt_hours_val / watt<double> {25.};
-    watt<double> watt_val = watt_hours_val / hours<double> {3.};
+    hours hours_val = watt_hours_val / watt {25.};
+    watt watt_val = watt_hours_val / hours {3.};
 }
 ```
 
@@ -148,16 +148,16 @@ using mega_watt_hours =
 void introducing_another_type()
 {
     // twig::make allows you to scale the input value but it does not change the resulting type
-    mega_watt_hours<double> one_mega_watt_hour = mega_watt_hours<double> {1.};
+    auto one_mega_watt_hour = mega_watt_hours {1.};
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    auto euros_per_mega_watt_hour = euro<double> {300.} / one_mega_watt_hour;
+    auto euros_per_mega_watt_hour = euro {300.} / one_mega_watt_hour;
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
-    euro<double> price_for_buying_5_mega_watt_hours =
-        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours<double> {5.});
+    euro price_for_buying_5_mega_watt_hours =
+        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
-    mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
+    mega_watt_hours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro {500.};
 }
 ```
 
