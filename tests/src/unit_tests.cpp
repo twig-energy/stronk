@@ -9,9 +9,9 @@
 #include "stronk/stronk.hpp"
 #include "stronk/utilities/ratio.hpp"
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
-#    include "stronk/extensions/fmt.h"  // IWYU pragma: keep
+#    include "stronk/extensions/fmt.hpp"  // IWYU pragma: keep
 #endif
-#include "stronk/extensions/gtest.h"  // IWYU pragma: keep for printing values in assertions
+#include "stronk/extensions/gtest.hpp"  // IWYU pragma: keep for printing values in assertions
 #include "stronk/utilities/dimensions.hpp"
 
 namespace twig
