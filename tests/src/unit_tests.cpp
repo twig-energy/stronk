@@ -372,19 +372,19 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     using km_t = meters::scaled_t<twig::kilo>;
     using um_t = meters::scaled_t<twig::micro>;
 
-    is_unit<meters> auto km = m.to<km_t::value<double>>();
+    is_unit<meters> auto km = m.to<km_t>();
     auto expected_km = make<km_t>(2.0 / 1'000.0);
     EXPECT_EQ(km, expected_km);
 
-    auto um = m.to<um_t::value<double>>();
+    auto um = m.to<um_t>();
     auto expected_um = make<um_t>(2'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    um = make<twig::kilo, meters>(3.0).to<um_t::value<double>>();
+    um = make<twig::kilo, meters>(3.0).to<um_t>();
     expected_um = make<um_t>(3'000'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    km = make<um_t>(4.0).to<km_t::value<double>>();
+    km = make<um_t>(4.0).to<km_t>();
     expected_km = make<km_t>(4.0 / 1'000'000'000.0);
     EXPECT_EQ(km, expected_km);
 
@@ -398,7 +398,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     using hr_t = seconds::scaled_t<twig::ratio<3600ULL>>;
     using km_per_hr_t = meters_per_second::scaled_t<twig::ratio<1000, 3600ULL>>;
 
-    auto hr = s.to<hr_t::value<double>>();
+    auto hr = s.to<hr_t>();
     auto expected_hr = make<hr_t>(2.0);
     EXPECT_EQ(hr, expected_hr);
 
@@ -406,7 +406,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_km_per_hr = unit_value_t<km_per_hr_t, double>(4.0);
 
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
-    auto converted_to_km_per_hr = km_per_s.to<km_per_hr_t::value<double>>();
+    auto converted_to_km_per_hr = km_per_s.to<km_per_hr_t>();
     EXPECT_EQ(converted_to_km_per_hr, expected_km_per_hr);
 }
 
