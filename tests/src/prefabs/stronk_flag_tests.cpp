@@ -3,6 +3,8 @@
 
 #include <gtest/gtest.h>
 
+#include "stronk/stronk.hpp"
+
 namespace twig
 {
 
