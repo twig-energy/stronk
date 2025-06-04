@@ -339,9 +339,9 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     static_assert(std::same_as<decltype(um / um_2), per_meter::scaled_t<twig::mega>::value<double>>);
 
     auto s = make<seconds, double>(1.0);
-    auto hr = make<twig::ratio<60UL * 60, 1>, seconds, double>(1.0);
+    auto hr = make<twig::ratio<3600, 1>, seconds, double>(1.0);
     auto ms = make<twig::milli, seconds, double>(1.0);
-    auto d = make<twig::ratio<60UL * 60 * 24, 1>, seconds, double>(1.0);
+    auto d = make<twig::ratio<86400, 1>, seconds, double>(1.0);
 
     static_assert(std::same_as<decltype(m / s), meters_per_second::value<double>>);
     static_assert(std::same_as<decltype(m / hr), meters_per_second::scaled_t<twig::ratio<1, 3600>>::value<double>>);
@@ -395,8 +395,8 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
 
     EXPECT_EQ(km_per_s, expected_speed);
 
-    using hr_t = seconds::scaled_t<twig::ratio<60UL * 60>>;
-    using km_per_hr_t = meters_per_second::scaled_t<twig::ratio<1000, 60UL * 60>>;
+    using hr_t = seconds::scaled_t<twig::ratio<3600ULL>>;
+    using km_per_hr_t = meters_per_second::scaled_t<twig::ratio<1000, 3600ULL>>;
 
     auto hr = s.to<hr_t::value<double>>();
     auto expected_hr = make<hr_t>(2.0);
