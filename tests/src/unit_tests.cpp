@@ -1,6 +1,5 @@
 #include <concepts>
 #include <cstdint>
-#include <ratio>
 
 #include "stronk/unit.hpp"
 
@@ -8,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include "stronk/stronk.hpp"
+#include "stronk/utilities/ratio.hpp"
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 #    include "stronk/extensions/fmt.h"  // IWYU pragma: keep
 #endif

@@ -1,6 +1,6 @@
 #pragma once
 #include <concepts>
-#include <ratio>
+#include <cstdint>
 #include <type_traits>
 #include <utility>
 

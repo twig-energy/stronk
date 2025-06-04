@@ -1,8 +1,8 @@
 #include <concepts>
 #include <cstdint>
-#include <ratio>
 
 #include "stronk/unit.hpp"
+#include "stronk/utilities/ratio.hpp"
 
 // Let's consider the following units:
 struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>

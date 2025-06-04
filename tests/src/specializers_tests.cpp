@@ -1,12 +1,12 @@
 #include <concepts>
 #include <cstdint>
-#include <ratio>
 #include <type_traits>
 
 #include <gtest/gtest.h>
 #include <stronk/utilities/macros.hpp>
 
 #include "stronk/unit.hpp"
+#include "stronk/utilities/ratio.hpp"
 
 namespace twig::tests
 {
