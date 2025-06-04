@@ -16,8 +16,11 @@ function (add_example NAME)
     target_link_libraries("${NAME}" PRIVATE twig::stronk)
     target_compile_features("${NAME}" PRIVATE cxx_std_20)
     target_compile_options(
-        "${NAME}" PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-unused-variable
-                          -Wno-implicit-int-float-conversion>
+        "${NAME}"
+        PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+                -Wno-unused-variable
+                -Wno-implicit-int-float-conversion
+                -Wno-unused-but-set-variable>
     )
 
     add_custom_target(

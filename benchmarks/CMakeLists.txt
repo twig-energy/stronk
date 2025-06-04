@@ -25,9 +25,7 @@ target_link_libraries(
             twig::stronk
 )
 target_compile_features(stronk_benchmarks PRIVATE cxx_std_20)
-
-# TODO(anders.wind) remove the following after benchmark 1.7.1 is released on vcpkg https://github.com/microsoft/vcpkg/issues/27673
-target_compile_definitions(stronk_benchmarks PRIVATE BENCHMARK_STATIC_DEFINE)
+target_compile_options(stronk_benchmarks PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-conversion>)
 
 # ---- End-of-file commands ----
 add_folders(Benchmarks)

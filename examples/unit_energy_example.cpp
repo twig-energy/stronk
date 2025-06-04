@@ -5,7 +5,7 @@
 #include <stronk/unit.hpp>
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>
+struct joules_unit : twig::stronk_default_unit<joules_unit, twig::ratio<1>>
 {
 };
 
@@ -26,7 +26,7 @@ void joules_and_identity_units()
 }
 
 // Let's introduce seconds as a new unit
-struct seconds_unit : twig::stronk_default_unit<seconds_unit, std::ratio<1>>
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
 {
 };
 
@@ -35,7 +35,7 @@ using seconds = seconds_unit::value<T>;
 
 // We can define ratios of a specific unit - these scaled units have the same dimension
 template<typename T>
-using hours = seconds_unit::scaled_t<std::ratio<60 * 60>>::value<T>;
+using hours = seconds_unit::scaled_t<twig::ratio<60 * 60>>::value<T>;
 
 // We can now dynamically generate a new type!
 using watt_unit = twig::divided_unit_t<joules_unit, seconds_unit>;
@@ -63,7 +63,7 @@ void watt_hours_and_generating_new_units()
 }
 
 // Let's introduce a type for euros, and start combining more types.
-struct euro_unit : twig::stronk_default_unit<euro_unit, std::ratio<1>>
+struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
 {
 };
 template<typename T>
@@ -71,7 +71,7 @@ using euro = euro_unit::value<T>;
 
 template<typename T>
 using mega_watt_hours =
-    joules_unit::scaled_t<std::ratio_multiply<std::mega, typename watt_hours_unit::scale_t>>::value<T>;
+    joules_unit::scaled_t<twig::ratio_multiply<twig::mega, typename watt_hours_unit::scale_t>>::value<T>;
 
 void introducing_another_type()
 {
@@ -82,7 +82,7 @@ void introducing_another_type()
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
     euro<double> price_for_buying_5_mega_watt_hours =
-        euros_per_mega_watt_hour * (twig::identity_value_t<std::mega, double> {1} * watt_hours<double> {5.});
+        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours<double> {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
     mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
