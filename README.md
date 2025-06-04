@@ -62,7 +62,7 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=26
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=27
 #include <concepts>
 
 #include <stronk/stronk.hpp>
@@ -89,12 +89,12 @@ void joules_and_identity_units()
     // However an identity_unit divided by a regular unit results in a new unit type.
     auto one_over_joules = 1.0 / energy;
     static_assert(!std::same_as<decltype(one_over_joules), joules<double>>);
+}
 ```
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=28:line_end=63
-// Let's introduce seconds as a new unit
+```cpp :file=./examples/unit_energy_example.cpp:line_start=29:line_end=64
 struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
 {
 };
@@ -129,12 +129,12 @@ void watt_hours_and_generating_new_units()
     // We can get back to Hours or Watt by dividing the opposite out.
     hours<double> hours_val = watt_hours_val / watt<double> {25.};
     watt<double> watt_val = watt_hours_val / hours<double> {3.};
+}
 ```
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=65:line_end=89
-// Let's introduce a type for euros, and start combining more types.
+```cpp :file=./examples/unit_energy_example.cpp:line_start=66:line_end=90
 struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
 {
 };
@@ -158,6 +158,7 @@ void introducing_another_type()
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
     mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
+}
 ```
 
 Units are a great way of using the type system to validate your code.

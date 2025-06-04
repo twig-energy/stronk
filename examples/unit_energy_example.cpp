@@ -95,4 +95,4 @@ auto main() -> int
     watt_hours_and_generating_new_units();
     introducing_another_type();
 }
-static_assert(__LINE__ == 97UL, "update readme if this changes");
+static_assert(__LINE__ == 98UL, "update readme if this changes");
