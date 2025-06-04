@@ -33,7 +33,8 @@ concept scale_like = requires {
 };
 
 template<typename T>
-concept canonical_scale_like = std::same_as<typename T::type, T> /*ratio is fully reduced*/ && scale_like<T>;
+concept canonical_scale_like =
+    std::same_as<typename twig::ratio<T::den, T::nom>::type, T> /*ratio is fully reduced*/ && scale_like<T>;
 
 // Implementations
 
