@@ -31,10 +31,10 @@ template<typename T>
 using seconds = seconds_unit::value<T>;
 
 template<typename T>
-using minutes = seconds_unit::scaled_t<twig::ratio<60>>::value<T>;
+using minutes = seconds_unit::scaled_t<twig::ratio<60ULL>>::value<T>;
 
 template<typename T>
-using hours = seconds_unit::scaled_t<twig::ratio<3600>>::value<T>;
+using hours = seconds_unit::scaled_t<twig::ratio<3600ULL>>::value<T>;
 
 // MASS
 
