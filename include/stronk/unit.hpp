@@ -87,8 +87,7 @@ struct unit
             using new_scale_t = typename NewUnitValueT::unit_t::scale_t;
             using converter = twig::ratio_divide<ScaleT, new_scale_t>;
             using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
-            return result_value_t {static_cast<UnderlyingT>(this->val() * static_cast<uint64_t>(converter::num)
-                                                            / static_cast<uint64_t>(converter::den))};
+            return result_value_t {static_cast<UnderlyingT>(this->val() * converter::num / converter::den)};
         }
     };
 };
