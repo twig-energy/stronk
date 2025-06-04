@@ -12,7 +12,7 @@
 #include "stronk/stronk.hpp"
 #include "stronk/unit.hpp"
 
-struct a_unit : twig::stronk_default_unit<a_unit, std::ratio<1>>
+struct a_unit : twig::stronk_default_unit<a_unit, twig::ratio<1>>
 {
 };
 
