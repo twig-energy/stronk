@@ -5,17 +5,17 @@
 #include "stronk/utilities/ratio.hpp"
 
 // Let's consider the following units:
-struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>
+struct meters_unit : twig::unit<meters_unit, twig::base_scale>
 {
 };
 
-struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>>
+struct seconds_unit : twig::unit<seconds_unit, twig::base_scale>
 {
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::ratio<1>>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::base_scale>
 {
 };
 // Notice we are using twig::divided_dimensions_t instead of the regular tag

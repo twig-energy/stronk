@@ -20,16 +20,16 @@ namespace twig
 // Example code:
 
 // First we define our stronk types:
-struct meters : unit<meters, twig::ratio<1>, can_equate_underlying_type_specific, can_add>
+struct meters : unit<meters, twig::base_scale, can_equate_underlying_type_specific, can_add>
 {
 };
 
-struct seconds : unit<seconds, twig::ratio<1>, can_equate_underlying_type_specific>
+struct seconds : unit<seconds, twig::base_scale, can_equate_underlying_type_specific>
 {
 };
 
 // ISO defines kg as the base scale of mass
-struct kilograms : unit<kilograms, twig::ratio<1>, can_equate>
+struct kilograms : unit<kilograms, twig::base_scale, can_equate>
 {
 };
 
@@ -65,22 +65,22 @@ static_assert(!unit_value_like<a_regular_type>);
 // Testing the generated types
 
 // clang-format off
-using example_1 = stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilograms, -1>>, twig::ratio<1>>;
-using example_2 = stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -1>>, twig::ratio<1>>;
+using example_1 = stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>, dimension<kilograms, -1>>, twig::base_scale>;
+using example_2 = stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -1>>, twig::base_scale>;
 static_assert(kilograms::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(!example_1::dimensions_t::is_pure());
 static_assert(std::same_as<kilograms::dimensions_t::first_t::unit_t, kilograms>);
-static_assert(std::same_as<multiplied_unit_t<meters, seconds>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>, twig::ratio<1>>>);
-static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>,twig::ratio<1>>>);
+static_assert(std::same_as<multiplied_unit_t<meters, seconds>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 1>>, twig::base_scale>>);
+static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>,twig::base_scale>>);
 static_assert(std::same_as<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
 static_assert(std::same_as<divided_unit_t<example_1, example_1>, identity_unit>);
 static_assert(std::same_as<multiplied_unit_t<meters_per_second, seconds_per_meter>, identity_unit>);
-static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilograms, -2>>,twig::ratio<1>>>);
-static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::ratio<1>>>);
-static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::ratio<1>>>);
-static_assert(std::same_as<divided_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilograms, -2>>,twig::ratio<1>>>);
-static_assert(std::same_as<force, stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -2>>,twig::ratio<1>>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilograms, -2>>,twig::base_scale>>);
+static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::base_scale>>);
+static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::base_scale>>);
+static_assert(std::same_as<divided_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 1>, dimension<seconds, 2>, dimension<kilograms, -2>>,twig::base_scale>>);
+static_assert(std::same_as<force, stronk_default_unit<create_dimensions_t<dimension<kilograms, 1>, dimension<meters, 1>, dimension<seconds, -2>>,twig::base_scale>>);
 // clang-format on
 
 TEST(stronk_units_v2, when_multiplied_with_a_scalar_the_type_does_not_change_and_it_behaves_as_normally)
@@ -206,7 +206,7 @@ TEST(stronk_units_v2, make_function_can_create_units_of_different_types)
     EXPECT_EQ(m_int, m_int_converted);
 }
 
-struct using_default_unit : stronk_default_unit<using_default_unit, twig::ratio<1>>
+struct using_default_unit : stronk_default_unit<using_default_unit, twig::base_scale>
 {
 };
 
@@ -224,17 +224,17 @@ TEST(stronk_units_v2, default_unit_can_do_all_the_usual_stuff)
     EXPECT_GT(val, -val);
 }
 
-struct A : unit<A, twig::ratio<1>, can_equate>
+struct A : unit<A, twig::base_scale, can_equate>
 {
 };
-struct B : unit<B, twig::ratio<1>, can_equate>
+struct B : unit<B, twig::base_scale, can_equate>
 {
 };
-struct C : unit<multiplied_dimensions_t<A, B>, twig::ratio<1>, can_equate>
+struct C : unit<multiplied_dimensions_t<A, B>, twig::base_scale, can_equate>
 {
 };
 
-struct D : unit<divided_dimensions_t<A, B>, twig::ratio<1>, can_equate>
+struct D : unit<divided_dimensions_t<A, B>, twig::base_scale, can_equate>
 {
 };
 

@@ -71,7 +71,7 @@ On top of providing strong type utilities, `stronk` also enables unit-like behav
 #include "stronk/utilities/ratio.hpp"
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct joules_unit : twig::stronk_default_unit<joules_unit, twig::ratio<1>>
+struct joules_unit : twig::stronk_default_unit<joules_unit, twig::base_scale>
 {
 };
 
@@ -95,7 +95,7 @@ void joules_and_identity_units()
 Different units can be combined by multiplying or dividing them:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=29:line_end=64
-struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::base_scale>
 {
 };
 
@@ -135,7 +135,7 @@ void watt_hours_and_generating_new_units()
 These new generated types are also units which can be used to generate new units:
 
 ```cpp :file=./examples/unit_energy_example.cpp:line_start=66:line_end=90
-struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
+struct euro_unit : twig::stronk_default_unit<euro_unit, twig::base_scale>
 {
 };
 template<typename T>
@@ -227,17 +227,17 @@ By default the units are generated with the `stronk_default_unit` type.
 #include "stronk/utilities/ratio.hpp"
 
 // Let's consider the following units:
-struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>
+struct meters_unit : twig::unit<meters_unit, twig::base_scale>
 {
 };
 
-struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>>
+struct seconds_unit : twig::unit<seconds_unit, twig::base_scale>
 {
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::ratio<1>>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::base_scale>
 {
 };
 // Notice we are using twig::divided_dimensions_t instead of the regular tag

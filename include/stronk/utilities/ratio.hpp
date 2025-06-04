@@ -7,9 +7,9 @@ namespace stronk_details
 {
 
 #if defined(__SIZEOF_INT128__)
-using unsigned_big_num = unsigned __int128;
+using u_biggest_int_t = unsigned __int128;
 #else
-using unsigned_big_num =uint64_t
+using u_biggest_int_t = uint64_t;
 
 #endif
 
@@ -31,12 +31,11 @@ constexpr auto gcd(const auto& self, const auto& other) -> auto
 }
 }  // namespace stronk_details
 
-template<stronk_details::unsigned_big_num Num,
-         stronk_details::unsigned_big_num Den = stronk_details::unsigned_big_num {1}>
+template<stronk_details::u_biggest_int_t Num, stronk_details::u_biggest_int_t Den = stronk_details::u_biggest_int_t {1}>
 struct ratio
 {
-    constexpr static stronk_details::unsigned_big_num num = Num / stronk_details::gcd(Num, Den);
-    constexpr static stronk_details::unsigned_big_num den = Den / stronk_details::gcd(Num, Den);
+    constexpr static stronk_details::u_biggest_int_t num = Num / stronk_details::gcd(Num, Den);
+    constexpr static stronk_details::u_biggest_int_t den = Den / stronk_details::gcd(Num, Den);
 
     using type = ratio<num, den>;
 };
@@ -57,6 +56,7 @@ using milli = ratio<1, 1000>;
 using centi = ratio<1, 100>;
 using deci = ratio<1, 10>;
 using deca = ratio<10, 1>;
+using base_scale = ratio<1, 1>;
 using hecto = ratio<100, 1>;
 using kilo = ratio<1000, 1>;
 using mega = ratio<1000000, 1>;

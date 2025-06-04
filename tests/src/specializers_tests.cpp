@@ -11,18 +11,18 @@
 namespace twig::tests
 {
 
-struct specializer_type_a : unit<specializer_type_a, twig::ratio<1>>
+struct specializer_type_a : unit<specializer_type_a, twig::base_scale>
 {
 };
-struct specializer_type_b : unit<specializer_type_b, twig::ratio<1>>
-{
-};
-
-struct specializer_type_c : unit<specializer_type_c, twig::ratio<1>>
+struct specializer_type_b : unit<specializer_type_b, twig::base_scale>
 {
 };
 
-struct specializer_type_d : unit<multiplied_dimensions_t<specializer_type_a, specializer_type_c>, twig::ratio<1>>
+struct specializer_type_c : unit<specializer_type_c, twig::base_scale>
+{
+};
+
+struct specializer_type_d : unit<multiplied_dimensions_t<specializer_type_a, specializer_type_c>, twig::base_scale>
 {
 };
 
@@ -100,10 +100,10 @@ TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
 // clang-format off
 
 static_assert(std::same_as<specializer_type_d::value<int>, decltype(specializer_type_a::value<int> {} * specializer_type_c::value<int> {})>);
-static_assert(std::same_as<unit_lookup<typename specializer_type_a_divided_by_b::unit_t::dimensions_t>::unit_t<twig::ratio<1>>::value<int64_t>, specializer_type_a_divided_by_b>);
-static_assert(std::same_as<unit_lookup<typename specializer_type_a_times_b::unit_t::dimensions_t>::unit_t<twig::ratio<1>>::value<int64_t>, specializer_type_a_times_b>);
-static_assert(std::same_as<unit_lookup<typename multiplied_unit_t<specializer_type_a, specializer_type_c>::dimensions_t>::unit_t<twig::ratio<1>>, specializer_type_d>);
-static_assert(std::same_as<unit_lookup<typename specializer_type_d::dimensions_t>::unit_t<twig::ratio<1>>, specializer_type_d>);
+static_assert(std::same_as<unit_lookup<typename specializer_type_a_divided_by_b::unit_t::dimensions_t>::unit_t<twig::base_scale>::value<int64_t>, specializer_type_a_divided_by_b>);
+static_assert(std::same_as<unit_lookup<typename specializer_type_a_times_b::unit_t::dimensions_t>::unit_t<twig::base_scale>::value<int64_t>, specializer_type_a_times_b>);
+static_assert(std::same_as<unit_lookup<typename multiplied_unit_t<specializer_type_a, specializer_type_c>::dimensions_t>::unit_t<twig::base_scale>, specializer_type_d>);
+static_assert(std::same_as<unit_lookup<typename specializer_type_d::dimensions_t>::unit_t<twig::base_scale>, specializer_type_d>);
 // clang-format on
 
 }  // namespace twig::tests
