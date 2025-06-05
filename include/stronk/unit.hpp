@@ -7,7 +7,7 @@
 #include <stronk/utilities/macros.hpp>
 
 #include "stronk/stronk.hpp"
-#include "stronk/utilities/ratio.hpp"
+#include "stronk/utilities/ratio.hpp"  // IWYU pragma: export
 
 namespace twig
 {
@@ -33,7 +33,7 @@ concept scale_like = requires {
 
 template<typename T>
 concept canonical_scale_like =
-    std::same_as<typename twig::ratio<T::num, T::den>::type, T> /*ratio is fully reduced*/ && scale_like<T>;
+    scale_like<T> && std::same_as<typename twig::ratio<T::num, T::den>::type, T> /*ratio is fully reduced*/;
 
 // Implementations
 
@@ -93,10 +93,10 @@ struct unit
 };
 
 template<>
-struct unit<::twig::create_dimensions_t<>, twig::base_scale>
+struct unit<::twig::create_dimensions_t<>, twig::ratio<1>>
 {
     using dimensions_t = ::twig::create_dimensions_t<>;
-    using scale_t = twig::base_scale;
+    using scale_t = twig::ratio<1>;
     using unit_t = unit;
 
     unit() = delete;  // Do not construct this type
@@ -107,7 +107,7 @@ struct unit<::twig::create_dimensions_t<>, twig::base_scale>
     template<typename OtherScaleT>
     using scaled_t = unit<::twig::create_dimensions_t<>, OtherScaleT>;
 };
-using identity_unit = unit<::twig::create_dimensions_t<>, twig::base_scale>;
+using identity_unit = unit<::twig::create_dimensions_t<>, twig::ratio<1>>;
 
 template<scale_like ScaleT>
 using identity_unit_t = unit<::twig::create_dimensions_t<>, ScaleT>;
@@ -127,7 +127,7 @@ using unit_scaled_value_t = typename UnitT::template scaled_t<ScaleT>::template 
 
 template<unit_like UnitT, typename ScaleT>
 using unit_scaled_or_base_t =
-    std::conditional_t<std::is_same_v<ScaleT, twig::base_scale>, UnitT, typename UnitT::template scaled_t<ScaleT>>;
+    std::conditional_t<std::is_same_v<ScaleT, twig::ratio<1>>, UnitT, typename UnitT::template scaled_t<ScaleT>>;
 
 /**
  * @brief Lookup which specific type is the type for the given Dimensions.

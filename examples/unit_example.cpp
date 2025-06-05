@@ -11,7 +11,7 @@ namespace twig
 
 // Distance
 
-struct meters_unit : twig::unit<meters_unit, twig::base_scale, can_ostream>
+struct meters_unit : twig::unit<meters_unit, twig::ratio<1>, can_ostream>
 {
 };
 
@@ -23,7 +23,7 @@ using kilo_meters = meters_unit::scaled_t<twig::kilo>::value<T>;
 
 // TIME
 
-struct seconds_unit : twig::unit<seconds_unit, twig::base_scale, can_ostream>
+struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>, can_ostream>
 {
 };
 
@@ -38,7 +38,7 @@ using hours = seconds_unit::scaled_t<twig::ratio<3600ULL>>::value<T>;
 
 // MASS
 
-struct kilograms_unit : twig::unit<kilograms_unit, twig::base_scale, can_ostream>
+struct kilograms_unit : twig::unit<kilograms_unit, twig::ratio<1>, can_ostream>
 {
 };
 

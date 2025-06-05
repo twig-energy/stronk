@@ -6,7 +6,7 @@
 #include "stronk/utilities/ratio.hpp"
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct joules_unit : twig::stronk_default_unit<joules_unit, twig::base_scale>
+struct joules_unit : twig::stronk_default_unit<joules_unit, twig::ratio<1>>
 {
 };
 
@@ -27,7 +27,7 @@ void joules_and_identity_units()
 }
 
 // Let's introduce seconds as a new unit
-struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::base_scale>
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
 {
 };
 
@@ -64,7 +64,7 @@ void watt_hours_and_generating_new_units()
 }
 
 // Let's introduce a type for euros, and start combining more types.
-struct euro_unit : twig::stronk_default_unit<euro_unit, twig::base_scale>
+struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
 {
 };
 template<typename T>
