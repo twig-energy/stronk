@@ -29,6 +29,7 @@ add_executable(
     src/extensions/nlohmann_json_tests.cpp
     src/prefabs/stronk_flag_tests.cpp
     src/prefabs/stronk_string_tests.cpp
+    src/prefabs/stronk_vector_tests.cpp
     src/skills/can_abs_tests.cpp
     src/skills/can_decrement_tests.cpp
     src/skills/can_divide_tests.cpp
