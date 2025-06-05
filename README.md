@@ -62,15 +62,16 @@ auto main() -> int
 
 On top of providing strong type utilities, `stronk` also enables unit-like behavior:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=26
+```cpp :file=./examples/unit_energy_example.cpp:line_start=0:line_end=27
 #include <concepts>
-#include <ratio>
 
 #include <stronk/stronk.hpp>
 #include <stronk/unit.hpp>
 
+#include "stronk/utilities/ratio.hpp"
+
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct joules_unit : twig::stronk_default_unit<joules_unit, std::ratio<1>>
+struct joules_unit : twig::stronk_default_unit<joules_unit, twig::ratio<1>>
 {
 };
 
@@ -93,8 +94,8 @@ void joules_and_identity_units()
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=28:line_end=63
-struct seconds_unit : twig::stronk_default_unit<seconds_unit, std::ratio<1>>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=29:line_end=64
+struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
 {
 };
 
@@ -103,7 +104,7 @@ using seconds = seconds_unit::value<T>;
 
 // We can define ratios of a specific unit - these scaled units have the same dimension
 template<typename T>
-using hours = seconds_unit::scaled_t<std::ratio<60 * 60>>::value<T>;
+using hours = seconds_unit::scaled_t<twig::ratio<60 * 60>>::value<T>;
 
 // We can now dynamically generate a new type!
 using watt_unit = twig::divided_unit_t<joules_unit, seconds_unit>;
@@ -133,8 +134,8 @@ void watt_hours_and_generating_new_units()
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=65:line_end=89
-struct euro_unit : twig::stronk_default_unit<euro_unit, std::ratio<1>>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=66:line_end=90
+struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
 {
 };
 template<typename T>
@@ -142,7 +143,7 @@ using euro = euro_unit::value<T>;
 
 template<typename T>
 using mega_watt_hours =
-    joules_unit::scaled_t<std::ratio_multiply<std::mega, typename watt_hours_unit::scale_t>>::value<T>;
+    joules_unit::scaled_t<twig::ratio_multiply<twig::mega, typename watt_hours_unit::scale_t>>::value<T>;
 
 void introducing_another_type()
 {
@@ -153,7 +154,7 @@ void introducing_another_type()
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
     euro<double> price_for_buying_5_mega_watt_hours =
-        euros_per_mega_watt_hour * (twig::identity_value_t<std::mega, double> {1} * watt_hours<double> {5.});
+        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours<double> {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
     mega_watt_hours<double> mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro<double> {500.};
@@ -221,22 +222,22 @@ By default the units are generated with the `stronk_default_unit` type.
 ```cpp :file=./examples/specializers_example.cpp:line_end=33
 #include <concepts>
 #include <cstdint>
-#include <ratio>
 
 #include "stronk/unit.hpp"
+#include "stronk/utilities/ratio.hpp"
 
 // Let's consider the following units:
-struct meters_unit : twig::unit<meters_unit, std::ratio<1>>
+struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>
 {
 };
 
-struct seconds_unit : twig::unit<seconds_unit, std::ratio<1>>
+struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>>
 {
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, std::ratio<1>>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::ratio<1>>
 {
 };
 // Notice we are using twig::divided_dimensions_t instead of the regular tag

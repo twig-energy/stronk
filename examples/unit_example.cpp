@@ -1,17 +1,17 @@
 #include <cstdint>
 #include <iostream>
-#include <ratio>
 
 #include "stronk/unit.hpp"
 
 #include "stronk/skills/can_stream.hpp"
+#include "stronk/utilities/ratio.hpp"
 
 namespace twig
 {
 
 // Distance
 
-struct meters_unit : twig::unit<meters_unit, std::ratio<1>, can_ostream>
+struct meters_unit : twig::unit<meters_unit, twig::ratio<1>, can_ostream>
 {
 };
 
@@ -19,11 +19,11 @@ template<typename T>
 using meters = meters_unit::value<T>;
 
 template<typename T>
-using kilo_meters = meters_unit::scaled_t<std::kilo>::value<T>;
+using kilo_meters = meters_unit::scaled_t<twig::kilo>::value<T>;
 
 // TIME
 
-struct seconds_unit : twig::unit<seconds_unit, std::ratio<1>, can_ostream>
+struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>, can_ostream>
 {
 };
 
@@ -31,14 +31,14 @@ template<typename T>
 using seconds = seconds_unit::value<T>;
 
 template<typename T>
-using minutes = seconds_unit::scaled_t<std::ratio<60>>::value<T>;
+using minutes = seconds_unit::scaled_t<twig::ratio<60ULL>>::value<T>;
 
 template<typename T>
-using hours = seconds_unit::scaled_t<std::ratio<3600>>::value<T>;
+using hours = seconds_unit::scaled_t<twig::ratio<3600ULL>>::value<T>;
 
 // MASS
 
-struct kilograms_unit : twig::unit<kilograms_unit, std::ratio<1>, can_ostream>
+struct kilograms_unit : twig::unit<kilograms_unit, twig::ratio<1>, can_ostream>
 {
 };
 

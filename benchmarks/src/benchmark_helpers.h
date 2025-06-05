@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <limits>
 #include <random>
-#include <ratio>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -11,8 +10,9 @@
 
 #include "stronk/stronk.hpp"
 #include "stronk/unit.hpp"
+#include "stronk/utilities/ratio.hpp"
 
-struct a_unit : twig::stronk_default_unit<a_unit, std::ratio<1>>
+struct a_unit : twig::stronk_default_unit<a_unit, twig::ratio<1>>
 {
 };
 

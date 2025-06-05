@@ -43,6 +43,7 @@ add_executable(
     src/stronk_tests.cpp
     src/unit_tests.cpp
     src/utilities/dimensions_tests.cpp
+    src/utilities/ratio_tests.cpp
 )
 
 target_link_libraries(

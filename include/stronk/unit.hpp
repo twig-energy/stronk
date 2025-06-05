@@ -1,6 +1,5 @@
 #pragma once
 #include <concepts>
-#include <ratio>
 #include <type_traits>
 #include <utility>
 
@@ -8,6 +7,7 @@
 #include <stronk/utilities/macros.hpp>
 
 #include "stronk/stronk.hpp"
+#include "stronk/utilities/ratio.hpp"  // IWYU pragma: export
 
 namespace twig
 {
@@ -32,7 +32,8 @@ concept scale_like = requires {
 };
 
 template<typename T>
-concept canonical_scale_like = std::same_as<typename T::type, T> /*ratio is fully reduced*/ && scale_like<T>;
+concept canonical_scale_like =
+    scale_like<T> && std::same_as<typename twig::ratio<T::num, T::den>::type, T> /*ratio is fully reduced*/;
 
 // Implementations
 
@@ -83,18 +84,19 @@ struct unit
         constexpr auto to() const -> NewUnitValueT
         {
             using new_scale_t = typename NewUnitValueT::unit_t::scale_t;
-            using converter = std::ratio_divide<ScaleT, new_scale_t>;
+            using converter = twig::ratio_divide<ScaleT, new_scale_t>;
             using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
-            return result_value_t {static_cast<UnderlyingT>(this->val() * converter::num / converter::den)};
+            return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
+                                   / static_cast<UnderlyingT>(converter::den)};
         }
     };
 };
 
 template<>
-struct unit<::twig::create_dimensions_t<>, std::ratio<1>>
+struct unit<::twig::create_dimensions_t<>, twig::ratio<1>>
 {
     using dimensions_t = ::twig::create_dimensions_t<>;
-    using scale_t = std::ratio<1>;
+    using scale_t = twig::ratio<1>;
     using unit_t = unit;
 
     unit() = delete;  // Do not construct this type
@@ -105,7 +107,7 @@ struct unit<::twig::create_dimensions_t<>, std::ratio<1>>
     template<typename OtherScaleT>
     using scaled_t = unit<::twig::create_dimensions_t<>, OtherScaleT>;
 };
-using identity_unit = unit<::twig::create_dimensions_t<>, std::ratio<1>>;
+using identity_unit = unit<::twig::create_dimensions_t<>, twig::ratio<1>>;
 
 template<scale_like ScaleT>
 using identity_unit_t = unit<::twig::create_dimensions_t<>, ScaleT>;
@@ -125,7 +127,7 @@ using unit_scaled_value_t = typename UnitT::template scaled_t<ScaleT>::template 
 
 template<unit_like UnitT, typename ScaleT>
 using unit_scaled_or_base_t =
-    std::conditional_t<std::is_same_v<ScaleT, std::ratio<1>>, UnitT, typename UnitT::template scaled_t<ScaleT>>;
+    std::conditional_t<std::is_same_v<ScaleT, twig::ratio<1>>, UnitT, typename UnitT::template scaled_t<ScaleT>>;
 
 /**
  * @brief Lookup which specific type is the type for the given Dimensions.
@@ -161,7 +163,7 @@ using multiplied_dimensions_t = typename A::dimensions_t::template multiply_t<ty
 
 template<unit_like A, unit_like B>
 using multiplied_unit_t = typename unit_lookup<multiplied_dimensions_t<A, B>>::template unit_t<
-    std::ratio_multiply<typename A::scale_t, typename B::scale_t>>;
+    twig::ratio_multiply<typename A::scale_t, typename B::scale_t>>;
 
 // You can specialize this struct if you want another underlying multiply operation
 template<unit_value_like T1, unit_value_like T2>
@@ -221,7 +223,7 @@ using divided_dimensions_t = typename A::dimensions_t::template divide_t<typenam
 
 template<unit_like A, unit_like B>
 using divided_unit_t = typename unit_lookup<divided_dimensions_t<A, B>>::template unit_t<
-    std::ratio_divide<typename A::scale_t, typename B::scale_t>>;
+    twig::ratio_divide<typename A::scale_t, typename B::scale_t>>;
 
 // You can specialize this struct if you want another underlying divide operation
 template<unit_value_like T1, unit_value_like T2>
