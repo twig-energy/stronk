@@ -18,7 +18,7 @@ static_assert(!a_flag_type::on().is_off());
 static_assert(!a_flag_type::off().is_on());
 static_assert(a_flag_type::off().is_off());
 
-TEST(flag, flag_values_corrosponds_to_bool_values)
+TEST(stronk_flag, flag_values_corrosponds_to_bool_values)
 {
     EXPECT_FALSE(a_flag_type {false}.is_on());
     EXPECT_TRUE(a_flag_type {false}.is_off());

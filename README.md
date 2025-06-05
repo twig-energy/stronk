@@ -210,6 +210,8 @@ Adding new skills is easy so feel free to add more.
 Often you might just need a group of skills for your specific types. For this you can use prefabs.
 
 - `stronk_flag`: flag like boolean with equal operators etc.
+- `stronk_string`: a stronk string with equation and size skills.
+- `stronk_vector`: a stronk std::vector with equation, indexing, iterating and size skills.
 
 ## Examples
 
