@@ -7,7 +7,7 @@ namespace stronk_details
 {
 
 #if defined(__SIZEOF_INT128__)
-using u_biggest_int_t = unsigned __int128;
+__extension__ using u_biggest_int_t = unsigned __int128;
 #else
 using u_biggest_int_t = uint64_t;
 
