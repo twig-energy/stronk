@@ -1,7 +1,6 @@
 #pragma once
 #include <concepts>
 #include <cstddef>
-#include <initializer_list>
 #include <type_traits>
 #include <utility>
 
@@ -37,13 +36,6 @@ struct stronk : public Skills<Tag>...
                  && sizeof...(ConvertConstructibleTs) >= 2)
     STRONK_FORCEINLINE constexpr explicit stronk(ConvertConstructibleTs&&... values)
         : _you_should_not_be_using_this_but_rather_unwrap(std::forward<ConvertConstructibleTs>(values)...)
-    {
-    }
-
-    template<typename InnerT>
-        requires(std::constructible_from<underlying_type, std::initializer_list<InnerT>>)
-    STRONK_FORCEINLINE constexpr stronk(std::initializer_list<InnerT>&& value)
-        : _you_should_not_be_using_this_but_rather_unwrap(std::move(value))
     {
     }
 

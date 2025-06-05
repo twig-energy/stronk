@@ -437,7 +437,7 @@ TEST(can_clamp, clamping_behaves_similar_to_integers)
 {
     for (auto i = -16; i < 16; i++) {
         for (auto j = -16; j < 16; j++) {
-            for (auto k = -16; k < 16; k++) {
+            for (auto k = j; k < 16; k++) {
                 EXPECT_EQ(a_can_clamp_type {std::clamp(i, j, k)},
                           std::clamp(a_can_clamp_type {i}, a_can_clamp_type {j}, a_can_clamp_type {k}));
             }
