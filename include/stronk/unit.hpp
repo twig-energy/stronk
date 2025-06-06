@@ -57,7 +57,8 @@ struct unit
         using base_t = stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
 
-        constexpr explicit value(UnderlyingT&& value_)
+        // Only here because base constructors cannot be used for CTAD (before [p2582])
+        STRONK_FORCEINLINE constexpr explicit value(UnderlyingT&& value_)
             : base_t(std::move(value_))
         {
         }
@@ -211,21 +212,21 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-constexpr auto operator*(const T& a, const B& b) noexcept -> B
+STRONK_FORCEINLINE constexpr auto operator*(const T& a, const B& b) noexcept -> B
 {
     return B {a * b.template unwrap<B>()};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator*(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() * b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator*=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() *= b;
     return a;
@@ -271,7 +272,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-constexpr auto operator/(const T& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const T& a, const B& b) noexcept
 {
     auto res = a / b.template unwrap<B>();
     using resulting_unit = divided_unit_t<identity_unit, typename B::unit_t>;
@@ -283,14 +284,14 @@ constexpr auto operator/(const T& a, const B& b) noexcept
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator/(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() / b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator/=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
     return a;
