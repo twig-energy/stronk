@@ -41,19 +41,6 @@
       }
     },
     {
-      "name": "clang-18",
-      "hidden": true,
-      "environment": {
-        "CXX": "clang++-18",
-        "CC": "clang-18"
-      },
-      "cacheVariables": {
-        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-18",
-        "LLVM_COV_COMMAND": "llvm-cov-18",
-        "LLVM_PROFDATA_COMMAND": "llvm-profdata-18"
-      }
-    },
-    {
       "name": "clang-19",
       "hidden": true,
       "environment": {
@@ -64,6 +51,19 @@
         "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-19",
         "LLVM_COV_COMMAND": "llvm-cov-19",
         "LLVM_PROFDATA_COMMAND": "llvm-profdata-19"
+      }
+    },
+    {
+      "name": "clang-20",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-20",
+        "CC": "clang-20"
+      },
+      "cacheVariables": {
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-20",
+        "LLVM_COV_COMMAND": "llvm-cov-20",
+        "LLVM_PROFDATA_COMMAND": "llvm-profdata-20"
       }
     },
     {
@@ -147,7 +147,13 @@
       ],
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
-      "hidden": true
+      "hidden": true,
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/triplets",
+        "VCPKG_TARGET_TRIPLET": "sanitize-x64-windows",
+        "VCPKG_HOST_TRIPLET": "sanitize-x64-windows",
+        "CMAKE_CXX_FLAGS": "/fsanitize=address /EHsc"
+      }
     },
     {
       "name": "coverage-linux",
@@ -273,17 +279,17 @@
       ]
     },
     {
-      "name": "ci-ubuntu-clang-18",
-      "inherits": [
-        "ci-ubuntu",
-        "clang-18"
-      ]
-    },
-    {
       "name": "ci-ubuntu-clang-19",
       "inherits": [
         "ci-ubuntu",
         "clang-19"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-20",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-20"
       ]
     },
     {
