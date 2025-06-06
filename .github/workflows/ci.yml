@@ -198,13 +198,24 @@ jobs:
         run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])-${{ matrix.compiler }}"
 
       - name: Build
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: cmake --build build --config Release -j 2
 
+      - name: Build
+        if: ${{ contains(matrix.os, 'windows') }}
+        run: cmake --build build --config Debug -j 2
+
       - name: Install
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: cmake --install build --config Release --prefix prefix
 
       - name: Test
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: ctest --preset=default -C Release -j 2
+
+      - name: Test
+        if: ${{ contains(matrix.os, 'windows') }}
+        run: ctest --preset=default -C Debug -j 2
 
       - name: Benchmarks
         if: ${{ !contains(matrix.os, 'windows') }}

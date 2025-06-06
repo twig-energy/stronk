@@ -147,7 +147,13 @@
       ],
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
-      "hidden": true
+      "hidden": true,
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/triplets",
+        "VCPKG_TARGET_TRIPLET": "sanitize-x64-windows",
+        "VCPKG_HOST_TRIPLET": "sanitize-x64-windows",
+        "CMAKE_CXX_FLAGS": "/fsanitize=address /EHsc"
+      }
     },
     {
       "name": "coverage-linux",
