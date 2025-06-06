@@ -1,7 +1,5 @@
 
 
-#include <vector>
-
 #include "stronk/prefabs/stronk_vector.hpp"
 
 #include <gtest/gtest.h>
