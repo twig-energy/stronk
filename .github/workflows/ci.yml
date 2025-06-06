@@ -57,6 +57,9 @@ jobs:
       - name: Dependency Setup Check
         run: python3 ./tools/check_install_packages_match.py
 
+      - name: Dependency cmake file_set check
+        run: python3 ./tools/check_install_packages_match.py
+
   sonar:
     needs: lint
     if: ${{ !cancelled() && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }} # Don't skip on main build, even though lint is skipped.

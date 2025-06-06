@@ -1,12 +1,18 @@
 # Project is configured with no languages, so tell GNUInstallDirs the lib dir
-set(CMAKE_INSTALL_LIBDIR lib CACHE PATH "")
+set(CMAKE_INSTALL_LIBDIR
+    lib
+    CACHE PATH ""
+)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-if(PROJECT_IS_TOP_LEVEL)
-    set(CMAKE_INSTALL_INCLUDEDIR "include/stronk-${PROJECT_VERSION}" CACHE PATH "")
-endif()
+if (PROJECT_IS_TOP_LEVEL)
+    set(CMAKE_INSTALL_INCLUDEDIR
+        "include/stronk-${PROJECT_VERSION}"
+        CACHE PATH ""
+    )
+endif ()
 
 # find_package(<package>) call for consumers to find this project
 set(package stronk)
@@ -20,18 +26,16 @@ install(
 install(
     TARGETS twig_stronk
     EXPORT stronkTargets
-    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    INCLUDES
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILE_SET HEADERS
 )
 
-write_basic_package_version_file(
-    "${package}ConfigVersion.cmake"
-    COMPATIBILITY SameMajorVersion
-    ARCH_INDEPENDENT
-)
+write_basic_package_version_file("${package}ConfigVersion.cmake" COMPATIBILITY SameMajorVersion ARCH_INDEPENDENT)
 
 # Allow package maintainers to freely override the path for the configs
-set(
-    stronk_INSTALL_CMAKEDIR "${CMAKE_INSTALL_DATADIR}/${package}"
+set(stronk_INSTALL_CMAKEDIR
+    "${CMAKE_INSTALL_DATADIR}/${package}"
     CACHE PATH "CMake package config location relative to the install prefix"
 )
 mark_as_advanced(stronk_INSTALL_CMAKEDIR)
@@ -56,6 +60,6 @@ install(
     COMPONENT stronk_Development
 )
 
-if(PROJECT_IS_TOP_LEVEL)
+if (PROJECT_IS_TOP_LEVEL)
     include(CPack)
-endif()
+endif ()
