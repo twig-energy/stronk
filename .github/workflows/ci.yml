@@ -214,8 +214,11 @@ jobs:
         run: ctest --preset=default -C Release -j 2
 
       - name: Test
+        shell: pwsh
         if: ${{ contains(matrix.os, 'windows') }}
-        run: ctest --preset=default -C Debug -j 2
+        run: |
+          $env:Path += ";C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64"
+          ctest --preset=default -C Debug -j 2
 
       - name: Benchmarks
         if: ${{ !contains(matrix.os, 'windows') }}
