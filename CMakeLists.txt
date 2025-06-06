@@ -29,6 +29,40 @@ find_package(boost_type_index CONFIG REQUIRED)
 add_library(twig_stronk INTERFACE)
 add_library(twig::stronk ALIAS twig_stronk)
 
+target_sources(
+    twig_stronk
+    INTERFACE
+    FILE_SET HEADERS
+             BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include"
+             FILES include/stronk/extensions/absl.hpp
+                   include/stronk/extensions/doctest.hpp
+                   include/stronk/extensions/fmt.hpp
+                   include/stronk/extensions/glaze.hpp
+                   include/stronk/extensions/gtest.hpp
+                   include/stronk/extensions/nlohmann_json.hpp
+                   include/stronk/prefabs/stronk_flag.hpp
+                   include/stronk/skills/can_abs.hpp
+                   include/stronk/skills/can_be_used_as_flag.hpp
+                   include/stronk/skills/can_decrement.hpp
+                   include/stronk/skills/can_divide.hpp
+                   include/stronk/skills/can_format.hpp
+                   include/stronk/skills/can_hash.hpp
+                   include/stronk/skills/can_increment.hpp
+                   include/stronk/skills/can_index.hpp
+                   include/stronk/skills/can_isnan.hpp
+                   include/stronk/skills/can_iterate.hpp
+                   include/stronk/skills/can_multiply.hpp
+                   include/stronk/skills/can_stream.hpp
+                   include/stronk/stronk.hpp
+                   include/stronk/unit.hpp
+                   include/stronk/utilities/constexpr_helpers.hpp
+                   include/stronk/utilities/dimensions.hpp
+                   include/stronk/utilities/equality.hpp
+                   include/stronk/utilities/macros.hpp
+                   include/stronk/utilities/ratio.hpp
+                   include/stronk/utilities/strings.hpp
+)
+
 set_property(TARGET twig_stronk PROPERTY EXPORT_NAME stronk)
 
 target_include_directories(twig_stronk ${warning_guard} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>")
