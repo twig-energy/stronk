@@ -289,184 +289,175 @@ Stronk is a close to zero cost abstraction - performance varies per compiler and
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
 
-```
-2022-09-06T15:29:32+02:00
-Running ./build/benchmarks/stronk_benchmarks
-Run on (64 X 4549.12 MHz CPU s)
+```bash
+2025-06-09T17:31:42
+Running /home/runner/work/stronk/stronk/build/benchmarks/stronk_benchmarks
+Run on (4 X 3253.74 MHz CPU s)
 CPU Caches:
-  L1 Data 32 KiB (x32)
-  L1 Instruction 32 KiB (x32)
-  L2 Unified 512 KiB (x32)
-  L3 Unified 16384 KiB (x8)
-Load Average: 5.12, 10.46, 10.65
-***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 512 KiB (x2)
+  L3 Unified 32768 KiB (x1)
+Load Average: 1.19, 0.36, 0.12
 ------------------------------------------------------------------------------------------------------------------------------
 Benchmark                                                                                    Time             CPU   Iterations
 ------------------------------------------------------------------------------------------------------------------------------
-benchmark_default_onto_reserved_vector<int8_t>                  /32                       8.91 ns         8.91 ns     78563433
-benchmark_default_onto_reserved_vector<int8_t_wrapping_type>    /32                       8.66 ns         8.66 ns     80918037
-benchmark_default_onto_reserved_vector<int8_t>                  /8192                     1980 ns         1979 ns       353087
-benchmark_default_onto_reserved_vector<int8_t_wrapping_type>    /8192                     1986 ns         1986 ns       354193
+benchmark_default_onto_reserved_vector<int8_t>/32                                         12.0 ns         12.0 ns     62407326
+benchmark_default_onto_reserved_vector<int8_t_wrapping_type>/32                           2.80 ns         2.80 ns    250149993
+benchmark_default_onto_reserved_vector<int8_t>/8192                                       2554 ns         2554 ns       274149
+benchmark_default_onto_reserved_vector<int8_t_wrapping_type>/8192                          115 ns          115 ns      6088976
 
-benchmark_default_onto_reserved_vector<int64_t>                 /32                       8.90 ns         8.90 ns     78708349
-benchmark_default_onto_reserved_vector<int64_t_wrapping_type>   /32                       9.09 ns         9.09 ns     80903274
-benchmark_default_onto_reserved_vector<int64_t>                 /8192                     2045 ns         2044 ns       343621
-benchmark_default_onto_reserved_vector<int64_t_wrapping_type>   /8192                     2037 ns         2036 ns       343414
+benchmark_default_onto_reserved_vector<int64_t>/32                                        11.2 ns         11.2 ns     62446873
+benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/32                          10.9 ns         10.9 ns     64236385
+benchmark_default_onto_reserved_vector<int64_t>/8192                                      2557 ns         2557 ns       270881
+benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/8192                        2566 ns         2566 ns       272682
 
-benchmark_default_onto_reserved_vector<std::string>             /32                       47.8 ns         47.8 ns     14663125
-benchmark_default_onto_reserved_vector<string_wrapping_type>    /32                       85.5 ns         85.5 ns      8131930
-benchmark_default_onto_reserved_vector<std::string>             /8192                    19631 ns        19624 ns        36104
-benchmark_default_onto_reserved_vector<string_wrapping_type>    /8192                    22198 ns        22190 ns        31634
+benchmark_default_onto_reserved_vector<std::string>/32                                    68.9 ns         68.9 ns     10172651
+benchmark_default_onto_reserved_vector<string_wrapping_type>/32                           69.0 ns         69.0 ns     10181646
+benchmark_default_onto_reserved_vector<std::string>/8192                                 18293 ns        18292 ns        38252
+benchmark_default_onto_reserved_vector<string_wrapping_type>/8192                        18689 ns        18689 ns        38048
 
+benchmark_rand_onto_reserved_vector<int8_t>/32                                             175 ns          175 ns      4029369
+benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>/32                               183 ns          183 ns      3818736
+benchmark_rand_onto_reserved_vector<int8_t>/8192                                         42324 ns        42317 ns        16605
+benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>/8192                           44696 ns        44692 ns        15645
 
-benchmark_rand_onto_reserved_vector<int8_t>                     /32                        158 ns          158 ns      4422920
-benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>       /32                        161 ns          161 ns      4321957
-benchmark_rand_onto_reserved_vector<int8_t>                     /8192                    39296 ns        39287 ns        18003
-benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>       /8192                    41177 ns        41165 ns        13780
+benchmark_rand_onto_reserved_vector<int64_t>/32                                            507 ns          507 ns      1382460
+benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>/32                              519 ns          519 ns      1399287
+benchmark_rand_onto_reserved_vector<int64_t>/8192                                       130622 ns       130616 ns         5498
+benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>/8192                         125446 ns       125435 ns         4605
 
-benchmark_rand_onto_reserved_vector<int64_t>                    /32                        492 ns          491 ns      1341406
-benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>      /32                        474 ns          474 ns      1457581
-benchmark_rand_onto_reserved_vector<int64_t>                    /8192                   118668 ns       118618 ns         6019
-benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>      /8192                   117694 ns       117661 ns         5962
+benchmark_rand_onto_reserved_vector<std::string>/32                                      10403 ns        10403 ns        67340
+benchmark_rand_onto_reserved_vector<string_wrapping_type>/32                             10645 ns        10644 ns        65943
+benchmark_rand_onto_reserved_vector<std::string>/8192                                  2668895 ns      2668719 ns          260
+benchmark_rand_onto_reserved_vector<string_wrapping_type>/8192                         2724441 ns      2724121 ns          257
 
-benchmark_rand_onto_reserved_vector<std::string>                /32                      21612 ns        21605 ns        32047
-benchmark_rand_onto_reserved_vector<string_wrapping_type>       /32                      21155 ns        21149 ns        32177
-benchmark_rand_onto_reserved_vector<std::string>                /8192                  5583745 ns      5581594 ns          126
-benchmark_rand_onto_reserved_vector<string_wrapping_type>       /8192                  5520208 ns      5518877 ns          125
+benchmark_copy_vector_of<int8_t>/32                                                       20.1 ns         20.1 ns     34701524
+benchmark_copy_vector_of<int8_t_wrapping_type>/32                                         19.9 ns         19.9 ns     34918031
+benchmark_copy_vector_of<int8_t>/8192                                                     2746 ns         2746 ns       254751
+benchmark_copy_vector_of<int8_t_wrapping_type>/8192                                       2747 ns         2747 ns       255140
 
+benchmark_copy_vector_of<int64_t>/32                                                      30.0 ns         30.0 ns     24108558
+benchmark_copy_vector_of<int64_t_wrapping_type>/32                                        30.2 ns         30.2 ns     23655573
+benchmark_copy_vector_of<int64_t>/8192                                                   22400 ns        22398 ns        31273
+benchmark_copy_vector_of<int64_t_wrapping_type>/8192                                     22364 ns        22363 ns        31317
 
-benchmark_copy_vector_of<int8_t>                                /32                       11.0 ns         11.0 ns     61066804
-benchmark_copy_vector_of<int8_t_wrapping_type>                  /32                       11.8 ns         11.8 ns     58053187
-benchmark_copy_vector_of<int8_t>                                /8192                    100.0 ns         99.9 ns      6840525
-benchmark_copy_vector_of<int8_t_wrapping_type>                  /8192                    114.0 ns          114 ns      6107469
-
-benchmark_copy_vector_of<int64_t>                               /32                       11.8 ns         11.8 ns     59132687
-benchmark_copy_vector_of<int64_t_wrapping_type>                 /32                       13.0 ns         13.0 ns     54934171
-benchmark_copy_vector_of<int64_t>                               /8192                     1070 ns         1070 ns       653306
-benchmark_copy_vector_of<int64_t_wrapping_type>                 /8192                     1067 ns         1067 ns       657525
-
-benchmark_copy_vector_of<std::string>                           /32                        522 ns          522 ns      1336216
-benchmark_copy_vector_of<string_wrapping_type>                  /32                        528 ns          528 ns      1319940
-benchmark_copy_vector_of<std::string>                           /8192                   206292 ns       206209 ns         3501
-benchmark_copy_vector_of<string_wrapping_type>                  /8192                   207750 ns       207709 ns         3368
-
+benchmark_copy_vector_of<std::string>/32                                                   627 ns          627 ns      1124125
+benchmark_copy_vector_of<string_wrapping_type>/32                                          633 ns          633 ns      1105766
+benchmark_copy_vector_of<std::string>/8192                                              240597 ns       240586 ns         2908
+benchmark_copy_vector_of<string_wrapping_type>/8192                                     241608 ns       241588 ns         2885
 ```
 
 Calling "Skill" functions (which internally calls unwrap) performs identically to calling the functions directly on the raw types. They even auto-vectorize the same:
 
 ```
-2022-09-06T15:29:32+02:00
-Running ./build/benchmarks/stronk_benchmarks
-Run on (64 X 4549.12 MHz CPU s)
+2025-06-09T17:31:42
+Running /home/runner/work/stronk/stronk/build/benchmarks/stronk_benchmarks
+Run on (4 X 3253.74 MHz CPU s)
 CPU Caches:
-  L1 Data 32 KiB (x32)
-  L1 Instruction 32 KiB (x32)
-  L2 Unified 512 KiB (x32)
-  L3 Unified 16384 KiB (x8)
-Load Average: 5.12, 10.46, 10.65
-***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
---------------------------------------------------------------------------------------------------------------------------------
-Benchmark                                                                                      Time             CPU   Iterations
---------------------------------------------------------------------------------------------------------------------------------
-benchmark_add_units<int8_t>                                                       /8192     4114 ns         4113 ns       172898
-benchmark_add_units<int8_t_wrapping_type>                                         /8192     4074 ns         4073 ns       172007
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 512 KiB (x2)
+  L3 Unified 32768 KiB (x1)
+Load Average: 1.19, 0.36, 0.12
+------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                                                                    Time             CPU   Iterations
+------------------------------------------------------------------------------------------------------------------------------
+benchmark_add_units<int8_t>/8192                                                          5106 ns         5106 ns       137161
+benchmark_add_units<int8_t_wrapping_type>/8192                                            2558 ns         2557 ns       267810
 
-benchmark_add_units<int64_t>                                                      /8192     4059 ns         4058 ns       172825
-benchmark_add_units<int64_t_wrapping_type>                                        /8192     4136 ns         4135 ns       172749
+benchmark_add_units<int64_t>/8192                                                         2627 ns         2627 ns       262084
+benchmark_add_units<int64_t_wrapping_type>/8192                                           2611 ns         2611 ns       269788
 
-benchmark_add_units<double>                                                       /8192     4168 ns         4167 ns       171310
-benchmark_add_units<double_wrapping_type>                                         /8192     4203 ns         4202 ns       170063
+benchmark_add_units<double>/8192                                                          2560 ns         2560 ns       263402
+benchmark_add_units<double_wrapping_type>/8192                                            2597 ns         2596 ns       261914
 
-benchmark_add_units_simd<int8_t, 32>                                              /256       284 ns          284 ns      2482647
-benchmark_add_units_simd<int8_t_wrapping_type, 32>                                /256       278 ns          278 ns      2521970
+benchmark_add_units_simd<int8_t, 32>/256                                                   294 ns          294 ns      2385544
+benchmark_add_units_simd<int8_t_wrapping_type, 32>/256                                     292 ns          292 ns      2396000
 
-benchmark_add_units_simd<int64_t, 32>                                             /256      1804 ns         1802 ns       386445
-benchmark_add_units_simd<int64_t_wrapping_type, 32>                               /256      1802 ns         1801 ns       387243
+benchmark_add_units_simd<int64_t, 32>/256                                                 4926 ns         4926 ns       147322
+benchmark_add_units_simd<int64_t_wrapping_type, 32>/256                                   4757 ns         4756 ns       147417
 
-benchmark_add_units_simd<double, 32>                                              /256      1812 ns         1811 ns       386561
-benchmark_add_units_simd<double_wrapping_type, 32>                                /256      1791 ns         1790 ns       388848
+benchmark_add_units_simd<double, 32>/256                                                  4817 ns         4817 ns       145288
+benchmark_add_units_simd<double_wrapping_type, 32>/256                                    4844 ns         4843 ns       145286
 
+benchmark_subtract_units<int8_t>/8192                                                     5104 ns         5104 ns       137258
+benchmark_subtract_units<int8_t_wrapping_type>/8192                                       2593 ns         2593 ns       263280
 
-benchmark_subtract_units<int8_t>                                                  /8192     4129 ns         4128 ns       172555
-benchmark_subtract_units<int8_t_wrapping_type>                                    /8192     4042 ns         4041 ns       172917
+benchmark_subtract_units<int64_t>/8192                                                    5316 ns         5316 ns       137355
+benchmark_subtract_units<int64_t_wrapping_type>/8192                                      2598 ns         2596 ns       268095
 
-benchmark_subtract_units<int64_t>                                                 /8192     4016 ns         4015 ns       174396
-benchmark_subtract_units<int64_t_wrapping_type>                                   /8192     4012 ns         4011 ns       174147
+benchmark_subtract_units<double>/8192                                                     2595 ns         2595 ns       269322
+benchmark_subtract_units<double_wrapping_type>/8192                                       2601 ns         2601 ns       271730
 
-benchmark_subtract_units<double>                                                  /8192     4030 ns         4029 ns       173898
-benchmark_subtract_units<double_wrapping_type>                                    /8192     4019 ns         4018 ns       174130
+benchmark_subtract_units_simd<int8_t, 32>/256                                              292 ns          292 ns      2397710
+benchmark_subtract_units_simd<int8_t_wrapping_type, 32>/256                                293 ns          293 ns      2400188
 
-benchmark_subtract_units_simd<int8_t, 32>                                         /256       278 ns          278 ns      2528806
-benchmark_subtract_units_simd<int8_t_wrapping_type, 32>                           /256       278 ns          278 ns      2522150
+benchmark_subtract_units_simd<int64_t, 32>/256                                            4756 ns         4756 ns       146574
+benchmark_subtract_units_simd<int64_t_wrapping_type, 32>/256                              4753 ns         4752 ns       146956
 
-benchmark_subtract_units_simd<int64_t, 32>                                        /256      1796 ns         1796 ns       388739
-benchmark_subtract_units_simd<int64_t_wrapping_type, 32>                          /256      1797 ns         1797 ns       389213
+benchmark_subtract_units_simd<double, 32>/256                                             4827 ns         4826 ns       145283
+benchmark_subtract_units_simd<double_wrapping_type, 32>/256                               4821 ns         4821 ns       145180
 
-benchmark_subtract_units_simd<double, 32>                                         /256      1817 ns         1817 ns       386436
-benchmark_subtract_units_simd<double_wrapping_type, 32>                           /256      1806 ns         1806 ns       384036
+benchmark_multiply_units<int8_t, int8_t>/8192                                             5106 ns         5106 ns       137260
+benchmark_multiply_units<int8_t_wrapping_type, int8_t_wrapping_type>/8192                 2598 ns         2598 ns       273621
 
+benchmark_multiply_units<int64_t, int64_t>/8192                                           5107 ns         5107 ns       137336
+benchmark_multiply_units<int64_t_wrapping_type, int64_t_wrapping_type>/8192               2625 ns         2625 ns       267305
 
-benchmark_multiply_units<int8_t, int8_t>                                          /8192     4840 ns         4840 ns       144495
-benchmark_multiply_units<int8_t_wrapping_type, int8_t_wrapping_type>              /8192     4836 ns         4835 ns       144600
+benchmark_multiply_units<double, double>/8192                                             2616 ns         2615 ns       264152
+benchmark_multiply_units<double_wrapping_type, double_wrapping_type>/8192                 2715 ns         2715 ns       269888
 
-benchmark_multiply_units<int64_t, int64_t>                                        /8192     4176 ns         4175 ns       168529
-benchmark_multiply_units<int64_t_wrapping_type, int64_t_wrapping_type>            /8192     4144 ns         4144 ns       167954
+benchmark_multiply_units<int64_t, double>/8192                                            2588 ns         2587 ns       272344
+benchmark_multiply_units<int64_t_wrapping_type, double_wrapping_type>/8192                2635 ns         2634 ns       267335
 
-benchmark_multiply_units<double, double>                                          /8192     4032 ns         4031 ns       173870
-benchmark_multiply_units<double_wrapping_type, double_wrapping_type>              /8192     4029 ns         4027 ns       172664
+benchmark_multiply_units<double, int64_t>/8192                                            2589 ns         2589 ns       270346
+benchmark_multiply_units<double_wrapping_type, int64_t_wrapping_type>/8192                2586 ns         2586 ns       256974
 
-benchmark_multiply_units<int64_t, double>                                         /8192     4044 ns         4043 ns       173192
-benchmark_multiply_units<int64_t_wrapping_type, double_wrapping_type>             /8192     4040 ns         4039 ns       173067
+benchmark_multiply_units_simd<int8_t, int8_t, 32>/256                                     3216 ns         3216 ns       217588
+benchmark_multiply_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>/256         3216 ns         3215 ns       217792
 
-benchmark_multiply_units<double, int64_t>                                         /8192     4036 ns         4034 ns       173323
-benchmark_multiply_units<double_wrapping_type, int64_t_wrapping_type>             /8192     3990 ns         3989 ns       172120
+benchmark_multiply_units_simd<int64_t, int64_t, 32>/256                                   7036 ns         7035 ns        99638
+benchmark_multiply_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>/256       6973 ns         6972 ns       100436
 
+benchmark_multiply_units_simd<double, double, 32>/256                                     4818 ns         4818 ns       145227
+benchmark_multiply_units_simd<double_wrapping_type, double_wrapping_type, 32>/256         4821 ns         4820 ns       145119
 
-benchmark_multiply_units_simd<int8_t, int8_t, 32>                                 /256      2162 ns         2161 ns       323603
-benchmark_multiply_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>     /256      2168 ns         2167 ns       323478
+benchmark_multiply_units_simd<int64_t, double, 32>/256                                    5939 ns         5939 ns       118051
+benchmark_multiply_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>/256        5940 ns         5939 ns       117936
 
-benchmark_multiply_units_simd<int64_t, int64_t, 32>                               /256      2756 ns         2755 ns       256899
-benchmark_multiply_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>   /256      2731 ns         2730 ns       255456
+benchmark_multiply_units_simd<double, int64_t, 32>/256                                    5940 ns         5940 ns       117885
+benchmark_multiply_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>/256        5954 ns         5953 ns       117853
 
-benchmark_multiply_units_simd<double, double, 32>                                 /256      1835 ns         1835 ns       381571
-benchmark_multiply_units_simd<double_wrapping_type, double_wrapping_type, 32>     /256      1826 ns         1826 ns       386378
+benchmark_divide_units<int8_t, int8_t>/8192                                               2603 ns         2603 ns       264947
+benchmark_divide_units<int8_t_wrapping_type, int8_t_wrapping_type>/8192                   2655 ns         2655 ns       263236
 
-benchmark_multiply_units_simd<int64_t, double, 32>                                /256      3938 ns         3937 ns       181518
-benchmark_multiply_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>    /256      3922 ns         3921 ns       174342
+benchmark_divide_units<int64_t, int64_t>/8192                                             2741 ns         2741 ns       259965
+benchmark_divide_units<int64_t_wrapping_type, int64_t_wrapping_type>/8192                 2582 ns         2581 ns       265405
 
-benchmark_multiply_units_simd<double, int64_t, 32>                                /256      3979 ns         3978 ns       175656
-benchmark_multiply_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>    /256      3973 ns         3972 ns       175886
+benchmark_divide_units<double, double>/8192                                               2631 ns         2631 ns       268084
+benchmark_divide_units<double_wrapping_type, double_wrapping_type>/8192                   2641 ns         2640 ns       273748
 
+benchmark_divide_units<int64_t, double>/8192                                              2608 ns         2608 ns       264458
+benchmark_divide_units<int64_t_wrapping_type, double_wrapping_type>/8192                  2618 ns         2617 ns       263916
 
-benchmark_divide_units<int8_t, int8_t>                                            /8192    28624 ns        28615 ns        24461
-benchmark_divide_units<int8_t_wrapping_type, int8_t_wrapping_type>                /8192    28646 ns        28639 ns        24440
+benchmark_divide_units<double, int64_t>/8192                                              2559 ns         2559 ns       268442
+benchmark_divide_units<double_wrapping_type, int64_t_wrapping_type>/8192                  2584 ns         2584 ns       273500
 
-benchmark_divide_units<int64_t, int64_t>                                          /8192    28736 ns        28725 ns        24393
-benchmark_divide_units<int64_t_wrapping_type, int64_t_wrapping_type>              /8192    28449 ns        28444 ns        24369
+benchmark_divide_units_simd<int8_t, int8_t, 32>/256                                      13372 ns        13371 ns        52398
+benchmark_divide_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>/256          13361 ns        13360 ns        52344
 
-benchmark_divide_units<double, double>                                            /8192    10116 ns        10114 ns        69634
-benchmark_divide_units<double_wrapping_type, double_wrapping_type>                /8192    10175 ns        10173 ns        69232
+benchmark_divide_units_simd<int64_t, int64_t, 32>/256                                    15750 ns        15748 ns        44440
+benchmark_divide_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>/256        15749 ns        15748 ns        44459
 
-benchmark_divide_units<int64_t, double>                                           /8192    10280 ns        10277 ns        69438
-benchmark_divide_units<int64_t_wrapping_type, double_wrapping_type>               /8192     9991 ns         9988 ns        69697
+benchmark_divide_units_simd<double, double, 32>/256                                       5730 ns         5730 ns       125709
+benchmark_divide_units_simd<double_wrapping_type, double_wrapping_type, 32>/256           5712 ns         5712 ns       123217
 
-benchmark_divide_units<double, int64_t>                                           /8192    10079 ns        10077 ns        69349
-benchmark_divide_units<double_wrapping_type, int64_t_wrapping_type>               /8192    10043 ns        10038 ns        69509
+benchmark_divide_units_simd<int64_t, double, 32>/256                                     10051 ns        10050 ns        69697
+benchmark_divide_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>/256         10050 ns        10049 ns        69550
 
-benchmark_divide_units_simd<int8_t, int8_t, 32>                                   /256     25015 ns        25007 ns        28410
-benchmark_divide_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>       /256     24891 ns        24884 ns        28246
-
-benchmark_divide_units_simd<int64_t, int64_t, 32>                                 /256     24910 ns        24905 ns        28098
-benchmark_divide_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>     /256     24888 ns        24881 ns        27959
-
-benchmark_divide_units_simd<double, double, 32>                                   /256      4362 ns         4361 ns       160498
-benchmark_divide_units_simd<double_wrapping_type, double_wrapping_type, 32>       /256      4371 ns         4370 ns       159631
-
-benchmark_divide_units_simd<int64_t, double, 32>                                  /256      4363 ns         4362 ns       160427
-benchmark_divide_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>      /256      4366 ns         4365 ns       160489
-
-benchmark_divide_units_simd<double, int64_t, 32>                                  /256      4365 ns         4363 ns       160532
-benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>      /256      4372 ns         4371 ns       160567
+benchmark_divide_units_simd<double, int64_t, 32>/256                                     10041 ns        10040 ns        69773
+benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>/256         10099 ns        10098 ns        69731
 ```
 
 # Licensing
