@@ -106,7 +106,7 @@ TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
     }
 }
 
-struct a_string_type : stronk<a_string_type, std::string>
+struct a_str_type : stronk<a_str_type, std::string>
 {
     using stronk::stronk;
 };
@@ -114,14 +114,14 @@ struct a_string_type : stronk<a_string_type, std::string>
 TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
 {
     auto str = std::string {"yoyo"};
-    auto stronked_copy = a_string_type {str};
-    EXPECT_EQ(stronked_copy.unwrap<a_string_type>(), str);
+    auto stronked_copy = a_str_type {str};
+    EXPECT_EQ(stronked_copy.unwrap<a_str_type>(), str);
 
-    auto stronked_moved = a_string_type {std::string {"lolo"}};
-    EXPECT_EQ(stronked_moved.unwrap<a_string_type>(), "lolo");
+    auto stronked_moved = a_str_type {std::string {"lolo"}};
+    EXPECT_EQ(stronked_moved.unwrap<a_str_type>(), "lolo");
 
-    auto stronked_forward = a_string_type {"soso"};
-    EXPECT_EQ(stronked_forward.unwrap<a_string_type>(), "soso");
+    auto stronked_forward = a_str_type {"soso"};
+    EXPECT_EQ(stronked_forward.unwrap<a_str_type>(), "soso");
 }
 
 struct implicit_wrapper
