@@ -20,7 +20,7 @@ concept unit_like = requires {
 };
 
 template<typename T>
-concept unit_value_like = ::twig::stronk_like<T> && requires { typename T::unit_t; };
+concept unit_value_like = stronk_like<T> && requires { typename T::unit_t; };
 
 template<typename T, typename ValueT>
 concept is_unit = std::same_as<typename T::unit_t::dimensions_t, typename ValueT::dimensions_t>;
@@ -51,11 +51,17 @@ struct unit
     using scaled_t = unit<Tag, typename OtherScaleT::type, SkillTs...>;
 
     template<typename UnderlyingT>
-    struct value : ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
+    struct value : stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>
     {
         using unit_t = unit;
-        using base_t = ::twig::stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
+        using base_t = stronk<value<UnderlyingT>, UnderlyingT, SkillTs...>;
         using base_t::base_t;
+
+        // Only here because base constructors cannot be used for CTAD (before [p2582])
+        STRONK_FORCEINLINE constexpr explicit value(UnderlyingT&& value_)
+            : base_t(std::move(value_))
+        {
+        }
 
         // can static_cast to same unit with different underlying type
         template<typename NewUnderlyingT>
@@ -78,12 +84,24 @@ struct unit
          * @tparam NewUnitValueT The new unit value type to convert to with same dimensions and underlying type
          * @return a new unit with same dimensions and underlying type, but with the specified scale
          */
-        template<unit_value_like NewUnitValueT>
-            requires(std::same_as<typename NewUnitValueT::unit_t::dimensions_t, dimensions_t>
-                     && std::same_as<UnderlyingT, typename NewUnitValueT::underlying_type>)
-        constexpr auto to() const -> NewUnitValueT
+        template<template<typename OtherSkillsTs> typename NewUnitValueT>
+            requires(std::same_as<typename NewUnitValueT<UnderlyingT>::unit_t::dimensions_t, dimensions_t>)
+        constexpr auto to() const -> NewUnitValueT<UnderlyingT>
         {
-            using new_scale_t = typename NewUnitValueT::unit_t::scale_t;
+            return to<typename NewUnitValueT<UnderlyingT>::unit_t>();
+        }
+
+        /**
+         * @brief Convert the value to another scale
+         *
+         * @tparam NewUnitValueT a unit type with same dimensions as this unit
+         * @return a new unit value with same dimensions and underlying type, but with a new specified scale
+         */
+        template<unit_like UnitT>
+            requires(std::same_as<typename UnitT::dimensions_t, dimensions_t>)
+        constexpr auto to() const
+        {
+            using new_scale_t = UnitT::scale_t;
             using converter = twig::ratio_divide<ScaleT, new_scale_t>;
             using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
             return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
@@ -95,7 +113,7 @@ struct unit
 template<>
 struct unit<::twig::create_dimensions_t<>, twig::ratio<1>>
 {
-    using dimensions_t = ::twig::create_dimensions_t<>;
+    using dimensions_t = create_dimensions_t<>;
     using scale_t = twig::ratio<1>;
     using unit_t = unit;
 
@@ -194,21 +212,21 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-constexpr auto operator*(const T& a, const B& b) noexcept -> B
+STRONK_FORCEINLINE constexpr auto operator*(const T& a, const B& b) noexcept -> B
 {
     return B {a * b.template unwrap<B>()};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator*(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() * b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator*=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator*=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() *= b;
     return a;
@@ -254,7 +272,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-constexpr auto operator/(const T& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const T& a, const B& b) noexcept
 {
     auto res = a / b.template unwrap<B>();
     using resulting_unit = divided_unit_t<identity_unit, typename B::unit_t>;
@@ -266,14 +284,14 @@ constexpr auto operator/(const T& a, const B& b) noexcept
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator/(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const T& b) noexcept -> A
 {
     return A {a.template unwrap<A>() / b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-constexpr auto operator/=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 {
     a.template unwrap<A>() /= b;
     return a;
@@ -282,7 +300,7 @@ constexpr auto operator/=(A& a, const T& b) noexcept -> A&
 template<unit_like UnitT, typename UnderlyingT>
 constexpr auto make(UnderlyingT&& value)
 {
-    return unit_value_t<UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
+    return unit_value_t<UnitT, std::remove_cvref_t<UnderlyingT>> {std::forward<UnderlyingT>(value)};
 }
 
 template<typename ScaleT, unit_like UnitT, typename UnderlyingT>

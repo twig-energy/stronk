@@ -34,24 +34,12 @@ target_sources(
     INTERFACE
     FILE_SET HEADERS
              BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include"
-             FILES include/stronk/can_decrement.h
-                   include/stronk/can_format.h
-                   include/stronk/can_hash.h
-                   include/stronk/can_increment.h
-                   include/stronk/can_stream.h
-                   include/stronk/extensions/absl.h
-                   include/stronk/extensions/absl.hpp
-                   include/stronk/extensions/doctest.h
+             FILES include/stronk/extensions/absl.hpp
                    include/stronk/extensions/doctest.hpp
-                   include/stronk/extensions/fmt.h
                    include/stronk/extensions/fmt.hpp
-                   include/stronk/extensions/glaze.h
                    include/stronk/extensions/glaze.hpp
-                   include/stronk/extensions/gtest.h
                    include/stronk/extensions/gtest.hpp
-                   include/stronk/extensions/nlohmann_json.h
                    include/stronk/extensions/nlohmann_json.hpp
-                   include/stronk/prefabs.h
                    include/stronk/prefabs/stronk_flag.hpp
                    include/stronk/skills/can_abs.hpp
                    include/stronk/skills/can_be_used_as_flag.hpp
@@ -65,9 +53,7 @@ target_sources(
                    include/stronk/skills/can_iterate.hpp
                    include/stronk/skills/can_multiply.hpp
                    include/stronk/skills/can_stream.hpp
-                   include/stronk/stronk.h
                    include/stronk/stronk.hpp
-                   include/stronk/unit.h
                    include/stronk/unit.hpp
                    include/stronk/utilities/constexpr_helpers.hpp
                    include/stronk/utilities/dimensions.hpp

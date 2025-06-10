@@ -14,7 +14,7 @@ struct string_literal
 
     consteval explicit(false) string_literal(const char (&str)[N]) noexcept  // NOLINT
     {
-        for (auto i = 0; i < N; i++) {
+        for (auto i = 0ULL; i < N; i++) {
             value[i] = str[i];
         }
     }
