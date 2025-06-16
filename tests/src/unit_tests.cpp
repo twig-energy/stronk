@@ -35,9 +35,9 @@ struct kilograms : unit<kilograms, twig::ratio<1>, can_equate>
 
 using per_meter = divided_unit_t<identity_unit, meters>;
 using square_meters = multiplied_unit_t<meters, meters>;
-using meters_per_second = divided_unit_t<meters, seconds>;
+using speed = divided_unit_t<meters, seconds>;
 using seconds_per_meter = divided_unit_t<seconds, meters>;
-using acceleration_m_per_s2 = divided_unit_t<meters_per_second, seconds>;
+using acceleration_m_per_s2 = divided_unit_t<speed, seconds>;
 using seconds_sq = multiplied_unit_t<seconds, seconds>;
 using force = multiplied_unit_t<kilograms, acceleration_m_per_s2>;
 
@@ -50,14 +50,14 @@ struct a_regular_stronk_type : stronk<a_regular_stronk_type, int32_t>
 
 // Testing the concepts
 static_assert(unit_like<kilograms>);
-static_assert(unit_like<meters_per_second>);
+static_assert(unit_like<speed>);
 static_assert(unit_like<acceleration_m_per_s2>);
 static_assert(!unit_like<a_regular_stronk_type>);
 static_assert(!unit_like<a_regular_type>);
-static_assert(!unit_like<unit_value_t<meters_per_second, int32_t>>);
+static_assert(!unit_like<unit_value_t<speed, int32_t>>);
 
 static_assert(unit_value_like<unit_value_t<kilograms, int32_t>>);
-static_assert(unit_value_like<unit_value_t<meters_per_second, int32_t>>);
+static_assert(unit_value_like<unit_value_t<speed, int32_t>>);
 static_assert(unit_value_like<unit_value_t<acceleration_m_per_s2, int32_t>>);
 static_assert(!unit_value_like<a_regular_stronk_type>);
 static_assert(!unit_value_like<a_regular_type>);
@@ -75,7 +75,7 @@ static_assert(std::same_as<multiplied_unit_t<meters, seconds>, stronk_default_un
 static_assert(std::same_as<multiplied_unit_t<multiplied_unit_t<meters, seconds>, meters>, stronk_default_unit<create_dimensions_t<dimension<meters, 2>, dimension<seconds, 1>>,twig::ratio<1>>>);
 static_assert(std::same_as<divided_unit_t<multiplied_unit_t<meters, seconds>, meters>, seconds>);
 static_assert(std::same_as<divided_unit_t<example_1, example_1>, identity_unit>);
-static_assert(std::same_as<multiplied_unit_t<meters_per_second, seconds_per_meter>, identity_unit>);
+static_assert(std::same_as<multiplied_unit_t<speed, seconds_per_meter>, identity_unit>);
 static_assert(std::same_as<multiplied_unit_t<example_1, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 4>, dimension<seconds, 2>, dimension<kilograms, -2>>,twig::ratio<1>>>);
 static_assert(std::same_as<multiplied_unit_t<example_1, example_2>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::ratio<1>>>);
 static_assert(std::same_as<multiplied_unit_t<example_2, example_1>, stronk_default_unit<create_dimensions_t<dimension<meters, 3>>,twig::ratio<1>>>);
@@ -142,8 +142,7 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_another_the_result_is_a_new_type_w
             if (j == 0) {
                 continue;
             }
-            EXPECT_EQ(make<meters_per_second>(static_cast<double>(i) / j),
-                      make<meters>(static_cast<double>(i)) / make<seconds>(j));
+            EXPECT_EQ(make<speed>(static_cast<double>(i) / j), make<meters>(static_cast<double>(i)) / make<seconds>(j));
         }
     }
 }
@@ -174,7 +173,7 @@ TEST(stronk_units_v2, when_dividing_a_unit_by_a_squared_unit_the_result_is_a_new
 TEST(stronk_units_v2, generated_units_can_add_and_subtract_and_compare_like_basic_types)
 {
     for (auto i = -16; i < 16; i++) {
-        using meters_per_second_double = unit_value_t<meters_per_second, double>;
+        using meters_per_second_double = unit_value_t<speed, double>;
         EXPECT_EQ(-meters_per_second_double {static_cast<double>(i)},
                   meters_per_second_double {static_cast<double>(-i)});
         for (auto j = -16; j < 16; j++) {
@@ -343,11 +342,11 @@ TEST(stronk_units_v2, scales_creates_the_right_types)
     auto ms = make<twig::milli, seconds, double>(1.0);
     auto d = make<twig::ratio<86400, 1>, seconds, double>(1.0);
 
-    static_assert(std::same_as<decltype(m / s), meters_per_second::value<double>>);
-    static_assert(std::same_as<decltype(m / hr), meters_per_second::scaled_t<twig::ratio<1, 3600>>::value<double>>);
-    static_assert(std::same_as<decltype(km / hr), meters_per_second::scaled_t<twig::ratio<5, 18>>::value<double>>);
-    static_assert(std::same_as<decltype(km / d), meters_per_second::scaled_t<twig::ratio<5, 432>>::value<double>>);
-    static_assert(std::same_as<decltype(um / ms), meters_per_second::scaled_t<twig::ratio<1, 1000>>::value<double>>);
+    static_assert(std::same_as<decltype(m / s), speed::value<double>>);
+    static_assert(std::same_as<decltype(m / hr), speed::scaled_t<twig::ratio<1, 3600>>::value<double>>);
+    static_assert(std::same_as<decltype(km / hr), speed::scaled_t<twig::ratio<5, 18>>::value<double>>);
+    static_assert(std::same_as<decltype(km / d), speed::scaled_t<twig::ratio<5, 432>>::value<double>>);
+    static_assert(std::same_as<decltype(um / ms), speed::scaled_t<twig::ratio<1, 1000>>::value<double>>);
     static_assert(std::same_as<decltype(ms / um), seconds_per_meter::scaled_t<twig::ratio<1000, 1>>::value<double>>);
 
     [[maybe_unused]]
@@ -391,12 +390,12 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     km = make<km_t>(8.0);
     auto s = make<seconds>(7200.0);
     auto km_per_s = km / s;
-    auto expected_speed = unit_scaled_value_t<twig::kilo, meters_per_second, double>(0.00111111111111);
+    auto expected_speed = unit_scaled_value_t<twig::kilo, speed, double>(0.00111111111111);
 
     EXPECT_EQ(km_per_s, expected_speed);
 
     using hr_t = seconds::scaled_t<twig::ratio<3600ULL>>;
-    using km_per_hr_t = meters_per_second::scaled_t<twig::ratio<1000, 3600ULL>>;
+    using km_per_hr_t = speed::scaled_t<twig::ratio<1000, 3600ULL>>;
 
     auto hr = s.to<hr_t>();
     auto expected_hr = make<hr_t>(2.0);

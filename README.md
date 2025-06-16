@@ -71,93 +71,91 @@ On top of providing strong type utilities, `stronk` also enables unit-like behav
 #include "stronk/utilities/ratio.hpp"
 
 // We introduce a unit type with a default set of skills with the `stronk_default_unit` prefab
-struct joules_unit : twig::stronk_default_unit<joules_unit, twig::ratio<1>>
+struct joules : twig::stronk_default_unit<joules, twig::ratio<1>>
 {
 };
 
 template<typename T>
-using joules = joules_unit::value<T>;
+using joules_t = joules::value<T>;
 
 void joules_and_identity_units()
 {
-    auto energy = joules {30.};
-    energy += joules {4.} - joules {2.};  // we can add and subtract units
+    auto energy = joules_t {30.};
+    energy += joules_t {4.} - joules_t {2.};  // we can add and subtract units
 
     // Multiplying and dividing with an identity_unit (such as floats and integers) does not change the type.
     energy *= 2.;
 
     // However an identity_unit divided by a regular unit results in a new unit type.
     auto one_over_joules = 1.0 / energy;
-    static_assert(!std::same_as<decltype(one_over_joules), joules<double>>);
+    static_assert(!std::same_as<decltype(one_over_joules), joules_t<double>>);
 }
 ```
 
 Different units can be combined by multiplying or dividing them:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=29:line_end=64
-struct seconds_unit : twig::stronk_default_unit<seconds_unit, twig::ratio<1>>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=28:line_end=61
+// Let's introduce seconds as a new unit
+struct seconds : twig::stronk_default_unit<seconds, twig::ratio<1>>
 {
 };
 
-template<typename T>
-using seconds = seconds_unit::value<T>;
-
 // We can define ratios of a specific unit - these scaled units have the same dimension
 template<typename T>
-using hours = seconds_unit::scaled_t<twig::ratio<60 * 60>>::value<T>;
+using hours_t = seconds::scaled_t<twig::ratio<60 * 60>>::value<T>;
 
 // We can now dynamically generate a new type!
-using watt_unit = twig::divided_unit_t<joules_unit, seconds_unit>;
+using watt = twig::divided_unit_t<joules, seconds>;
 
 template<typename T>
-using watt = watt_unit::value<T>;
+using watt_t = watt::value<T>;
 
 // or make custom names for already known types (joules) with specific scale
-using watt_hours_unit = decltype(watt<double> {} * hours<double> {})::unit_t;
+using watt_hours = decltype(watt_t<double> {} * hours_t<double> {})::unit_t;
 
 template<typename T>
-using watt_hours = watt_hours_unit::value<T>;
+using watt_hours_t = watt_hours::value<T>;
 
 void watt_hours_and_generating_new_units()
 {
     // Multiplying the right units together will automatically produce the new type
-    watt_hours watt_hours_val = hours {3.} * watt {25.};
+    watt_hours_t watt_hours_val = hours_t {3.} * watt_t {25.};
 
     // The new type supports adding, subtracting, comparing etc by default.
-    watt_hours_val -= watt_hours {10.} + watt_hours {2.};
+    watt_hours_val -= watt_hours_t {10.} + watt_hours_t {2.};
 
     // We can get back to Hours or Watt by dividing the opposite out.
-    hours hours_val = watt_hours_val / watt {25.};
-    watt watt_val = watt_hours_val / hours {3.};
+    hours_t hours_val = watt_hours_val / watt_t {25.};
+    watt_t watt_val = watt_hours_val / hours_t {3.};
 }
 ```
 
 These new generated types are also units which can be used to generate new units:
 
-```cpp :file=./examples/unit_energy_example.cpp:line_start=66:line_end=90
-struct euro_unit : twig::stronk_default_unit<euro_unit, twig::ratio<1>>
+```cpp :file=./examples/unit_energy_example.cpp:line_start=62:line_end=86
+// Let's introduce a type for euros, and start combining more types.
+struct euro : twig::stronk_default_unit<euro, twig::ratio<1>>
 {
 };
 template<typename T>
-using euro = euro_unit::value<T>;
+using euro_t = euro::value<T>;
 
 template<typename T>
-using mega_watt_hours =
-    joules_unit::scaled_t<twig::ratio_multiply<twig::mega, typename watt_hours_unit::scale_t>>::value<T>;
+using mega_watt_hours_t = joules::scaled_t<twig::ratio_multiply<twig::mega, typename watt_hours::scale_t>>::value<T>;
 
 void introducing_another_type()
 {
     // twig::make allows you to scale the input value but it does not change the resulting type
-    auto one_mega_watt_hour = mega_watt_hours {1.};
+    auto one_mega_watt_hour = mega_watt_hours_t {1.};
     // Now we can generate a new type which consists of 3 types: `Euro / (Watt * Hours)`
-    auto euros_per_mega_watt_hour = euro {300.} / one_mega_watt_hour;
+    auto euros_per_mega_watt_hour = euro_t {300.} / one_mega_watt_hour;
 
     // This flexibility allows us to write expessive code, while having the type system check our implementation.
-    euro price_for_buying_5_mega_watt_hours =
-        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours {5.});
+    euro_t price_for_buying_5_mega_watt_hours =
+        euros_per_mega_watt_hour * (twig::identity_value_t<twig::mega, double> {1} * watt_hours_t {5.});
 
     auto mega_watt_hours_per_euro = 1. / euros_per_mega_watt_hour;  // `(Watt * Hours) / Euro`
-    mega_watt_hours mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro {500.};
+    mega_watt_hours_t mega_watt_hours_affordable_for_500_euros = mega_watt_hours_per_euro * euro_t {500.};
 }
 ```
 
@@ -234,20 +232,20 @@ struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>
 {
 };
 
-struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>>
+struct seconds : twig::unit<seconds, twig::ratio<1>>
 {
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::ratio<1>>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds>, twig::ratio<1>>
 {
 };
 // Notice we are using twig::divided_dimensions_t instead of the regular tag
 
 // To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds_unit>>
+struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds>>
 {
     template<scale_like ScaleT>  // scale is to support kilo meters / second, or nano meters / second
     using unit_t = twig::unit_scaled_or_base_t<meters_per_second_unit, ScaleT>;

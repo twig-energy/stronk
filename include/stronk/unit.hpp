@@ -81,29 +81,22 @@ struct unit
         /**
          * @brief Convert the value to another scale
          *
-         * @tparam NewUnitValueT The new unit value type to convert to with same dimensions and underlying type
-         * @return a new unit with same dimensions and underlying type, but with the specified scale
-         */
-        template<template<typename OtherSkillsTs> typename NewUnitValueT>
-            requires(std::same_as<typename NewUnitValueT<UnderlyingT>::unit_t::dimensions_t, dimensions_t>)
-        constexpr auto to() const -> NewUnitValueT<UnderlyingT>
-        {
-            return to<typename NewUnitValueT<UnderlyingT>::unit_t::scale_t>();
-        }
-
-        /**
-         * @brief Convert the value to another scale
-         *
-         * @tparam NewUnitValueT a unit type with same dimensions as this unit
+         * @tparam UnitT a unit type with same dimensions as this unit, but with a different scale
          * @return a new unit value with same dimensions and underlying type, but with a new specified scale
          */
         template<unit_like UnitT>
             requires(std::same_as<typename UnitT::dimensions_t, dimensions_t>)
         constexpr auto to() const
         {
-            return this->to<UnitT::scale_t>();
+            return this->to<typename UnitT::scale_t>();
         }
 
+        /**
+         * @brief Convert the value to another scale
+         *
+         * @tparam A twig::ratio scale
+         * @return a new unit value with same dimensions and underlying type, but with a new specified scale
+         */
         template<scale_like NewScaleT>
         constexpr auto to() const
         {
