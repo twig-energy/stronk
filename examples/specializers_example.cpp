@@ -9,20 +9,20 @@ struct meters_unit : twig::unit<meters_unit, twig::ratio<1>>
 {
 };
 
-struct seconds_unit : twig::unit<seconds_unit, twig::ratio<1>>
+struct seconds : twig::unit<seconds, twig::ratio<1>>
 {
 };
 
 // Let's say you want to use a custom defined stronk type for certain unit combinations.
 // Let's introduce our own `Speed` type:
-struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds_unit>, twig::ratio<1>>
+struct meters_per_second_unit : twig::unit<twig::divided_dimensions_t<meters_unit, seconds>, twig::ratio<1>>
 {
 };
 // Notice we are using twig::divided_dimensions_t instead of the regular tag
 
 // To make it possible for stronk to find this type we need to specialize `unit_lookup`:
 template<>
-struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds_unit>>
+struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds>>
 {
     template<scale_like ScaleT>  // scale is to support kilo meters / second, or nano meters / second
     using unit_t = twig::unit_scaled_or_base_t<meters_per_second_unit, ScaleT>;
@@ -36,10 +36,10 @@ struct twig::unit_lookup<twig::divided_dimensions_t<meters_unit, seconds_unit>>
 // Let's specialize `seconds^2 for double values` to use int64_t as its resulting type.
 
 template<typename T>
-using seconds = seconds_unit::value<T>;
+using seconds_t = seconds::value<T>;
 
 template<>
-struct twig::underlying_multiply_operation<seconds<double>, seconds<double>>
+struct twig::underlying_multiply_operation<seconds_t<double>, seconds_t<double>>
 {
     using res_type = int64_t;
 
@@ -52,7 +52,7 @@ struct twig::underlying_multiply_operation<seconds<double>, seconds<double>>
 
 auto main() -> int
 {
-    using speed_deduced = twig::divided_unit_t<meters_unit, seconds_unit>;
+    using speed_deduced = twig::divided_unit_t<meters_unit, seconds>;
     static_assert(std::same_as<speed_deduced, meters_per_second_unit>);
 }
 static_assert(__LINE__ == 58UL, "update readme if this changes");

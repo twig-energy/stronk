@@ -81,29 +81,27 @@ struct unit
         /**
          * @brief Convert the value to another scale
          *
-         * @tparam NewUnitValueT The new unit value type to convert to with same dimensions and underlying type
-         * @return a new unit with same dimensions and underlying type, but with the specified scale
-         */
-        template<template<typename OtherSkillsTs> typename NewUnitValueT>
-            requires(std::same_as<typename NewUnitValueT<UnderlyingT>::unit_t::dimensions_t, dimensions_t>)
-        constexpr auto to() const -> NewUnitValueT<UnderlyingT>
-        {
-            return to<typename NewUnitValueT<UnderlyingT>::unit_t>();
-        }
-
-        /**
-         * @brief Convert the value to another scale
-         *
-         * @tparam NewUnitValueT a unit type with same dimensions as this unit
+         * @tparam UnitT a unit type with same dimensions as this unit, but with a different scale
          * @return a new unit value with same dimensions and underlying type, but with a new specified scale
          */
         template<unit_like UnitT>
             requires(std::same_as<typename UnitT::dimensions_t, dimensions_t>)
         constexpr auto to() const
         {
-            using new_scale_t = UnitT::scale_t;
-            using converter = twig::ratio_divide<ScaleT, new_scale_t>;
-            using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
+            return this->to<typename UnitT::scale_t>();
+        }
+
+        /**
+         * @brief Convert the value to another scale
+         *
+         * @tparam A twig::ratio scale
+         * @return a new unit value with same dimensions and underlying type, but with a new specified scale
+         */
+        template<scale_like NewScaleT>
+        constexpr auto to() const
+        {
+            using converter = twig::ratio_divide<ScaleT, NewScaleT>;
+            using result_value_t = scaled_t<NewScaleT>::template value<UnderlyingT>;
             return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
                                    / static_cast<UnderlyingT>(converter::den)};
         }
