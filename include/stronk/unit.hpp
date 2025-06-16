@@ -88,7 +88,7 @@ struct unit
             requires(std::same_as<typename NewUnitValueT<UnderlyingT>::unit_t::dimensions_t, dimensions_t>)
         constexpr auto to() const -> NewUnitValueT<UnderlyingT>
         {
-            return to<typename NewUnitValueT<UnderlyingT>::unit_t>();
+            return to<typename NewUnitValueT<UnderlyingT>::unit_t::scale_t>();
         }
 
         /**
@@ -102,8 +102,14 @@ struct unit
         constexpr auto to() const
         {
             using new_scale_t = UnitT::scale_t;
-            using converter = twig::ratio_divide<ScaleT, new_scale_t>;
-            using result_value_t = scaled_t<new_scale_t>::template value<UnderlyingT>;
+            return this->to<new_scale_t>();
+        }
+
+        template<scale_like NewScaleT>
+        constexpr auto to() const
+        {
+            using converter = twig::ratio_divide<ScaleT, NewScaleT>;
+            using result_value_t = scaled_t<NewScaleT>::template value<UnderlyingT>;
             return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
                                    / static_cast<UnderlyingT>(converter::den)};
         }

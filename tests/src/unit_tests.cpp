@@ -380,7 +380,7 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     auto expected_um = make<um_t>(2'000'000.0);
     EXPECT_EQ(um, expected_um);
 
-    um = make<twig::kilo, meters>(3.0).to<um_t>();
+    um = make<twig::kilo, meters>(3.0).to<twig::micro>();
     expected_um = make<um_t>(3'000'000'000.0);
     EXPECT_EQ(um, expected_um);
 
@@ -408,6 +408,26 @@ TEST(stronk_units_v2, scales_are_applied_correctly_when_converted)
     EXPECT_EQ(km_per_hr, expected_km_per_hr);
     auto converted_to_km_per_hr = km_per_s.to<km_per_hr_t>();
     EXPECT_EQ(converted_to_km_per_hr, expected_km_per_hr);
+}
+
+struct ImplicitConstructible
+{
+    int value;
+
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions) here for testing purposes
+    ImplicitConstructible(std::integral auto v)
+        : value(static_cast<int>(v))
+    {
+    }
+
+    auto operator==(const ImplicitConstructible&) const -> bool = default;
+};
+
+TEST(unit_value_, Supports_implicit_constructible_types)  // gcc might complain about ambiguous constructors
+{
+    using implicitly_constructible_meters = meters::value<ImplicitConstructible>;
+    auto val = implicitly_constructible_meters {2};
+    EXPECT_EQ(val.unwrap<implicitly_constructible_meters>(), 2);
 }
 
 }  // namespace twig
