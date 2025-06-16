@@ -101,8 +101,7 @@ struct unit
             requires(std::same_as<typename UnitT::dimensions_t, dimensions_t>)
         constexpr auto to() const
         {
-            using new_scale_t = UnitT::scale_t;
-            return this->to<new_scale_t>();
+            return this->to<UnitT::scale_t>();
         }
 
         template<scale_like NewScaleT>
