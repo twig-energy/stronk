@@ -58,7 +58,7 @@
     "benchmark": {
       "description": "Dependencies for benchmarking",
       "dependencies": [
-        "benchmark"
+        "nanobench"
       ]
     }
   },

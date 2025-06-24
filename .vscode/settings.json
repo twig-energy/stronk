@@ -97,8 +97,11 @@
     },
     "cSpell.words": [
         "absl",
+        "ankerl",
         "consteval",
         "decltype",
+        "nanobench",
+        "randomish",
         "sonarcloud",
         "stronk",
         "structs",
