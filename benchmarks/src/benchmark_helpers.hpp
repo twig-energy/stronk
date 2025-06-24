@@ -106,3 +106,23 @@ auto generate_none_zero_randomish() -> T
 {
     return generate_randomish<T> {}() + static_cast<T>(1);
 }
+
+template<typename T>
+constexpr auto get_name() -> std::string
+{
+    if constexpr (std::is_same_v<T, int8_t>) {
+        return "int8_t";
+    } else if constexpr (std::is_same_v<T, int8_t_wrapping_type>) {
+        return "int8_t_wrapping_type";
+    } else if constexpr (std::is_same_v<T, int64_t>) {
+        return "int64_t";
+    } else if constexpr (std::is_same_v<T, int64_t_wrapping_type>) {
+        return "int64_t_wrapping_type";
+    } else if constexpr (std::is_same_v<T, std::string>) {
+        return "std::string";
+    } else if constexpr (std::is_same_v<T, string_wrapping_type>) {
+        return "string_wrapping_type";
+    } else {
+        static_assert(false, "Unknown type for get_name");
+    }
+}
