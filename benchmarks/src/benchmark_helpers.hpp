@@ -122,6 +122,10 @@ constexpr auto get_name() -> std::string
         return "std::string";
     } else if constexpr (std::is_same_v<T, string_wrapping_type>) {
         return "string_wrapping_type";
+    } else if constexpr (std::is_same_v<T, double>) {
+        return "double";
+    } else if constexpr (std::is_same_v<T, double_wrapping_type>) {
+        return "double_wrapping_type";
     } else {
         static_assert(false, "Unknown type for get_name");
     }
