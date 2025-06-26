@@ -15,18 +15,59 @@
 namespace
 {
 
-template<typename T, typename O>
-constexpr void benchmark_units_operation(ankerl::nanobench::Bench& bench,
-                                         size_t size,
-                                         const auto& op,
-                                         O o_min_val = O {})
+struct add
+{
+    constexpr static auto name = "+";
+
+    template<typename T, typename O>
+    constexpr auto operator()(T a, O b) const noexcept -> auto
+    {
+        return a + b;
+    }
+};
+
+struct subtract
+{
+    constexpr static auto name = "-";
+
+    template<typename T, typename O>
+    constexpr auto operator()(T a, O b) const noexcept -> auto
+    {
+        return a - b;
+    }
+};
+
+struct multiply
+{
+    constexpr static auto name = "*";
+
+    template<typename T, typename O>
+    constexpr auto operator()(T a, O b) const noexcept -> auto
+    {
+        return a * b;
+    }
+};
+
+struct divide
+{
+    constexpr static auto name = "/";
+
+    template<typename T, typename O>
+    constexpr auto operator()(T a, O b) const -> auto
+    {
+        return a / b;
+    }
+};
+
+template<typename T, typename O, typename Op>
+constexpr void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t size, const Op& op, O o_min_val = O {})
 {
     auto vec_a = std::vector<T>(size);
     auto vec_b = std::vector<O>(size);
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
     std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    bench.complexityN(size).batch(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
+    bench.complexityN(size).batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
                                             [&]()
                                             {
                                                 using ResT = decltype(op(T {}, O {}));
@@ -39,10 +80,10 @@ constexpr void benchmark_units_operation(ankerl::nanobench::Bench& bench,
                                             });
 }
 
-template<typename T, typename O, size_t WidthV>
+template<typename T, typename O, size_t WidthV, typename Op>
 constexpr void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench,
                                               size_t size,
-                                              const auto& op,
+                                              const Op& op,
                                               O o_min_val = O {})
 {
     auto vec_a = std::vector<T>(size);
@@ -50,7 +91,7 @@ constexpr void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench,
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
     std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    bench.complexityN(size).batch(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
+    bench.complexityN(size).batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
                                             [&]()
                                             {
                                                 using ResT = decltype(op(T {}, O {}));
@@ -69,49 +110,49 @@ constexpr void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench,
 template<typename T>
 constexpr void benchmark_add_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_operation<T, T>(bench, size, std::plus<> {});
+    benchmark_units_operation<T, T>(bench, size, add {});
 }
 
 template<typename T, size_t WidthV>
 constexpr void benchmark_add_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_simd_operation<T, T, WidthV>(bench, size, std::plus<> {});
+    benchmark_units_simd_operation<T, T, WidthV>(bench, size, add {});
 }
 
 template<typename T>
 constexpr void benchmark_subtract_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_operation<T, T>(bench, size, std::minus<> {});
+    benchmark_units_operation<T, T>(bench, size, subtract {});
 }
 
 template<typename T, size_t WidthV>
 constexpr void benchmark_subtract_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_simd_operation<T, T, WidthV>(bench, size, std::minus<> {});
+    benchmark_units_simd_operation<T, T, WidthV>(bench, size, subtract {});
 }
 
 template<typename T, typename O>
 constexpr void benchmark_multiply_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_operation<T, O>(bench, size, [](auto x, auto y) { return x * y; });  // NOLINT
+    benchmark_units_operation<T, O>(bench, size, multiply {});  // NOLINT
 }
 
 template<typename T, typename O, size_t WidthV>
 constexpr void benchmark_multiply_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_simd_operation<T, O, WidthV>(bench, size, [](auto x, auto y) { return x * y; });  // NOLINT
+    benchmark_units_simd_operation<T, O, WidthV>(bench, size, multiply {});  // NOLINT
 }
 
 template<typename T, typename O>
 constexpr void benchmark_divide_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_operation<T, O>(bench, size, [](auto x, auto y) { return x / y; }, O {1});  // NOLINT
+    benchmark_units_operation<T, O>(bench, size, divide {}, O {1});  // NOLINT
 }
 
 template<typename T, typename O, size_t WidthV>
 constexpr void benchmark_divide_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    benchmark_units_simd_operation<T, O, WidthV>(bench, size, [](auto x, auto y) { return x / y; }, O {1});  // NOLINT
+    benchmark_units_simd_operation<T, O, WidthV>(bench, size, divide {}, O {1});  // NOLINT
 }
 
 }  // namespace
