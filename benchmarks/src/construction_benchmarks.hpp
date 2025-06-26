@@ -27,7 +27,7 @@ void benchmark_default_onto_reserved_vector(ankerl::nanobench::Bench& bench, siz
 inline void run_default_onto_reserved_vector_benchmarks()
 {
     ankerl::nanobench::Bench bench;
-    bench.title("Default Construction onto Reserved Vector").unit("elements").warmup(100);
+    bench.title("Default Construction onto Reserved Vector").unit("elements").warmup(100).performanceCounters(true);
     bench.performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
@@ -71,7 +71,7 @@ void benchmark_rand_onto_reserved_vector(ankerl::nanobench::Bench& bench, size_t
 inline void run_rand_onto_reserved_vector_benchmarks()
 {
     ankerl::nanobench::Bench bench;
-    bench.title("Random Construction onto Reserved Vector").unit("elements").warmup(100);
+    bench.title("Random Construction onto Reserved Vector").unit("elements").warmup(100).performanceCounters(true);
     bench.performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
@@ -113,7 +113,7 @@ void benchmark_copy_vector_of(ankerl::nanobench::Bench& bench, size_t size)
 inline void run_copy_vector_of_benchmarks()
 {
     ankerl::nanobench::Bench bench;
-    bench.title("Copy Vector Benchmarks").unit("elements").warmup(100);
+    bench.title("Copy Vector Benchmarks").unit("elements").warmup(100).performanceCounters(true);
     bench.performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
