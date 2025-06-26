@@ -264,6 +264,7 @@ inline void run_multiply_units_benchmarks()
     for (auto size : sizes) {
         benchmark_multiply_units<double_wrapping_type, int64_t_wrapping_type>(bench, size);
     }
+    std::cout << bench.complexityBigO() << '\n';
 }
 
 inline void run_multiply_units_simd_benchmarks()
@@ -309,6 +310,7 @@ inline void run_multiply_units_simd_benchmarks()
     for (auto size : sizes) {
         benchmark_multiply_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>(bench, size);
     }
+    std::cout << bench.complexityBigO() << '\n';
 }
 
 inline void run_divide_units_benchmarks()
@@ -351,6 +353,7 @@ inline void run_divide_units_benchmarks()
     for (auto size : sizes) {
         benchmark_divide_units<double_wrapping_type, int64_t_wrapping_type>(bench, size);
     }
+    std::cout << bench.complexityBigO() << '\n';
 }
 
 inline void run_divide_units_simd_benchmarks()
@@ -393,4 +396,5 @@ inline void run_divide_units_simd_benchmarks()
     for (auto size : sizes) {
         benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>(bench, size);
     }
+    std::cout << bench.complexityBigO() << '\n';
 }
