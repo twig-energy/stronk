@@ -20,7 +20,7 @@ on:
   schedule:
     - cron: "44 8 * * 1"
 env:
-  VCPKG_COMMIT: "d5ec528843d29e3a52d745a64b469f810b2cedbf"
+  VCPKG_COMMIT: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0"
 
 jobs:
   analyze:
