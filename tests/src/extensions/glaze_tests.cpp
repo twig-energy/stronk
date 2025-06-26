@@ -1,5 +1,6 @@
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 
+#    include <cstdint>
 #    include <string>
 
 #    include "stronk/extensions/glaze.hpp"
@@ -14,7 +15,7 @@
 namespace twig
 {
 
-struct an_int_can_glaze_de_and_serialize : stronk<an_int_can_glaze_de_and_serialize, int, can_equate>
+struct an_int_can_glaze_de_and_serialize : stronk<an_int_can_glaze_de_and_serialize, int32_t, can_equate>
 {
     using stronk::stronk;
 };
