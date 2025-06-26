@@ -1,7 +1,7 @@
 
 #include "stronk/prefabs/stronk_flag.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 #include "stronk/stronk.hpp"
 
@@ -18,18 +18,21 @@ static_assert(!a_flag_type::on().is_off());
 static_assert(!a_flag_type::off().is_on());
 static_assert(a_flag_type::off().is_off());
 
-TEST(stronk_flag, flag_values_corrosponds_to_bool_values)
+TEST_SUITE("stronk_flag")
 {
-    EXPECT_FALSE(a_flag_type {false}.is_on());
-    EXPECT_TRUE(a_flag_type {false}.is_off());
-    EXPECT_TRUE(a_flag_type {true}.is_on());
-    EXPECT_FALSE(a_flag_type {true}.is_off());
+    TEST_CASE("flag_values_corrosponds_to_bool_values")
+    {
+        CHECK_FALSE(a_flag_type {false}.is_on());
+        CHECK(a_flag_type {false}.is_off());
+        CHECK(a_flag_type {true}.is_on());
+        CHECK_FALSE(a_flag_type {true}.is_off());
 
-    EXPECT_FALSE(a_flag_type::off().is_on());
-    EXPECT_TRUE(a_flag_type::off().is_off());
+        CHECK_FALSE(a_flag_type::off().is_on());
+        CHECK(a_flag_type::off().is_off());
 
-    EXPECT_TRUE(a_flag_type::on().is_on());
-    EXPECT_FALSE(a_flag_type::on().is_off());
+        CHECK(a_flag_type::on().is_on());
+        CHECK_FALSE(a_flag_type::on().is_off());
+    }
 }
 
 }  // namespace twig

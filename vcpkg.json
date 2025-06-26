@@ -37,6 +37,12 @@
         "nlohmann-json"
       ]
     },
+    "gtest": {
+      "description": "Dependencies for gtest extension",
+      "dependencies": [
+        "gtest"
+      ]
+    },
     "glaze": {
       "description": "Dependencies for glaze extension",
       "dependencies": [
@@ -46,7 +52,7 @@
     "test": {
       "description": "Dependencies for testing",
       "dependencies": [
-        "gtest"
+        "doctest"
       ]
     },
     "benchmark": {

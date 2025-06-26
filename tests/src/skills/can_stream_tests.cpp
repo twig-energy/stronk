@@ -2,7 +2,7 @@
 
 #include "stronk/skills/can_stream.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 #include "stronk/stronk.hpp"
 
@@ -14,27 +14,30 @@ struct an_ostreamable_type : stronk<an_ostreamable_type, int, can_ostream>
     using stronk::stronk;
 };
 
-TEST(can_ostream, streaming_to_ostream_prints_the_value)  // NOLINT
+TEST_SUITE("can_ostream")
 {
-    auto formattable = an_ostreamable_type {5};
-    auto sstream = std::stringstream();
-    sstream << formattable;
+    TEST_CASE("streaming_to_ostream_prints_the_value")  // NOLINT
+    {
+        auto formattable = an_ostreamable_type {5};
+        auto sstream = std::stringstream();
+        sstream << formattable;
 
-    EXPECT_EQ(sstream.str(), "5");
-}
+        CHECK_EQ(sstream.str(), "5");
+    }
 
-struct an_istreamable_type : stronk<an_istreamable_type, int, can_istream>
-{
-    using stronk::stronk;
-};
+    struct an_istreamable_type : stronk<an_istreamable_type, int, can_istream>
+    {
+        using stronk::stronk;
+    };
 
-TEST(can_ostream, streaming_from_istream_overrides_the_value)  // NOLINT
-{
-    auto val = an_istreamable_type {5};
-    auto sstream = std::stringstream("7");
-    sstream >> val;
+    TEST_CASE("streaming_from_istream_overrides_the_value")  // NOLINT
+    {
+        auto val = an_istreamable_type {5};
+        auto sstream = std::stringstream("7");
+        sstream >> val;
 
-    EXPECT_EQ(val.unwrap<an_istreamable_type>(), 7);
+        CHECK_EQ(val.unwrap<an_istreamable_type>(), 7);
+    }
 }
 
 }  // namespace twig

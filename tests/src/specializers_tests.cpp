@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 #include <stronk/utilities/macros.hpp>
 
 #include "stronk/unit.hpp"
@@ -77,28 +77,33 @@ using specializer_type_a_divided_by_b =
 namespace twig::tests
 {
 
-TEST(underlying_multiply_operation, the_multiplying_function_is_overloaded)  // NOLINT
+TEST_SUITE("underlying_multiply_operation")
 {
-    using res_type = decltype(tests::specializer_type_a::value<int> {} * tests::specializer_type_b::value<int> {});
+    TEST_CASE("the_multiplying_function_is_overloaded")  // NOLINT
+    {
+        using res_type = decltype(tests::specializer_type_a::value<int> {} * tests::specializer_type_b::value<int> {});
 
-    // we have specialized it to return int64_t and add one to the result
-    static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
-    EXPECT_EQ(tests::specializer_type_a::value<int> {10} * tests::specializer_type_b::value<int> {20},
-              res_type {200 + 1});
+        // we have specialized it to return int64_t and add one to the result
+        static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
+        CHECK_EQ(tests::specializer_type_a::value<int> {10} * tests::specializer_type_b::value<int> {20},
+                 res_type {200 + 1});
+    }
 }
 
-TEST(underlying_divide_operation, the_divide_function_is_overloaded)  // NOLINT
+TEST_SUITE("underlying_divide_operation")
 {
-    using res_type = decltype(tests::specializer_type_a::value<int> {} / tests::specializer_type_b::value<int> {});
+    TEST_CASE("the_divide_function_is_overloaded")  // NOLINT
+    {
+        using res_type = decltype(tests::specializer_type_a::value<int> {} / tests::specializer_type_b::value<int> {});
 
-    // we have specialized it to return int64_t and add one to the result
-    static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
-    EXPECT_EQ(tests::specializer_type_a::value<int> {120} / tests::specializer_type_b::value<int> {2},
-              res_type {60 + 1});
+        // we have specialized it to return int64_t and add one to the result
+        static_assert(std::is_same_v<res_type::underlying_type, int64_t>);
+        CHECK_EQ(tests::specializer_type_a::value<int> {120} / tests::specializer_type_b::value<int> {2},
+                 res_type {60 + 1});
+    }
 }
 
 // clang-format off
-
 static_assert(std::same_as<specializer_type_d::value<int>, decltype(specializer_type_a::value<int> {} * specializer_type_c::value<int> {})>);
 static_assert(std::same_as<unit_lookup<typename specializer_type_a_divided_by_b::unit_t::dimensions_t>::unit_t<twig::ratio<1>>::value<int64_t>, specializer_type_a_divided_by_b>);
 static_assert(std::same_as<unit_lookup<typename specializer_type_a_times_b::unit_t::dimensions_t>::unit_t<twig::ratio<1>>::value<int64_t>, specializer_type_a_times_b>);

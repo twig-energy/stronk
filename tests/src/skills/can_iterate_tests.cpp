@@ -5,7 +5,7 @@
 
 #include "stronk/skills/can_iterate.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 #include "stronk/stronk.hpp"
 
@@ -17,37 +17,43 @@ struct a_can_iterate_vector_type : stronk<a_can_iterate_vector_type, std::vector
     using stronk::stronk;
 };
 
-TEST(can_const_iterate, can_const_iterate_works_for_vectors)
+TEST_SUITE("can_const_iterate")
 {
-    for (size_t i = 0; i < 16; i++) {
-        const auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_iterate_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (const auto& val : vector) {
-            EXPECT_EQ(val, curr);
-            curr++;
+    TEST_CASE("can_const_iterate_works_for_vectors")
+    {
+        for (size_t i = 0; i < 16; i++) {
+            const auto vector = [&i]()
+            {
+                auto tmp = std::vector<int>(i);
+                std::iota(tmp.begin(), tmp.end(), -8);
+                return a_can_iterate_vector_type(tmp);
+            }();
+            auto curr = -8;
+            for (const auto& val : vector) {
+                CHECK_EQ(val, curr);
+                curr++;
+            }
         }
     }
 }
 
-TEST(can_iterate, can_iterate_works_for_vectors)
+TEST_SUITE("can_iterate")
 {
-    for (size_t i = 0; i < 16; i++) {
-        auto vector = [&i]()
-        {
-            auto tmp = std::vector<int>(i);
-            std::iota(tmp.begin(), tmp.end(), -8);
-            return a_can_iterate_vector_type(tmp);
-        }();
-        auto curr = -8;
-        for (auto& val : vector) {
-            val++;
-            EXPECT_EQ(val, curr + 1);
-            curr++;
+    TEST_CASE("can_iterate_works_for_vectors")
+    {
+        for (size_t i = 0; i < 16; i++) {
+            auto vector = [&i]()
+            {
+                auto tmp = std::vector<int>(i);
+                std::iota(tmp.begin(), tmp.end(), -8);
+                return a_can_iterate_vector_type(tmp);
+            }();
+            auto curr = -8;
+            for (auto& val : vector) {
+                val++;
+                CHECK_EQ(val, curr + 1);
+                curr++;
+            }
         }
     }
 }

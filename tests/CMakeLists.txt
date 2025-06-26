@@ -27,6 +27,7 @@ add_executable(
     src/extensions/glaze_tests.cpp
     src/extensions/gtest_tests.cpp
     src/extensions/nlohmann_json_tests.cpp
+    src/main.cpp
     src/prefabs/stronk_arithmetic_tests.cpp
     src/prefabs/stronk_flag_tests.cpp
     src/prefabs/stronk_string_tests.cpp
@@ -55,7 +56,6 @@ target_link_libraries(
             doctest::doctest
             fmt::fmt
             glaze::glaze
-            GTest::gtest_main
             nlohmann_json::nlohmann_json
             twig::stronk
 )

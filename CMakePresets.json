@@ -16,7 +16,7 @@
       "hidden": true,
       "cacheVariables": {
         "stronk_DEVELOPER_MODE": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;doctest;nlohmann-json;glaze;benchmark"
+        "VCPKG_MANIFEST_FEATURES": "test;fmt;abseil;doctest;nlohmann-json;gtest;glaze;benchmark"
       }
     },
     {

@@ -2,7 +2,7 @@
 
 #include "stronk/utilities/ratio.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 namespace twig
 {
@@ -24,14 +24,17 @@ static_assert(std::same_as<ratio_divide<ratio<1, 2>, ratio<3>>, ratio<1, 6>>);
 static_assert(std::same_as<ratio_divide<ratio<1, 2>, ratio<1, 3>>, ratio<3, 2>>);
 static_assert(std::same_as<ratio_divide<ratio<1, 2>, ratio<1, 1>>, ratio<1, 2>>);
 
-TEST(gcd, few_examples)
+TEST_SUITE("gcd")
 {
-    EXPECT_EQ(stronk_details::gcd(0, 0), 0);
-    EXPECT_EQ(stronk_details::gcd(1, 0), 1);
-    EXPECT_EQ(stronk_details::gcd(0, 1), 1);
-    EXPECT_EQ(stronk_details::gcd(2, 4), 2);
-    EXPECT_EQ(stronk_details::gcd(4, 2), 2);
-    EXPECT_EQ(stronk_details::gcd(12, 15), 3);
+    TEST_CASE("few_examples")
+    {
+        CHECK_EQ(stronk_details::gcd(0, 0), 0);
+        CHECK_EQ(stronk_details::gcd(1, 0), 1);
+        CHECK_EQ(stronk_details::gcd(0, 1), 1);
+        CHECK_EQ(stronk_details::gcd(2, 4), 2);
+        CHECK_EQ(stronk_details::gcd(4, 2), 2);
+        CHECK_EQ(stronk_details::gcd(12, 15), 3);
+    }
 }
 
 }  // namespace twig
