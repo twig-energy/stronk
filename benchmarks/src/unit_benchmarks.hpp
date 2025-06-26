@@ -141,7 +141,7 @@ inline void run_add_units_simd_benchmarks()
 {
     auto bench = ankerl::nanobench::Bench {}.title("Add Units SIMD").warmup(100).performanceCounters(true);
 
-    auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
+    auto sizes = std::array {64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
         benchmark_add_units_simd<int8_t, 32>(bench, size);
     }
@@ -199,7 +199,7 @@ inline void run_subtract_units_simd_benchmarks()
                      .warmup(100)
                      .performanceCounters(true);
 
-    auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
+    auto sizes = std::array {64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
         benchmark_subtract_units_simd<int8_t, 32>(bench, size);
     }
@@ -273,7 +273,7 @@ inline void run_multiply_units_simd_benchmarks()
                      .warmup(100)
                      .performanceCounters(true);
 
-    auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
+    auto sizes = std::array {64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
         benchmark_multiply_units_simd<int8_t, int8_t, 32>(bench, size);
     }
@@ -359,7 +359,7 @@ inline void run_divide_units_simd_benchmarks()
 {
     auto bench = ankerl::nanobench::Bench {}.title("Divide Units SIMD").warmup(100).performanceCounters(true);
 
-    auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
+    auto sizes = std::array {64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
         benchmark_divide_units_simd<int8_t, int8_t, 32>(bench, size);
     }
