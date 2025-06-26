@@ -21,17 +21,17 @@ constexpr void benchmark_units_operation(ankerl::nanobench::Bench& bench,
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
     std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    bench.complexityN(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
-                                [&]()
-                                {
-                                    using ResT = decltype(op(T {}, O {}));
-                                    for (auto i = 0ULL; i < size; i++) {
-                                        ResT res;
-                                        ankerl::nanobench::doNotOptimizeAway(res);
-                                        res = op(vec_a[i], vec_b[i]);  // NOLINT
-                                        ankerl::nanobench::doNotOptimizeAway(res);
-                                    }
-                                });
+    bench.complexityN(size).batch(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
+                                            [&]()
+                                            {
+                                                using ResT = decltype(op(T {}, O {}));
+                                                for (auto i = 0ULL; i < size; i++) {
+                                                    ResT res;
+                                                    ankerl::nanobench::doNotOptimizeAway(res);
+                                                    res = op(vec_a[i], vec_b[i]);  // NOLINT
+                                                    ankerl::nanobench::doNotOptimizeAway(res);
+                                                }
+                                            });
 }
 
 template<typename T, typename O, size_t WidthV>
@@ -45,20 +45,20 @@ constexpr void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench,
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
     std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    bench.complexityN(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
-                                [&]()
-                                {
-                                    using ResT = decltype(op(T {}, O {}));
-                                    for (auto i = 0ULL; i < size - WidthV; i++) {
-                                        auto array_c = std::array<ResT, WidthV> {};
-                                        ankerl::nanobench::doNotOptimizeAway(array_c.data());
-                                        // We expect the inner loop to be vectorized to SIMD instructions
-                                        for (size_t j = 0; j < WidthV; j++) {
-                                            array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
-                                        }
-                                        ankerl::nanobench::doNotOptimizeAway(array_c);
-                                    }
-                                });
+    bench.complexityN(size).batch(size).run(fmt::format("{}_{}", get_name<T>(), get_name<O>()),
+                                            [&]()
+                                            {
+                                                using ResT = decltype(op(T {}, O {}));
+                                                for (auto i = 0ULL; i < size - WidthV; i++) {
+                                                    auto array_c = std::array<ResT, WidthV> {};
+                                                    ankerl::nanobench::doNotOptimizeAway(array_c.data());
+                                                    // We expect the inner loop to be vectorized to SIMD instructions
+                                                    for (size_t j = 0; j < WidthV; j++) {
+                                                        array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
+                                                    }
+                                                    ankerl::nanobench::doNotOptimizeAway(array_c);
+                                                }
+                                            });
 }
 
 template<typename T>
@@ -111,8 +111,7 @@ constexpr void benchmark_divide_units_simd(ankerl::nanobench::Bench& bench, size
 
 inline void run_add_units_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Add Units").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Add Units").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -139,8 +138,7 @@ inline void run_add_units_benchmarks()
 
 inline void run_add_units_simd_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Add Units SIMD").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Add Units SIMD").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -167,8 +165,7 @@ inline void run_add_units_simd_benchmarks()
 
 inline void run_subtract_units_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Subtract Units").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Subtract Units").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -197,7 +194,7 @@ inline void run_subtract_units_simd_benchmarks()
 {
     auto bench = ankerl::nanobench::Bench {}
                      .title("Subtract Units SIMD")
-                     .unit("operations")
+
                      .warmup(100)
                      .performanceCounters(true);
 
@@ -226,8 +223,7 @@ inline void run_subtract_units_simd_benchmarks()
 
 inline void run_multiply_units_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Multiply Units").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Multiply Units").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -264,6 +260,7 @@ inline void run_multiply_units_benchmarks()
     for (auto size : sizes) {
         benchmark_multiply_units<double_wrapping_type, int64_t_wrapping_type>(bench, size);
     }
+
     std::cout << bench.complexityBigO() << '\n';
 }
 
@@ -271,7 +268,7 @@ inline void run_multiply_units_simd_benchmarks()
 {
     auto bench = ankerl::nanobench::Bench {}
                      .title("Multiply Units SIMD")
-                     .unit("operations")
+
                      .warmup(100)
                      .performanceCounters(true);
 
@@ -310,13 +307,13 @@ inline void run_multiply_units_simd_benchmarks()
     for (auto size : sizes) {
         benchmark_multiply_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>(bench, size);
     }
+
     std::cout << bench.complexityBigO() << '\n';
 }
 
 inline void run_divide_units_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Divide Units").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Divide Units").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -353,13 +350,13 @@ inline void run_divide_units_benchmarks()
     for (auto size : sizes) {
         benchmark_divide_units<double_wrapping_type, int64_t_wrapping_type>(bench, size);
     }
+
     std::cout << bench.complexityBigO() << '\n';
 }
 
 inline void run_divide_units_simd_benchmarks()
 {
-    auto bench =
-        ankerl::nanobench::Bench {}.title("Divide Units SIMD").unit("operations").warmup(100).performanceCounters(true);
+    auto bench = ankerl::nanobench::Bench {}.title("Divide Units SIMD").warmup(100).performanceCounters(true);
 
     auto sizes = std::array {32ULL, 64ULL, 128ULL, 256ULL, 512ULL, 1024ULL, 2048ULL, 4096ULL, 8192ULL};
     for (auto size : sizes) {
@@ -396,5 +393,6 @@ inline void run_divide_units_simd_benchmarks()
     for (auto size : sizes) {
         benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>(bench, size);
     }
+
     std::cout << bench.complexityBigO() << '\n';
 }
