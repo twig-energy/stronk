@@ -4,7 +4,6 @@
 #include "stronk/extensions/gtest.hpp"
 
 #include <doctest/doctest.h>
-#include <gtest/gtest.h>
 
 #include "stronk/stronk.hpp"
 
@@ -22,7 +21,7 @@ TEST_SUITE("can_gtest_print")
     {
         auto val = a_can_gtest_print_type {5};
         auto sstream = std::stringstream();
-        PrintTo(val, &sstream);
+        PrintTo(val, &sstream);  // this function is what gtest uses to print values
 
         CHECK_EQ(sstream.str(), "5");
     }
