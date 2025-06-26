@@ -130,3 +130,5 @@ constexpr auto get_name() -> std::string
         static_assert(twig::stronk_details::not_implemented_type<T>(), "Unknown type for get_name");
     }
 }
+
+auto current_test_name() -> std::string;

@@ -1,20 +1,13 @@
-#include "./construction_benchmarks.hpp"
-#include "./unit_benchmarks.hpp"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
-auto main() -> int
+#include "./benchmark_helpers.hpp"
+
+// declared in test/source/details/doctest_helpers.hpp
+auto current_test_name() -> std::string
 {
-    run_default_onto_reserved_vector_benchmarks();
-    run_rand_onto_reserved_vector_benchmarks();
-    run_copy_vector_of_benchmarks();
-
-    run_add_units_benchmarks();
-    run_add_units_simd_benchmarks();
-    run_subtract_units_benchmarks();
-    run_subtract_units_simd_benchmarks();
-    run_multiply_units_benchmarks();
-    run_multiply_units_simd_benchmarks();
-    run_divide_units_benchmarks();
-    run_divide_units_simd_benchmarks();
-
-    return 0;
+    // doctest::detail::g_cs->currentTest->m_name is only accessible in the
+    // compilation unit that has DOCTEST_CONFIG_IMPLEMENT or
+    // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN defined.
+    return doctest::detail::g_cs->currentTest->m_name;
 }

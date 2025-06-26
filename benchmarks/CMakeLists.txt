@@ -13,12 +13,14 @@ endif ()
 find_package(fmt CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
 find_package(nanobench CONFIG REQUIRED)
+find_package(doctest CONFIG REQUIRED)
 
 # ---- Benchmarks ----
-add_executable(stronk_benchmarks src/main.cpp)
+add_executable(stronk_benchmarks src/construction_benchmarks.cpp src/main.cpp src/unit_benchmarks.cpp)
 target_link_libraries(
     stronk_benchmarks
     PRIVATE absl::hash
+            doctest::doctest
             fmt::fmt
             nanobench::nanobench
             twig::stronk
