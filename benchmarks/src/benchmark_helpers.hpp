@@ -127,6 +127,6 @@ constexpr auto get_name() -> std::string
     } else if constexpr (std::is_same_v<T, double_wrapping_type>) {
         return "double_wrapping_type";
     } else {
-        static_assert(false, "Unknown type for get_name");
+        static_assert(twig::stronk_details::not_implemented_type<T>(), "Unknown type for get_name");
     }
 }
