@@ -283,179 +283,131 @@ For more information on how to build see the [BUILDING](BUILDING.md) and [HACKIN
 
 # Benchmarks
 
-Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with clang-13. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
+Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with gcc-14. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
 
 ```bash
-2025-06-09T17:31:42
-Running /home/runner/work/stronk/stronk/build/benchmarks/stronk_benchmarks
-Run on (4 X 3253.74 MHz CPU s)
-CPU Caches:
-  L1 Data 32 KiB (x2)
-  L1 Instruction 32 KiB (x2)
-  L2 Unified 512 KiB (x2)
-  L3 Unified 32768 KiB (x1)
-Load Average: 1.19, 0.36, 0.12
-------------------------------------------------------------------------------------------------------------------------------
-Benchmark                                                                                    Time             CPU   Iterations
-------------------------------------------------------------------------------------------------------------------------------
-benchmark_default_onto_reserved_vector<int8_t>/32                                         12.0 ns         12.0 ns     62407326
-benchmark_default_onto_reserved_vector<int8_t_wrapping_type>/32                           2.80 ns         2.80 ns    250149993
-benchmark_default_onto_reserved_vector<int8_t>/8192                                       2554 ns         2554 ns       274149
-benchmark_default_onto_reserved_vector<int8_t_wrapping_type>/8192                          115 ns          115 ns      6088976
 
-benchmark_default_onto_reserved_vector<int64_t>/32                                        11.2 ns         11.2 ns     62446873
-benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/32                          10.9 ns         10.9 ns     64236385
-benchmark_default_onto_reserved_vector<int64_t>/8192                                      2557 ns         2557 ns       270881
-benchmark_default_onto_reserved_vector<int64_t_wrapping_type>/8192                        2566 ns         2566 ns       272682
+| relative |               ns/op |                op/s |    err% |     total | Default Construction onto Reserved Vector
+|---------:|--------------------:|--------------------:|--------:|----------:|:------------------------------------------
+|   100.0% |                1.35 |      740,711,218.87 |    0.4% |      0.01 | `int8_t`
+|10,982.4% |                0.01 |   81,348,012,975.29 |    0.1% |      0.01 | `int8_t_wrapping_type`
+|   100.0% |                0.31 |    3,209,582,423.68 |    0.1% |      0.01 | `int64_t`
+|    99.8% |                0.31 |    3,203,516,330.00 |    0.1% |      0.01 | `int64_t_wrapping_type`
+|   100.0% |                3.49 |      286,495,339.90 |    0.5% |      0.01 | `std::string`
+|   100.4% |                3.48 |      287,695,250.94 |    0.3% |      0.01 | `string_wrapping_type`
 
-benchmark_default_onto_reserved_vector<std::string>/32                                    68.9 ns         68.9 ns     10172651
-benchmark_default_onto_reserved_vector<string_wrapping_type>/32                           69.0 ns         69.0 ns     10181646
-benchmark_default_onto_reserved_vector<std::string>/8192                                 18293 ns        18292 ns        38252
-benchmark_default_onto_reserved_vector<string_wrapping_type>/8192                        18689 ns        18689 ns        38048
+| relative |               ns/op |                op/s |    err% |     total | Random Construction onto Reserved Vector
+|---------:|--------------------:|--------------------:|--------:|----------:|:-----------------------------------------
+|   100.0% |                5.45 |      183,513,493.49 |    0.0% |      0.01 | `int8_t`
+|   100.1% |                5.44 |      183,704,061.48 |    0.1% |      0.01 | `int8_t_wrapping_type`
+|   100.0% |               15.58 |       64,191,634.60 |    0.1% |      0.01 | `int64_t`
+|   100.0% |               15.57 |       64,220,814.80 |    0.1% |      0.01 | `int64_t_wrapping_type`
+|   100.0% |              337.97 |        2,958,821.38 |    0.3% |      0.03 | `std::string`
+|   100.5% |              336.36 |        2,972,989.06 |    0.3% |      0.03 | `string_wrapping_type`
 
-benchmark_rand_onto_reserved_vector<int8_t>/32                                             175 ns          175 ns      4029369
-benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>/32                               183 ns          183 ns      3818736
-benchmark_rand_onto_reserved_vector<int8_t>/8192                                         42324 ns        42317 ns        16605
-benchmark_rand_onto_reserved_vector<int8_t_wrapping_type>/8192                           44696 ns        44692 ns        15645
-
-benchmark_rand_onto_reserved_vector<int64_t>/32                                            507 ns          507 ns      1382460
-benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>/32                              519 ns          519 ns      1399287
-benchmark_rand_onto_reserved_vector<int64_t>/8192                                       130622 ns       130616 ns         5498
-benchmark_rand_onto_reserved_vector<int64_t_wrapping_type>/8192                         125446 ns       125435 ns         4605
-
-benchmark_rand_onto_reserved_vector<std::string>/32                                      10403 ns        10403 ns        67340
-benchmark_rand_onto_reserved_vector<string_wrapping_type>/32                             10645 ns        10644 ns        65943
-benchmark_rand_onto_reserved_vector<std::string>/8192                                  2668895 ns      2668719 ns          260
-benchmark_rand_onto_reserved_vector<string_wrapping_type>/8192                         2724441 ns      2724121 ns          257
-
-benchmark_copy_vector_of<int8_t>/32                                                       20.1 ns         20.1 ns     34701524
-benchmark_copy_vector_of<int8_t_wrapping_type>/32                                         19.9 ns         19.9 ns     34918031
-benchmark_copy_vector_of<int8_t>/8192                                                     2746 ns         2746 ns       254751
-benchmark_copy_vector_of<int8_t_wrapping_type>/8192                                       2747 ns         2747 ns       255140
-
-benchmark_copy_vector_of<int64_t>/32                                                      30.0 ns         30.0 ns     24108558
-benchmark_copy_vector_of<int64_t_wrapping_type>/32                                        30.2 ns         30.2 ns     23655573
-benchmark_copy_vector_of<int64_t>/8192                                                   22400 ns        22398 ns        31273
-benchmark_copy_vector_of<int64_t_wrapping_type>/8192                                     22364 ns        22363 ns        31317
-
-benchmark_copy_vector_of<std::string>/32                                                   627 ns          627 ns      1124125
-benchmark_copy_vector_of<string_wrapping_type>/32                                          633 ns          633 ns      1105766
-benchmark_copy_vector_of<std::string>/8192                                              240597 ns       240586 ns         2908
-benchmark_copy_vector_of<string_wrapping_type>/8192                                     241608 ns       241588 ns         2885
+| relative |               ns/op |                op/s |    err% |     total | Copy Vector Benchmarks
+|---------:|--------------------:|--------------------:|--------:|----------:|:-----------------------
+|   100.0% |                0.33 |    2,989,469,667.87 |    0.1% |      0.01 | `int8_t`
+|    99.9% |                0.33 |    2,986,563,973.33 |    0.2% |      0.01 | `int8_t_wrapping_type`
+|   100.0% |                2.71 |      368,805,320.99 |    0.1% |      0.01 | `int64_t`
+|   100.2% |                2.71 |      369,395,695.26 |    0.3% |      0.01 | `int64_t_wrapping_type`
+|   100.0% |               35.67 |       28,037,063.32 |    0.3% |      0.01 | `std::string`
+|   100.4% |               35.53 |       28,142,740.58 |    0.2% |      0.01 | `string_wrapping_type`
 ```
 
 Calling "Skill" functions (which internally calls unwrap) performs identically to calling the functions directly on the raw types. They even auto-vectorize the same:
 
 ```
-2025-06-09T17:31:42
-Running /home/runner/work/stronk/stronk/build/benchmarks/stronk_benchmarks
-Run on (4 X 3253.74 MHz CPU s)
-CPU Caches:
-  L1 Data 32 KiB (x2)
-  L1 Instruction 32 KiB (x2)
-  L2 Unified 512 KiB (x2)
-  L3 Unified 32768 KiB (x1)
-Load Average: 1.19, 0.36, 0.12
-------------------------------------------------------------------------------------------------------------------------------
-Benchmark                                                                                    Time             CPU   Iterations
-------------------------------------------------------------------------------------------------------------------------------
-benchmark_add_units<int8_t>/8192                                                          5106 ns         5106 ns       137161
-benchmark_add_units<int8_t_wrapping_type>/8192                                            2558 ns         2557 ns       267810
 
-benchmark_add_units<int64_t>/8192                                                         2627 ns         2627 ns       262084
-benchmark_add_units<int64_t_wrapping_type>/8192                                           2611 ns         2611 ns       269788
+| relative |               ns/op |                op/s |    err% |     total | Add Units
+|---------:|--------------------:|--------------------:|--------:|----------:|:----------
+|   100.0% |                1.09 |      918,547,216.25 |    1.1% |      0.01 | `int8_t + int8_t`
+|   100.8% |                1.08 |      925,465,732.99 |    0.7% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
+|   100.0% |                1.14 |      879,567,144.37 |    0.8% |      0.01 | `int64_t + int64_t`
+|   101.0% |                1.13 |      888,444,778.56 |    0.4% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
+|   100.0% |                1.16 |      862,908,076.97 |    0.2% |      0.01 | `double + double`
+|   100.6% |                1.15 |      867,891,078.18 |    0.2% |      0.01 | `double_wrapping_type + double_wrapping_type`
 
-benchmark_add_units<double>/8192                                                          2560 ns         2560 ns       263402
-benchmark_add_units<double_wrapping_type>/8192                                            2597 ns         2596 ns       261914
+| relative |               ns/op |                op/s |    err% |     total | Add Units SIMD
+|---------:|--------------------:|--------------------:|--------:|----------:|:---------------
+|   100.0% |               17.02 |       58,740,331.10 |    0.1% |      0.01 | `int8_t + int8_t`
+|   652.6% |                2.61 |      383,332,910.89 |    0.2% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
+|   100.0% |               24.99 |       40,021,222.19 |    0.0% |      0.01 | `int64_t + int64_t`
+|    98.5% |               25.36 |       39,431,402.26 |    0.0% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
+|   100.0% |               25.36 |       39,434,097.59 |    0.3% |      0.01 | `double + double`
+|   101.2% |               25.06 |       39,911,783.53 |    0.0% |      0.01 | `double_wrapping_type + double_wrapping_type`
 
-benchmark_add_units_simd<int8_t, 32>/256                                                   294 ns          294 ns      2385544
-benchmark_add_units_simd<int8_t_wrapping_type, 32>/256                                     292 ns          292 ns      2396000
+| relative |               ns/op |                op/s |    err% |     total | Subtract Units
+|---------:|--------------------:|--------------------:|--------:|----------:|:---------------
+|   100.0% |                1.09 |      916,284,928.30 |    1.6% |      0.01 | `int8_t - int8_t`
+|   100.6% |                1.09 |      921,615,806.78 |    0.7% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
+|   100.0% |                1.13 |      888,585,001.14 |    0.4% |      0.01 | `int64_t - int64_t`
+|   100.4% |                1.12 |      892,292,956.52 |    0.1% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
+|   100.0% |                1.16 |      861,364,564.51 |    0.4% |      0.01 | `double - double`
+|   100.8% |                1.15 |      867,941,420.31 |    0.2% |      0.01 | `double_wrapping_type - double_wrapping_type`
 
-benchmark_add_units_simd<int64_t, 32>/256                                                 4926 ns         4926 ns       147322
-benchmark_add_units_simd<int64_t_wrapping_type, 32>/256                                   4757 ns         4756 ns       147417
+| relative |               ns/op |                op/s |    err% |     total | Subtract Units SIMD
+|---------:|--------------------:|--------------------:|--------:|----------:|:--------------------
+|   100.0% |               17.03 |       58,736,645.87 |    0.1% |      0.01 | `int8_t - int8_t`
+|   650.4% |                2.62 |      382,004,424.80 |    0.4% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
+|   100.0% |               24.96 |       40,059,619.98 |    0.1% |      0.01 | `int64_t - int64_t`
+|    98.5% |               25.35 |       39,451,227.26 |    0.1% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
+|   100.0% |               25.29 |       39,548,895.41 |    0.1% |      0.01 | `double - double`
+|   100.9% |               25.06 |       39,906,741.37 |    0.0% |      0.01 | `double_wrapping_type - double_wrapping_type`
 
-benchmark_add_units_simd<double, 32>/256                                                  4817 ns         4817 ns       145288
-benchmark_add_units_simd<double_wrapping_type, 32>/256                                    4844 ns         4843 ns       145286
+| relative |               ns/op |                op/s |    err% |     total | multiply_units_benchmarks
+|---------:|--------------------:|--------------------:|--------:|----------:|:--------------------------
+|   100.0% |                1.07 |      935,659,443.04 |    0.2% |      0.01 | `int8_t * int8_t`
+|   100.1% |                1.07 |      936,973,688.60 |    0.1% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
+|   100.0% |                1.14 |      876,992,986.35 |    2.8% |      0.01 | `int64_t * int64_t`
+|   102.6% |                1.11 |      900,088,684.10 |    0.5% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
+|   100.0% |                1.18 |      847,724,492.35 |    1.1% |      0.01 | `double * double`
+|   101.6% |                1.16 |      861,177,889.60 |    0.9% |      0.01 | `double_wrapping_type * double_wrapping_type`
+|   100.0% |                1.16 |      858,816,905.78 |    0.7% |      0.01 | `int64_t * double`
+|   103.9% |                1.12 |      892,148,795.72 |    0.3% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
+|   100.0% |                1.16 |      864,198,534.34 |    0.5% |      0.01 | `double * int64_t`
+|   100.8% |                1.15 |      871,442,195.18 |    0.0% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
 
-benchmark_subtract_units<int8_t>/8192                                                     5104 ns         5104 ns       137258
-benchmark_subtract_units<int8_t_wrapping_type>/8192                                       2593 ns         2593 ns       263280
+| relative |               ns/op |                op/s |    err% |     total | Multiply Units SIMD
+|---------:|--------------------:|--------------------:|--------:|----------:|:--------------------
+|   100.0% |               17.01 |       58,775,732.77 |    0.1% |      0.01 | `int8_t * int8_t`
+|   112.2% |               15.17 |       65,928,737.49 |    0.1% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
+|   100.0% |               32.27 |       30,991,241.15 |    0.0% |      0.01 | `int64_t * int64_t`
+|    99.8% |               32.32 |       30,939,652.19 |    0.2% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
+|   100.0% |               25.01 |       39,984,348.57 |    0.1% |      0.01 | `double * double`
+|    99.8% |               25.05 |       39,913,741.10 |    0.1% |      0.01 | `double_wrapping_type * double_wrapping_type`
+|   100.0% |               30.73 |       32,546,133.01 |    0.1% |      0.01 | `int64_t * double`
+|    93.5% |               32.85 |       30,445,439.22 |    0.2% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
+|   100.0% |               30.74 |       32,531,237.65 |    0.1% |      0.01 | `double * int64_t`
+|   100.0% |               30.73 |       32,540,315.41 |    0.1% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
 
-benchmark_subtract_units<int64_t>/8192                                                    5316 ns         5316 ns       137355
-benchmark_subtract_units<int64_t_wrapping_type>/8192                                      2598 ns         2596 ns       268095
+| relative |               ns/op |                op/s |    err% |     total | Divide Units
+|---------:|--------------------:|--------------------:|--------:|----------:|:-------------
+|   100.0% |                1.86 |      537,004,260.90 |    0.1% |      0.01 | `int8_t / int8_t`
+|   100.0% |                1.86 |      537,010,040.37 |    0.0% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
+|   100.0% |                2.17 |      460,303,190.01 |    0.0% |      0.01 | `int64_t / int64_t`
+|   100.0% |                2.17 |      460,258,600.98 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
+|   100.0% |                1.40 |      714,971,460.49 |    0.1% |      0.01 | `double / double`
+|   100.0% |                1.40 |      714,967,119.62 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
+|   100.0% |                1.40 |      714,839,057.47 |    0.1% |      0.01 | `int64_t / double`
+|   100.0% |                1.40 |      714,811,335.30 |    0.1% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
+|   100.0% |                1.40 |      714,812,479.96 |    0.1% |      0.01 | `double / int64_t`
+|   100.0% |                1.40 |      714,777,440.86 |    0.1% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
 
-benchmark_subtract_units<double>/8192                                                     2595 ns         2595 ns       269322
-benchmark_subtract_units<double_wrapping_type>/8192                                       2601 ns         2601 ns       271730
-
-benchmark_subtract_units_simd<int8_t, 32>/256                                              292 ns          292 ns      2397710
-benchmark_subtract_units_simd<int8_t_wrapping_type, 32>/256                                293 ns          293 ns      2400188
-
-benchmark_subtract_units_simd<int64_t, 32>/256                                            4756 ns         4756 ns       146574
-benchmark_subtract_units_simd<int64_t_wrapping_type, 32>/256                              4753 ns         4752 ns       146956
-
-benchmark_subtract_units_simd<double, 32>/256                                             4827 ns         4826 ns       145283
-benchmark_subtract_units_simd<double_wrapping_type, 32>/256                               4821 ns         4821 ns       145180
-
-benchmark_multiply_units<int8_t, int8_t>/8192                                             5106 ns         5106 ns       137260
-benchmark_multiply_units<int8_t_wrapping_type, int8_t_wrapping_type>/8192                 2598 ns         2598 ns       273621
-
-benchmark_multiply_units<int64_t, int64_t>/8192                                           5107 ns         5107 ns       137336
-benchmark_multiply_units<int64_t_wrapping_type, int64_t_wrapping_type>/8192               2625 ns         2625 ns       267305
-
-benchmark_multiply_units<double, double>/8192                                             2616 ns         2615 ns       264152
-benchmark_multiply_units<double_wrapping_type, double_wrapping_type>/8192                 2715 ns         2715 ns       269888
-
-benchmark_multiply_units<int64_t, double>/8192                                            2588 ns         2587 ns       272344
-benchmark_multiply_units<int64_t_wrapping_type, double_wrapping_type>/8192                2635 ns         2634 ns       267335
-
-benchmark_multiply_units<double, int64_t>/8192                                            2589 ns         2589 ns       270346
-benchmark_multiply_units<double_wrapping_type, int64_t_wrapping_type>/8192                2586 ns         2586 ns       256974
-
-benchmark_multiply_units_simd<int8_t, int8_t, 32>/256                                     3216 ns         3216 ns       217588
-benchmark_multiply_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>/256         3216 ns         3215 ns       217792
-
-benchmark_multiply_units_simd<int64_t, int64_t, 32>/256                                   7036 ns         7035 ns        99638
-benchmark_multiply_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>/256       6973 ns         6972 ns       100436
-
-benchmark_multiply_units_simd<double, double, 32>/256                                     4818 ns         4818 ns       145227
-benchmark_multiply_units_simd<double_wrapping_type, double_wrapping_type, 32>/256         4821 ns         4820 ns       145119
-
-benchmark_multiply_units_simd<int64_t, double, 32>/256                                    5939 ns         5939 ns       118051
-benchmark_multiply_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>/256        5940 ns         5939 ns       117936
-
-benchmark_multiply_units_simd<double, int64_t, 32>/256                                    5940 ns         5940 ns       117885
-benchmark_multiply_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>/256        5954 ns         5953 ns       117853
-
-benchmark_divide_units<int8_t, int8_t>/8192                                               2603 ns         2603 ns       264947
-benchmark_divide_units<int8_t_wrapping_type, int8_t_wrapping_type>/8192                   2655 ns         2655 ns       263236
-
-benchmark_divide_units<int64_t, int64_t>/8192                                             2741 ns         2741 ns       259965
-benchmark_divide_units<int64_t_wrapping_type, int64_t_wrapping_type>/8192                 2582 ns         2581 ns       265405
-
-benchmark_divide_units<double, double>/8192                                               2631 ns         2631 ns       268084
-benchmark_divide_units<double_wrapping_type, double_wrapping_type>/8192                   2641 ns         2640 ns       273748
-
-benchmark_divide_units<int64_t, double>/8192                                              2608 ns         2608 ns       264458
-benchmark_divide_units<int64_t_wrapping_type, double_wrapping_type>/8192                  2618 ns         2617 ns       263916
-
-benchmark_divide_units<double, int64_t>/8192                                              2559 ns         2559 ns       268442
-benchmark_divide_units<double_wrapping_type, int64_t_wrapping_type>/8192                  2584 ns         2584 ns       273500
-
-benchmark_divide_units_simd<int8_t, int8_t, 32>/256                                      13372 ns        13371 ns        52398
-benchmark_divide_units_simd<int8_t_wrapping_type, int8_t_wrapping_type, 32>/256          13361 ns        13360 ns        52344
-
-benchmark_divide_units_simd<int64_t, int64_t, 32>/256                                    15750 ns        15748 ns        44440
-benchmark_divide_units_simd<int64_t_wrapping_type, int64_t_wrapping_type, 32>/256        15749 ns        15748 ns        44459
-
-benchmark_divide_units_simd<double, double, 32>/256                                       5730 ns         5730 ns       125709
-benchmark_divide_units_simd<double_wrapping_type, double_wrapping_type, 32>/256           5712 ns         5712 ns       123217
-
-benchmark_divide_units_simd<int64_t, double, 32>/256                                     10051 ns        10050 ns        69697
-benchmark_divide_units_simd<int64_t_wrapping_type, double_wrapping_type, 32>/256         10050 ns        10049 ns        69550
-
-benchmark_divide_units_simd<double, int64_t, 32>/256                                     10041 ns        10040 ns        69773
-benchmark_divide_units_simd<double_wrapping_type, int64_t_wrapping_type, 32>/256         10099 ns        10098 ns        69731
+| relative |               ns/op |                op/s |    err% |     total | Divide Units SIMD
+|---------:|--------------------:|--------------------:|--------:|----------:|:------------------
+|   100.0% |               59.39 |       16,837,881.95 |    0.0% |      0.01 | `int8_t / int8_t`
+|   100.0% |               59.40 |       16,833,902.89 |    0.0% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
+|   100.0% |               73.92 |       13,528,331.55 |    0.1% |      0.01 | `int64_t / int64_t`
+|   100.0% |               73.96 |       13,521,621.47 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
+|   100.0% |               29.66 |       33,714,674.34 |    0.2% |      0.01 | `double / double`
+|   100.7% |               29.47 |       33,938,540.25 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
+|   100.0% |               55.23 |       18,107,348.82 |    0.4% |      0.01 | `int64_t / double`
+|    97.0% |               56.95 |       17,559,258.75 |    0.2% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
+|   100.0% |               55.70 |       17,954,065.03 |    0.3% |      0.01 | `double / int64_t`
+|   100.3% |               55.55 |       18,002,628.31 |    0.2% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
 ```
 
 # Licensing
