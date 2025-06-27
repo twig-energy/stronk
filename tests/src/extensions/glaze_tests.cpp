@@ -1,4 +1,4 @@
-#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
+#if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 13)
 
 #    include <cstdint>
 #    include <string>
