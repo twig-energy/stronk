@@ -420,8 +420,8 @@ TEST_SUITE("unit")
 
     TEST_CASE("values can be in constexpr")
     {
-        constexpr auto val = make<meters, double>(1.0);
-        static_assert(val == meters::value<double>(1.0));
+        constexpr auto val = make<meters, int>(1);
+        static_assert(val == meters::value<int>(1));
     }
 }
 
