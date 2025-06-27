@@ -314,7 +314,7 @@ Constructing and copying the structs performs identically or very close to ident
 |   100.0% |           38,859.33 |           25,733.84 |    0.0% |      0.01 | `std::string`
 |   100.0% |           38,858.08 |           25,734.68 |    0.1% |      0.01 | `string_stronk_t`
 
-Calling "Skill" functions (which internally calls unwrap) performs identically to calling the functions directly on the raw types. They even auto-vectorize the same:
+Calling "Skill" functions (which internally calls unwrap) performs close to identically with calling the functions directly on the raw types. However they do not seem to vectorize as well. We will investigate this further:
 
  | relative |               ns/op |                op/s |    err% |     total | Add Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:----------
