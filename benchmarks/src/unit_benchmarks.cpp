@@ -99,7 +99,7 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
                                       array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
                                   }
                                   for (size_t j = 0; j < WidthV; j++) {
-                                      ankerl::nanobench::doNotOptimizeAway(array_c[j]);
+                                      ankerl::nanobench::doNotOptimizeAway(array_c[j]);  // NOLINT
                                   }
                               }
                           });
