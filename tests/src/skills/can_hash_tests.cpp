@@ -17,7 +17,7 @@ struct a_hashable_type : stronk<a_hashable_type, int64_t, can_hash>
 
 TEST_SUITE("can_hash")
 {
-    TEST_CASE("can_hash_overloads_std_hash")  // NOLINT
+    TEST_CASE("can_hash_overloads_std_hash")
     {
         for (auto i = -10; i < 10; i++) {
             auto hash = std::hash<a_hashable_type> {}(a_hashable_type {i});

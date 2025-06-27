@@ -17,7 +17,7 @@ struct a_can_gtest_print_type : stronk<a_can_gtest_print_type, int>
 
 TEST_SUITE("can_gtest_print")
 {
-    TEST_CASE("streaming to ostream prints the value")  // NOLINT
+    TEST_CASE("streaming to ostream prints the value")
     {
         auto val = a_can_gtest_print_type {5};
         auto sstream = std::stringstream();

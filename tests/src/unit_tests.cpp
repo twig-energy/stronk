@@ -96,7 +96,6 @@ TEST_SUITE("unit")
         }
     }
 
-    // NOLINTNEXTLINE
     TEST_CASE(
         "when_multiplied_with_own_type_the_value_in_the_resulting_type_behaves_as_if_it_the_values_were_multiplied")
     {

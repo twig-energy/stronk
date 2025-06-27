@@ -79,7 +79,7 @@ namespace twig::tests
 
 TEST_SUITE("underlying_multiply_operation")
 {
-    TEST_CASE("the_multiplying_function_is_overloaded")  // NOLINT
+    TEST_CASE("the_multiplying_function_is_overloaded")
     {
         using res_type = decltype(tests::specializer_type_a::value<int> {} * tests::specializer_type_b::value<int> {});
 
@@ -92,7 +92,7 @@ TEST_SUITE("underlying_multiply_operation")
 
 TEST_SUITE("underlying_divide_operation")
 {
-    TEST_CASE("the_divide_function_is_overloaded")  // NOLINT
+    TEST_CASE("the_divide_function_is_overloaded")
     {
         using res_type = decltype(tests::specializer_type_a::value<int> {} / tests::specializer_type_b::value<int> {});
 

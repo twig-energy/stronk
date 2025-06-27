@@ -16,7 +16,7 @@ struct an_ostreamable_type : stronk<an_ostreamable_type, int, can_ostream>
 
 TEST_SUITE("can_ostream")
 {
-    TEST_CASE("streaming_to_ostream_prints_the_value")  // NOLINT
+    TEST_CASE("streaming_to_ostream_prints_the_value")
     {
         auto formattable = an_ostreamable_type {5};
         auto sstream = std::stringstream();
@@ -30,7 +30,7 @@ TEST_SUITE("can_ostream")
         using stronk::stronk;
     };
 
-    TEST_CASE("streaming_from_istream_overrides_the_value")  // NOLINT
+    TEST_CASE("streaming_from_istream_overrides_the_value")
     {
         auto val = an_istreamable_type {5};
         auto sstream = std::stringstream("7");

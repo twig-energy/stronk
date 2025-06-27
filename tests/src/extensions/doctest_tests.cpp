@@ -19,7 +19,7 @@ struct a_recursive_type_to_doctest_print : stronk<a_recursive_type_to_doctest_pr
 
 TEST_SUITE("can_doctest_extend")
 {
-    TEST_CASE("when_given_a_stronk_type_doctest_can_convert_the_underlying_string")  // NOLINT
+    TEST_CASE("when_given_a_stronk_type_doctest_can_convert_the_underlying_string")
     {
         CHECK_EQ(doctest::StringMaker<a_type_to_doctest_print>::convert(a_type_to_doctest_print {5}), "5");
         CHECK_EQ(doctest::StringMaker<a_recursive_type_to_doctest_print>::convert(
