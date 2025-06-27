@@ -86,7 +86,7 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
 
     using ResT = decltype(op(T {}, O {}));
     auto array_c = std::array<ResT, WidthV> {};
-    bench.batch(size * WidthV)
+    bench.batch(size * WidthV - WidthV)
         .run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
              [&vec_a, &vec_b, &op, &array_c]()
              {
@@ -95,7 +95,9 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
                      for (size_t j = 0; j < WidthV; j++) {
                          array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
                      }
-                     ankerl::nanobench::doNotOptimizeAway(array_c);
+                     for (size_t j = 0; j < WidthV; j++) {
+                         ankerl::nanobench::doNotOptimizeAway(array_c[j]);
+                     }
                  }
              });
 }
