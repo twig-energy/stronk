@@ -1,4 +1,5 @@
 {
+    "testMate.cpp.test.executables": "{build,Build,BUILD,out,Out,OUT}/**/*{test,Test,TEST,benchmark}*",
     "clangd.path": "clangd-19",
     "clangd.arguments": [
         "-compile-commands-dir=${workspaceFolder}/build"
