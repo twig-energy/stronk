@@ -10,7 +10,7 @@
 
 #include "stronk/stronk.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 namespace twig
 {
@@ -24,20 +24,26 @@ struct a_float_test_type : stronk<a_float_test_type, float>
     using stronk::stronk;
 };
 
-TEST(unwrap, when_unwrapping_it_works_with_its_own_argument)
+TEST_SUITE("unwrap")
 {
-    auto a = an_int_test_type {42};
-    EXPECT_EQ(a.unwrap<an_int_test_type>(), 42);
+    TEST_CASE("when unwrapping it works with its own argument")
+    {
+        auto a = an_int_test_type {42};
+        CHECK_EQ(a.unwrap<an_int_test_type>(), 42);
 
-    auto b = a_float_test_type {42.1F};
-    EXPECT_EQ(b.unwrap<a_float_test_type>(), 42.1F);
+        auto b = a_float_test_type {42.1F};
+        CHECK_EQ(b.unwrap<a_float_test_type>(), 42.1F);
+    }
 }
 
-TEST(transform, transform_gets_called_on_the_underlying_type_and_returns_a_new_copy)
+TEST_SUITE("transform")
 {
-    auto val = an_int_test_type {2};
-    val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
-    EXPECT_EQ(val.unwrap<an_int_test_type>(), 42);
+    TEST_CASE("transform gets called on the underlying type and returns a new copy")
+    {
+        auto val = an_int_test_type {2};
+        val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
+        CHECK_EQ(val.unwrap<an_int_test_type>(), 42);
+    }
 }
 
 template<an_int_test_type Val>
@@ -46,10 +52,13 @@ struct type_which_requires_stronk_none_type_template_param
     constexpr static an_int_test_type value = Val;
 };
 
-TEST(none_type_template_parameter, stronk_types_can_be_used_as_none_type_template_parameters)
+TEST_SUITE("none_type_template_parameter")
 {
-    auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
-    EXPECT_EQ(val.value.unwrap<an_int_test_type>(), 25);
+    TEST_CASE("stronk types can be used as none type template parameters")
+    {
+        auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
+        CHECK_EQ(val.value.unwrap<an_int_test_type>(), 25);
+    }
 }
 
 struct mark_if_moved_type
@@ -78,31 +87,34 @@ struct a_move_indicating_type : stronk<a_move_indicating_type, mark_if_moved_typ
     using stronk::stronk;
 };
 
-TEST(move, stronk_allows_to_move_and_move_out_with_unwrap)
+TEST_SUITE("move")
 {
-    {  // wrapping type
-        auto marker = false;
-        auto val = a_move_indicating_type(mark_if_moved_type {&marker});
-        marker = false;
+    TEST_CASE("stronk allows to move and move out with unwrap")
+    {
+        {  // wrapping type
+            auto marker = false;
+            auto val = a_move_indicating_type(mark_if_moved_type {&marker});
+            marker = false;
 
-        [[maybe_unused]]
-        auto copy = val;
-        EXPECT_FALSE(marker);
-        [[maybe_unused]]
-        auto moved = std::move(val);  // has side effect
-        EXPECT_TRUE(marker);
-    }
+            [[maybe_unused]]
+            auto copy = val;
+            CHECK_FALSE(marker);
+            [[maybe_unused]]
+            auto moved = std::move(val);  // has side effect
+            CHECK(marker);
+        }
 
-    {  // underlying type
-        auto marker = false;
-        auto val = a_move_indicating_type {mark_if_moved_type {&marker}};
-        marker = false;
+        {  // underlying type
+            auto marker = false;
+            auto val = a_move_indicating_type {mark_if_moved_type {&marker}};
+            marker = false;
 
-        [[maybe_unused]]
-        auto copy = val.unwrap<a_move_indicating_type>();
-        EXPECT_FALSE(marker);
-        auto moved = std::move(val.unwrap<a_move_indicating_type>());
-        EXPECT_TRUE(marker);
+            [[maybe_unused]]
+            auto copy = val.unwrap<a_move_indicating_type>();
+            CHECK_FALSE(marker);
+            auto moved = std::move(val.unwrap<a_move_indicating_type>());
+            CHECK(marker);
+        }
     }
 }
 
@@ -111,24 +123,28 @@ struct a_str_type : stronk<a_str_type, std::string>
     using stronk::stronk;
 };
 
-TEST(constructor, can_construct_from_both_rvalue_lvalues_and_forwarded)
+TEST_SUITE("constructor")
 {
-    auto str = std::string {"yoyo"};
-    auto stronked_copy = a_str_type {str};
-    EXPECT_EQ(stronked_copy.unwrap<a_str_type>(), str);
+    TEST_CASE("can construct from both rvalue lvalues and forwarded")
+    {
+        auto str = std::string {"yoyo"};
+        auto stronked_copy = a_str_type {str};
+        CHECK_EQ(stronked_copy.unwrap<a_str_type>(), str);
 
-    auto stronked_moved = a_str_type {std::string {"lolo"}};
-    EXPECT_EQ(stronked_moved.unwrap<a_str_type>(), "lolo");
+        auto stronked_moved = a_str_type {std::string {"lolo"}};
+        CHECK_EQ(stronked_moved.unwrap<a_str_type>(), "lolo");
 
-    auto stronked_forward = a_str_type {"soso"};
-    EXPECT_EQ(stronked_forward.unwrap<a_str_type>(), "soso");
+        auto stronked_forward = a_str_type {"soso"};
+        CHECK_EQ(stronked_forward.unwrap<a_str_type>(), "soso");
+    }
 }
 
 struct implicit_wrapper
 {
     double d;
 
-    operator double() const  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions) because that's the test
+    operator double() const  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+                             // because that's the test
     {
         return this->d;
     }
@@ -176,11 +192,14 @@ struct wrapping_multiple_member_type : stronk<wrapping_multiple_member_type, a_t
     using stronk::stronk;
 };
 
-TEST(can_forward_multiple_args, correctly_passes_multiple_args_in_constructor)
+TEST_SUITE("can_forward_multiple_args")
 {
-    auto val = wrapping_multiple_member_type {1, 2.1};
-    EXPECT_EQ(val.unwrap<wrapping_multiple_member_type>().a, 1);
-    EXPECT_EQ(val.unwrap<wrapping_multiple_member_type>().b, 2.1);
+    TEST_CASE("correctly passes multiple args in constructor")
+    {
+        auto val = wrapping_multiple_member_type {1, 2.1};
+        CHECK_EQ(val.unwrap<wrapping_multiple_member_type>().a, 1);
+        CHECK_EQ(val.unwrap<wrapping_multiple_member_type>().b, 2.1);
+    }
 }
 
 struct an_orderable_type : stronk<an_orderable_type, int, can_order>
@@ -188,52 +207,55 @@ struct an_orderable_type : stronk<an_orderable_type, int, can_order>
     using stronk::stronk;
 };
 
-TEST(can_order, when_given_an_array_of_orderable_it_can_be_sorted)
+TEST_SUITE("can_order")
 {
-    auto arr = std::array<an_orderable_type, 5> {an_orderable_type {5},
-                                                 an_orderable_type {4},
-                                                 an_orderable_type {3},
-                                                 an_orderable_type {1},
-                                                 an_orderable_type {2}};
+    TEST_CASE("when given an array of orderable it can be sorted")
+    {
+        auto arr = std::array<an_orderable_type, 5> {an_orderable_type {5},
+                                                     an_orderable_type {4},
+                                                     an_orderable_type {3},
+                                                     an_orderable_type {1},
+                                                     an_orderable_type {2}};
 
-    std::sort(arr.begin(), arr.end());
-    EXPECT_TRUE(std::is_sorted(arr.begin(), arr.end()));
-}
+        std::sort(arr.begin(), arr.end());
+        CHECK(std::is_sorted(arr.begin(), arr.end()));
+    }
 
-TEST(can_order, order_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i <=> j, an_orderable_type {i} <=> an_orderable_type {j});
+    TEST_CASE("order behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i <=> j, an_orderable_type {i} <=> an_orderable_type {j});
+            }
         }
     }
-}
 
-struct an_orderable_and_equatable_type : stronk<an_orderable_and_equatable_type, int, can_order, can_equate>
-{
-    using stronk::stronk;
-};
+    struct an_orderable_and_equatable_type : stronk<an_orderable_and_equatable_type, int, can_order, can_equate>
+    {
+        using stronk::stronk;
+    };
 
-TEST(can_order, enables_min_max_behavior_correctly)
-{
-    EXPECT_EQ(std::min(an_orderable_and_equatable_type {10}, an_orderable_and_equatable_type {5}),
-              an_orderable_and_equatable_type {5});
-    EXPECT_EQ(std::min(an_orderable_and_equatable_type {5}, an_orderable_and_equatable_type {10}),
-              an_orderable_and_equatable_type {5});
-    EXPECT_EQ(std::max(an_orderable_and_equatable_type {10}, an_orderable_and_equatable_type {5}),
-              an_orderable_and_equatable_type {10});
-    EXPECT_EQ(std::max(an_orderable_and_equatable_type {5}, an_orderable_and_equatable_type {10}),
-              an_orderable_and_equatable_type {10});
-}
+    TEST_CASE("enables min max behavior correctly")
+    {
+        CHECK_EQ(std::min(an_orderable_and_equatable_type {10}, an_orderable_and_equatable_type {5}),
+                 an_orderable_and_equatable_type {5});
+        CHECK_EQ(std::min(an_orderable_and_equatable_type {5}, an_orderable_and_equatable_type {10}),
+                 an_orderable_and_equatable_type {5});
+        CHECK_EQ(std::max(an_orderable_and_equatable_type {10}, an_orderable_and_equatable_type {5}),
+                 an_orderable_and_equatable_type {10});
+        CHECK_EQ(std::max(an_orderable_and_equatable_type {5}, an_orderable_and_equatable_type {10}),
+                 an_orderable_and_equatable_type {10});
+    }
 
-TEST(can_order, min_max_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(an_orderable_and_equatable_type {std::min(i, j)},
-                      std::min(an_orderable_and_equatable_type {i}, an_orderable_and_equatable_type {j}));
-            EXPECT_EQ(an_orderable_and_equatable_type {std::max(i, j)},
-                      std::max(an_orderable_and_equatable_type {i}, an_orderable_and_equatable_type {j}));
+    TEST_CASE("min max behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(an_orderable_and_equatable_type {std::min(i, j)},
+                         std::min(an_orderable_and_equatable_type {i}, an_orderable_and_equatable_type {j}));
+                CHECK_EQ(an_orderable_and_equatable_type {std::max(i, j)},
+                         std::max(an_orderable_and_equatable_type {i}, an_orderable_and_equatable_type {j}));
+            }
         }
     }
 }
@@ -243,29 +265,32 @@ struct an_equatable_type : stronk<an_equatable_type, int, can_equate>
     using stronk::stronk;
 };
 
-TEST(can_equate, can_equate_numbers_correctly)
+TEST_SUITE("can_equate")
 {
-    EXPECT_EQ(an_equatable_type {-1}, an_equatable_type {-1});
-    EXPECT_NE(an_equatable_type {-1}, an_equatable_type {0});
-    EXPECT_NE(an_equatable_type {-1}, an_equatable_type {1});
+    TEST_CASE("can equate numbers correctly")
+    {
+        CHECK_EQ(an_equatable_type {-1}, an_equatable_type {-1});
+        CHECK_NE(an_equatable_type {-1}, an_equatable_type {0});
+        CHECK_NE(an_equatable_type {-1}, an_equatable_type {1});
 
-    EXPECT_NE(an_equatable_type {0}, an_equatable_type {-1});
-    EXPECT_EQ(an_equatable_type {0}, an_equatable_type {0});
-    EXPECT_NE(an_equatable_type {0}, an_equatable_type {1});
+        CHECK_NE(an_equatable_type {0}, an_equatable_type {-1});
+        CHECK_EQ(an_equatable_type {0}, an_equatable_type {0});
+        CHECK_NE(an_equatable_type {0}, an_equatable_type {1});
 
-    EXPECT_NE(an_equatable_type {1}, an_equatable_type {-1});
-    EXPECT_NE(an_equatable_type {1}, an_equatable_type {0});
-    EXPECT_EQ(an_equatable_type {1}, an_equatable_type {1});
+        CHECK_NE(an_equatable_type {1}, an_equatable_type {-1});
+        CHECK_NE(an_equatable_type {1}, an_equatable_type {0});
+        CHECK_EQ(an_equatable_type {1}, an_equatable_type {1});
 
-    EXPECT_EQ(an_equatable_type {1247865}, an_equatable_type {1247865});
-    EXPECT_NE(an_equatable_type {1247865}, an_equatable_type {918256});
-}
+        CHECK_EQ(an_equatable_type {1247865}, an_equatable_type {1247865});
+        CHECK_NE(an_equatable_type {1247865}, an_equatable_type {918256});
+    }
 
-TEST(can_equate, equate_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i == j, an_equatable_type {i} == an_equatable_type {j});
+    TEST_CASE("equate behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i == j, an_equatable_type {i} == an_equatable_type {j});
+            }
         }
     }
 }
@@ -275,55 +300,58 @@ struct a_less_than_greater_than_type : stronk<a_less_than_greater_than_type, int
     using stronk::stronk;
 };
 
-TEST(a_less_than_greater_than_type, can_less_than_correctly)
+TEST_SUITE("a_less_than_greater_than_type")
 {
-    EXPECT_FALSE(a_less_than_greater_than_type {-1} < a_less_than_greater_than_type {-1});
-    EXPECT_LT(a_less_than_greater_than_type {-1}, a_less_than_greater_than_type {0});
-    EXPECT_LT(a_less_than_greater_than_type {-1}, a_less_than_greater_than_type {1});
+    TEST_CASE("can less than correctly")
+    {
+        CHECK_FALSE(a_less_than_greater_than_type {-1} < a_less_than_greater_than_type {-1});
+        CHECK_LT(a_less_than_greater_than_type {-1}, a_less_than_greater_than_type {0});
+        CHECK_LT(a_less_than_greater_than_type {-1}, a_less_than_greater_than_type {1});
 
-    EXPECT_FALSE(a_less_than_greater_than_type {0} < a_less_than_greater_than_type {-1});
-    EXPECT_FALSE(a_less_than_greater_than_type {0} < a_less_than_greater_than_type {0});
-    EXPECT_LT(a_less_than_greater_than_type {0}, a_less_than_greater_than_type {1});
+        CHECK_FALSE(a_less_than_greater_than_type {0} < a_less_than_greater_than_type {-1});
+        CHECK_FALSE(a_less_than_greater_than_type {0} < a_less_than_greater_than_type {0});
+        CHECK_LT(a_less_than_greater_than_type {0}, a_less_than_greater_than_type {1});
 
-    EXPECT_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {-1});
-    EXPECT_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {0});
-    EXPECT_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {1});
+        CHECK_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {-1});
+        CHECK_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {0});
+        CHECK_FALSE(a_less_than_greater_than_type {1} < a_less_than_greater_than_type {1});
 
-    EXPECT_FALSE(a_less_than_greater_than_type {1247865} < a_less_than_greater_than_type {1247865});
-    EXPECT_FALSE(a_less_than_greater_than_type {1247865} < a_less_than_greater_than_type {918256});
-}
-TEST(a_less_than_greater_than_type, less_than_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i < j, a_less_than_greater_than_type {i} < a_less_than_greater_than_type {j});
+        CHECK_FALSE(a_less_than_greater_than_type {1247865} < a_less_than_greater_than_type {1247865});
+        CHECK_FALSE(a_less_than_greater_than_type {1247865} < a_less_than_greater_than_type {918256});
+    }
+    TEST_CASE("less than behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i < j, a_less_than_greater_than_type {i} < a_less_than_greater_than_type {j});
+            }
         }
     }
-}
 
-TEST(a_less_than_greater_than_type, can_greater_than_correctly)
-{
-    EXPECT_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {-1});
-    EXPECT_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {0});
-    EXPECT_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {1});
+    TEST_CASE("can_greater_than correctly")
+    {
+        CHECK_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {-1});
+        CHECK_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {0});
+        CHECK_FALSE(a_less_than_greater_than_type {-1} > a_less_than_greater_than_type {1});
 
-    EXPECT_GT(a_less_than_greater_than_type {0}, a_less_than_greater_than_type {-1});
-    EXPECT_FALSE(a_less_than_greater_than_type {0} > a_less_than_greater_than_type {0});
-    EXPECT_FALSE(a_less_than_greater_than_type {0} > a_less_than_greater_than_type {1});
+        CHECK_GT(a_less_than_greater_than_type {0}, a_less_than_greater_than_type {-1});
+        CHECK_FALSE(a_less_than_greater_than_type {0} > a_less_than_greater_than_type {0});
+        CHECK_FALSE(a_less_than_greater_than_type {0} > a_less_than_greater_than_type {1});
 
-    EXPECT_GT(a_less_than_greater_than_type {1}, a_less_than_greater_than_type {-1});
-    EXPECT_GT(a_less_than_greater_than_type {1}, a_less_than_greater_than_type {0});
-    EXPECT_FALSE(a_less_than_greater_than_type {1} > a_less_than_greater_than_type {1});
+        CHECK_GT(a_less_than_greater_than_type {1}, a_less_than_greater_than_type {-1});
+        CHECK_GT(a_less_than_greater_than_type {1}, a_less_than_greater_than_type {0});
+        CHECK_FALSE(a_less_than_greater_than_type {1} > a_less_than_greater_than_type {1});
 
-    EXPECT_FALSE(a_less_than_greater_than_type {1247865} > a_less_than_greater_than_type {1247865});
-    EXPECT_GT(a_less_than_greater_than_type {1247865}, a_less_than_greater_than_type {918256});
-}
+        CHECK_FALSE(a_less_than_greater_than_type {1247865} > a_less_than_greater_than_type {1247865});
+        CHECK_GT(a_less_than_greater_than_type {1247865}, a_less_than_greater_than_type {918256});
+    }
 
-TEST(a_less_than_greater_than_type, greater_than_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i > j, a_less_than_greater_than_type {i} > a_less_than_greater_than_type {j});
+    TEST_CASE("greater than behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i > j, a_less_than_greater_than_type {i} > a_less_than_greater_than_type {j});
+            }
         }
     }
 }
@@ -334,22 +362,25 @@ struct a_less_than_greater_than_or_equals_type
     using stronk::stronk;
 };
 
-TEST(can_less_than_greater_than_or_equal, greater_than_or_equal_behaves_similar_to_integers)
+TEST_SUITE("can_less_than_greater_than_or_equal")
 {
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i >= j,
-                      a_less_than_greater_than_or_equals_type {i} >= a_less_than_greater_than_or_equals_type {j});
+    TEST_CASE("greater than or equal behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i >= j,
+                         a_less_than_greater_than_or_equals_type {i} >= a_less_than_greater_than_or_equals_type {j});
+            }
         }
     }
-}
 
-TEST(can_less_than_greater_than_or_equal, less_than_or_equal_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(i <= j,
-                      a_less_than_greater_than_or_equals_type {i} <= a_less_than_greater_than_or_equals_type {j});
+    TEST_CASE("less than or equal behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(i <= j,
+                         a_less_than_greater_than_or_equals_type {i} <= a_less_than_greater_than_or_equals_type {j});
+            }
         }
     }
 }
@@ -359,21 +390,24 @@ struct an_addeable_type : stronk<an_addeable_type, int, can_add, can_equate>
     using stronk::stronk;
 };
 
-TEST(can_add, can_add_numbers_correctly)
+TEST_SUITE("can_add")
 {
-    auto val_1 = an_addeable_type {5};
-    auto val_2 = an_addeable_type {2};
-    EXPECT_EQ(val_1 + val_2, an_addeable_type {7});
-    val_1 += val_2;
+    TEST_CASE("can_add works correctly")
+    {
+        auto val_1 = an_addeable_type {5};
+        auto val_2 = an_addeable_type {2};
+        CHECK_EQ(val_1 + val_2, an_addeable_type {7});
+        val_1 += val_2;
 
-    EXPECT_EQ(val_1 + val_2, an_addeable_type {9});
-}
+        CHECK_EQ(val_1 + val_2, an_addeable_type {9});
+    }
 
-TEST(can_add, adding_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(an_addeable_type {i + j}, an_addeable_type {i} + an_addeable_type {j});
+    TEST_CASE("adding behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(an_addeable_type {i + j}, an_addeable_type {i} + an_addeable_type {j});
+            }
         }
     }
 }
@@ -383,21 +417,24 @@ struct a_subtractable_type : stronk<a_subtractable_type, int, can_subtract, can_
     using stronk::stronk;
 };
 
-TEST(can_subtract, can_subtract_numbers_correctly)
+TEST_SUITE("can_subtract")
 {
-    auto val_1 = a_subtractable_type {5};
-    auto val_2 = a_subtractable_type {2};
-    EXPECT_EQ(val_1 - val_2, a_subtractable_type {3});
-    val_1 -= val_2;
+    TEST_CASE("can_subtract works correctly")
+    {
+        auto val_1 = a_subtractable_type {5};
+        auto val_2 = a_subtractable_type {2};
+        CHECK_EQ(val_1 - val_2, a_subtractable_type {3});
+        val_1 -= val_2;
 
-    EXPECT_EQ(val_1 - val_2, a_subtractable_type {1});
-}
+        CHECK_EQ(val_1 - val_2, a_subtractable_type {1});
+    }
 
-TEST(can_subtract, subtracting_behaves_similar_to_integers)
-{
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            EXPECT_EQ(a_subtractable_type {i - j}, a_subtractable_type {i} - a_subtractable_type {j});
+    TEST_CASE("subtracting behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                CHECK_EQ(a_subtractable_type {i - j}, a_subtractable_type {i} - a_subtractable_type {j});
+            }
         }
     }
 }
@@ -407,24 +444,29 @@ struct a_fuzzy_equal_float_type : stronk<a_fuzzy_equal_float_type, double, can_e
     using stronk::stronk;
 };
 
-TEST(can_equate_with_is_close, is_close_is_applied_so_we_get_fuzzy_equal)
+TEST_SUITE("can_equate_with_is_close")
 {
-    EXPECT_EQ(a_fuzzy_equal_float_type {10}, a_fuzzy_equal_float_type {10});
-    EXPECT_EQ(a_fuzzy_equal_float_type {-10}, a_fuzzy_equal_float_type {-10});
-    EXPECT_EQ(a_fuzzy_equal_float_type {10 + 1e-9}, a_fuzzy_equal_float_type {10});
-    EXPECT_NE(a_fuzzy_equal_float_type {10}, a_fuzzy_equal_float_type {-10});
-    EXPECT_NE(a_fuzzy_equal_float_type {10 + 1e-7}, a_fuzzy_equal_float_type {10});
+    TEST_CASE("is_close is applied so we get fuzzy equal")
+    {
+        CHECK_EQ(a_fuzzy_equal_float_type {10}, a_fuzzy_equal_float_type {10});
+        CHECK_EQ(a_fuzzy_equal_float_type {-10}, a_fuzzy_equal_float_type {-10});
+        CHECK_EQ(a_fuzzy_equal_float_type {10 + 1e-9}, a_fuzzy_equal_float_type {10});
+        CHECK_NE(a_fuzzy_equal_float_type {10}, a_fuzzy_equal_float_type {-10});
+        CHECK_NE(a_fuzzy_equal_float_type {10 + 1e-7}, a_fuzzy_equal_float_type {10});
+    }
 }
-
 struct a_negatable_type : stronk<a_negatable_type, int32_t, can_negate, can_equate>
 {
     using stronk::stronk;
 };
 
-TEST(can_negate, when_negating_it_works_like_integers)
+TEST_SUITE("can_negate")
 {
-    for (auto i = -10; i < 10; i++) {
-        EXPECT_EQ(-a_negatable_type {i}, a_negatable_type {-i});
+    TEST_CASE("when negating it works like integers")
+    {
+        for (auto i = -10; i < 10; i++) {
+            CHECK_EQ(-a_negatable_type {i}, a_negatable_type {-i});
+        }
     }
 }
 
@@ -433,13 +475,16 @@ struct a_can_clamp_type : stronk<a_can_clamp_type, int, can_equate, can_order>
     using stronk::stronk;
 };
 
-TEST(can_clamp, clamping_behaves_similar_to_integers)
+TEST_SUITE("can_clamp")
 {
-    for (auto i = -16; i < 16; i++) {
-        for (auto j = -16; j < 16; j++) {
-            for (auto k = j; k < 16; k++) {
-                EXPECT_EQ(a_can_clamp_type {std::clamp(i, j, k)},
-                          std::clamp(a_can_clamp_type {i}, a_can_clamp_type {j}, a_can_clamp_type {k}));
+    TEST_CASE("clamping behaves similar to integers")
+    {
+        for (auto i = -16; i < 16; i++) {
+            for (auto j = -16; j < 16; j++) {
+                for (auto k = j; k < 16; k++) {
+                    CHECK_EQ(a_can_clamp_type {std::clamp(i, j, k)},
+                             std::clamp(a_can_clamp_type {i}, a_can_clamp_type {j}, a_can_clamp_type {k}));
+                }
             }
         }
     }
@@ -455,21 +500,24 @@ struct a_size_vector_type : stronk<a_size_vector_type, std::vector<int>, can_siz
     using stronk::stronk;
 };
 
-TEST(can_size, can_size_works_for_strings)
+TEST_SUITE("can_size")
 {
-    EXPECT_TRUE(a_size_string_type("").empty());
-    EXPECT_FALSE(a_size_string_type("a").empty());
-    for (size_t i = 0; i < 16; i++) {
-        EXPECT_EQ(a_size_string_type(std::to_string(i)).size(), std::to_string(i).size());
-        EXPECT_EQ(a_size_string_type(std::to_string(i)).empty(), std::to_string(i).empty());
+    TEST_CASE("can_size works for strings")
+    {
+        CHECK(a_size_string_type("").empty());
+        CHECK_FALSE(a_size_string_type("a").empty());
+        for (size_t i = 0; i < 16; i++) {
+            CHECK_EQ(a_size_string_type(std::to_string(i)).size(), std::to_string(i).size());
+            CHECK_EQ(a_size_string_type(std::to_string(i)).empty(), std::to_string(i).empty());
+        }
     }
-}
 
-TEST(can_size, can_size_works_for_vectors)
-{
-    for (size_t i = 0; i < 16; i++) {
-        EXPECT_EQ(a_size_vector_type(std::vector<int>(i)).size(), std::vector<int>(i).size());
-        EXPECT_EQ(a_size_vector_type(std::vector<int>(i)).empty(), std::vector<int>(i).empty());
+    TEST_CASE("can_size works for vectors")
+    {
+        for (size_t i = 0; i < 16; i++) {
+            CHECK_EQ(a_size_vector_type(std::vector<int>(i)).size(), std::vector<int>(i).size());
+            CHECK_EQ(a_size_vector_type(std::vector<int>(i)).empty(), std::vector<int>(i).empty());
+        }
     }
 }
 
@@ -483,15 +531,18 @@ struct wrapping_is_a_type : stronk<wrapping_is_a_type, type_which_is_an_underlyi
     using stronk::stronk;
 };
 
-TEST(is_a, is_a_works_at_multiple_levels)
+TEST_SUITE("is_a")
 {
-    auto first_level = type_which_is_an_underlying_type {42};
-    auto func = [](const int& x) { EXPECT_EQ(x, 42); };
-    func(first_level.unwrap_as<type_which_is_an_underlying_type, int>());
-    auto second_level = wrapping_is_a_type {first_level};
-    func(second_level.unwrap_as<wrapping_is_a_type, int>());
-    func(second_level.unwrap_as<wrapping_is_a_type, type_which_is_an_underlying_type>()
-             .unwrap_as<type_which_is_an_underlying_type, int>());
-};
+    TEST_CASE("is_a works at multiple levels")
+    {
+        auto first_level = type_which_is_an_underlying_type {42};
+        auto func = [](const int& x) { CHECK_EQ(x, 42); };
+        func(first_level.unwrap_as<type_which_is_an_underlying_type, int>());
+        auto second_level = wrapping_is_a_type {first_level};
+        func(second_level.unwrap_as<wrapping_is_a_type, int>());
+        func(second_level.unwrap_as<wrapping_is_a_type, type_which_is_an_underlying_type>()
+                 .unwrap_as<type_which_is_an_underlying_type, int>());
+    };
+}
 
 }  // namespace twig

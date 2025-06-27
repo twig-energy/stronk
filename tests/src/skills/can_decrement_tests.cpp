@@ -1,6 +1,6 @@
 #include "stronk/skills/can_decrement.hpp"
 
-#include <gtest/gtest.h>
+#include <doctest/doctest.h>
 
 #include "stronk/stronk.hpp"
 
@@ -12,13 +12,16 @@ struct an_int_decrement_test_type : stronk<an_int_decrement_test_type, int, can_
     using stronk::stronk;
 };
 
-TEST(can_decrement, can_decrement_stronk_integer)
+TEST_SUITE("can_decrement")
 {
-    auto a = an_int_decrement_test_type {1};
+    TEST_CASE("can_decrement_stronk_integer")
+    {
+        auto a = an_int_decrement_test_type {1};
 
-    EXPECT_EQ(--a, an_int_decrement_test_type {0});
-    EXPECT_EQ(a--, an_int_decrement_test_type {0});
-    EXPECT_EQ(a, an_int_decrement_test_type {-1});
+        CHECK_EQ(--a, an_int_decrement_test_type {0});
+        CHECK_EQ(a--, an_int_decrement_test_type {0});
+        CHECK_EQ(a, an_int_decrement_test_type {-1});
+    }
 }
 
 }  // namespace twig
