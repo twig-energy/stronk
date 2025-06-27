@@ -16,9 +16,9 @@ struct a_unit : twig::stronk_default_unit<a_unit, twig::ratio<1>>
 {
 };
 
-using int8_t_wrapping_type = a_unit::value<int8_t>;
-using int64_t_wrapping_type = a_unit::value<int64_t>;
-using double_wrapping_type = a_unit::value<double>;
+using stronk_int8_t = a_unit::value<int8_t>;
+using stronk_int64_t = a_unit::value<int64_t>;
+using stronk_double_t = a_unit::value<double>;
 
 struct string_wrapping_type : twig::stronk<string_wrapping_type, std::string>
 {
@@ -112,20 +112,20 @@ constexpr auto get_name() -> std::string
 {
     if constexpr (std::is_same_v<T, int8_t>) {
         return "int8_t";
-    } else if constexpr (std::is_same_v<T, int8_t_wrapping_type>) {
-        return "int8_t_wrapping_type";
+    } else if constexpr (std::is_same_v<T, stronk_int8_t>) {
+        return "stronk_int8_t";
     } else if constexpr (std::is_same_v<T, int64_t>) {
         return "int64_t";
-    } else if constexpr (std::is_same_v<T, int64_t_wrapping_type>) {
-        return "int64_t_wrapping_type";
+    } else if constexpr (std::is_same_v<T, stronk_int64_t>) {
+        return "stronk_int64_t";
     } else if constexpr (std::is_same_v<T, std::string>) {
         return "std::string";
     } else if constexpr (std::is_same_v<T, string_wrapping_type>) {
-        return "string_wrapping_type";
+        return "string_stronk_t";
     } else if constexpr (std::is_same_v<T, double>) {
         return "double";
-    } else if constexpr (std::is_same_v<T, double_wrapping_type>) {
-        return "double_wrapping_type";
+    } else if constexpr (std::is_same_v<T, stronk_double_t>) {
+        return "stronk_double_t";
     } else {
         static_assert(twig::stronk_details::not_implemented_type<T>(), "Unknown type for get_name");
     }

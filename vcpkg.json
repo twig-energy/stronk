@@ -58,6 +58,7 @@
     "benchmark": {
       "description": "Dependencies for benchmarking",
       "dependencies": [
+        "doctest",
         "nanobench"
       ]
     }

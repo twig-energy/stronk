@@ -287,8 +287,6 @@ Stronk is a close to zero cost abstraction - performance varies per compiler and
 
 Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
 
-```bash
-
 | relative |               ns/op |                op/s |    err% |     total | Default Construction onto Reserved Vector
 |---------:|--------------------:|--------------------:|--------:|----------:|:------------------------------------------
 |   100.0% |                1.35 |      740,711,218.87 |    0.4% |      0.01 | `int8_t`
@@ -315,11 +313,8 @@ Constructing and copying the structs performs identically or very close to ident
 |   100.2% |                2.71 |      369,395,695.26 |    0.3% |      0.01 | `int64_t_wrapping_type`
 |   100.0% |               35.67 |       28,037,063.32 |    0.3% |      0.01 | `std::string`
 |   100.4% |               35.53 |       28,142,740.58 |    0.2% |      0.01 | `string_wrapping_type`
-```
 
 Calling "Skill" functions (which internally calls unwrap) performs identically to calling the functions directly on the raw types. They even auto-vectorize the same:
-
-```
 
 | relative |               ns/op |                op/s |    err% |     total | Add Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:----------
@@ -408,7 +403,6 @@ Calling "Skill" functions (which internally calls unwrap) performs identically t
 |   100.0% |                1.42 |      706,604,742.43 |    0.1% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
 |   100.0% |                1.39 |      718,059,127.90 |    0.0% |      0.01 | `double / int64_t`
 |    99.9% |                1.39 |      717,468,235.71 |    0.0% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
-```
 
 # Licensing
 

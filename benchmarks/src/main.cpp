@@ -4,7 +4,7 @@
 
 #include "./benchmark_helpers.hpp"
 
-// declared in test/source/details/doctest_helpers.hpp
+// declared in benchmarks/src/benchmark_helpers.hpp
 auto current_test_name() -> std::string
 {
     // doctest::detail::g_cs->currentTest->m_name is only accessible in the
