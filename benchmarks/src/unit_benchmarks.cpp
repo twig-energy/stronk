@@ -68,12 +68,9 @@ constexpr void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t
     bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
                           [&]()
                           {
-                              using ResT = decltype(op(T {}, O {}));
                               for (auto i = 0ULL; i < size; i++) {
-                                  ResT res;
-                                  ankerl::nanobench::doNotOptimizeAway(res);
-                                  res = op(vec_a[i], vec_b[i]);  // NOLINT
-                                  ankerl::nanobench::doNotOptimizeAway(res);
+                                  auto tmp = op(vec_a[i], vec_b[i]);  // NOLINT
+                                  ankerl::nanobench::doNotOptimizeAway(tmp);
                               }
                           });
 }
@@ -89,20 +86,20 @@ constexpr void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench,
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
     std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
-                          [&]()
-                          {
-                              using ResT = decltype(op(T {}, O {}));
-                              for (auto i = 0ULL; i < size - WidthV; i++) {
-                                  auto array_c = std::array<ResT, WidthV> {};
-                                  ankerl::nanobench::doNotOptimizeAway(array_c.data());
-                                  // We expect the inner loop to be vectorized to SIMD instructions
-                                  for (size_t j = 0; j < WidthV; j++) {
-                                      array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
-                                  }
-                                  ankerl::nanobench::doNotOptimizeAway(array_c);
-                              }
-                          });
+    bench.batch(size * WidthV)
+        .run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
+             [&]()
+             {
+                 using ResT = decltype(op(T {}, O {}));
+                 for (auto i = 0ULL; i < size - WidthV; i++) {
+                     auto array_c = std::array<ResT, WidthV> {};
+                     // We expect the inner loop to be vectorized to SIMD instructions
+                     for (size_t j = 0; j < WidthV; j++) {
+                         array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
+                     }
+                     ankerl::nanobench::doNotOptimizeAway(array_c.data());
+                 }
+             });
 }
 
 template<typename T>
