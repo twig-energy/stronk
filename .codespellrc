@@ -4,4 +4,4 @@ check-filenames =
 check-hidden =
 skip = */.git,*/build,*/prefix,*/.vscode,*/.sonar,*/llvm,*/.github,*/.clang-tidy
 quiet-level = 2
-ignore-words-list = deque,dur,lightyears
+ignore-words-list = deque,dur,lightyears,warmup

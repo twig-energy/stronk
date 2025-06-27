@@ -417,6 +417,12 @@ TEST_SUITE("unit")
         auto converted_to_km_per_hr = km_per_s.to<km_per_hr_t>();
         CHECK_EQ(converted_to_km_per_hr, expected_km_per_hr);
     }
+
+    TEST_CASE("values can be in constexpr")
+    {
+        constexpr auto val = make<meters, int>(1);
+        static_assert(val == meters::value<int>(1));
+    }
 }
 
 }  // namespace twig

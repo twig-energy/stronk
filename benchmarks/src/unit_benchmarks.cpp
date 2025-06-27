@@ -4,277 +4,328 @@
 #include <cstdint>
 #include <vector>
 
-#include <benchmark/benchmark.h>
+#include <doctest/doctest.h>
+#include <fmt/format.h>
+#include <nanobench.h>
 
-#include "./benchmark_helpers.h"
+#include "./benchmark_helpers.hpp"
 
 namespace
 {
-template<typename T>
-void benchmark_add_units(benchmark::State& state)
+
+struct add
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
+    constexpr static auto name = "+";
+
+    template<typename T, typename O>
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
+    {
+        return a + b;
+    }
+};
+
+struct subtract
+{
+    constexpr static auto name = "-";
+
+    template<typename T, typename O>
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
+    {
+        return a - b;
+    }
+};
+
+struct multiply
+{
+    constexpr static auto name = "*";
+
+    template<typename T, typename O>
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
+    {
+        return a * b;
+    }
+};
+
+struct divide
+{
+    constexpr static auto name = "/";
+
+    template<typename T, typename O>
+    constexpr auto operator()(const T& a, const O& b) const -> auto
+    {
+        return a / b;
+    }
+};
+
+template<typename T, typename O, typename Op>
+void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t size, const Op& op, O o_min_val = O {})
+{
+    auto vec_a = std::vector<T>(size);
+    auto vec_b = std::vector<O>(size);
     std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
-    std::ranges::generate(vec_b, []() { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
-            T res;
-            benchmark::DoNotOptimize(res);
-            res = vec_a[i] + vec_b[i];
-            benchmark::ClobberMemory();
-        }
-    }
+    auto tmp = decltype(op(T {}, O {})) {};
+    bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
+                          [&vec_a, &vec_b, &op, &tmp]()
+                          {
+                              for (auto i = 0ULL; i < vec_a.size(); i++) {
+                                  tmp = op(vec_a[i], vec_b[i]);  // NOLINT
+                                  ankerl::nanobench::doNotOptimizeAway(tmp);
+                              }
+                          });
 }
 
-template<typename T, size_t WidthV>
-void benchmark_add_units_simd(benchmark::State& state)
+template<typename T, typename O, size_t WidthV, typename Op>
+void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size, const Op& op, O o_min_val = O {})
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
+    auto vec_a = std::vector<T>(size);
+    auto vec_b = std::vector<O>(size);
+    std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
 
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
-            auto array_c = std::array<T, WidthV> {};
-            benchmark::DoNotOptimize(array_c.data());
-            // We expect the inner loop to be vectorized to SIMD instructions
-            for (size_t j = 0; j < WidthV; j++) {
-                array_c[j] = vec_a[i + j] + vec_b[i + j];
-            }
-            benchmark::ClobberMemory();
-        }
+    using ResT = decltype(op(T {}, O {}));
+    auto array_c = std::array<ResT, WidthV> {};
+    if ((size % WidthV) != 0ULL) {
+        size -= size % WidthV;  // Ensure size is a multiple of WidthV
     }
+
+    bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
+                          [&vec_a, &vec_b, &op, &array_c]()
+                          {
+                              for (auto i = 0ULL; i < vec_a.size(); i += WidthV) {
+                                  // We expect the inner loop to be vectorized to SIMD instructions
+                                  for (size_t j = 0; j < WidthV; j++) {
+                                      array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
+                                  }
+                                  for (size_t j = 0; j < WidthV; j++) {
+                                      ankerl::nanobench::doNotOptimizeAway(array_c[j]);  // NOLINT
+                                  }
+                              }
+                          });
 }
-}  // namespace
 
-// // benchmark_add_units
-BENCHMARK_TEMPLATE(benchmark_add_units, int8_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_add_units, int8_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_add_units, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_add_units, int64_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_add_units, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_add_units, double_wrapping_type)->Arg(8192);
-
-// benchmark_add_units_simd
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, int8_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, int8_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, int64_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_add_units_simd, double_wrapping_type, 32)->Arg(8192 / 32);
-
-namespace
-{
 template<typename T>
-void benchmark_subtract_units(benchmark::State& state)
+void benchmark_add_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
-            T res;
-            benchmark::DoNotOptimize(res);
-            res = vec_a[i] - vec_b[i];
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_operation<T, T>(bench, size, add {});
 }
 
 template<typename T, size_t WidthV>
-void benchmark_subtract_units_simd(benchmark::State& state)
+void benchmark_add_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<T>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<T> {}(); });
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
-            auto array_c = std::array<T, WidthV> {};
-            benchmark::DoNotOptimize(array_c.data());
-            // We expect the inner loop to be vectorized to SIMD instructions
-            for (size_t j = 0; j < WidthV; j++) {
-                array_c[j] = vec_a[i + j] - vec_b[i + j];
-            }
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_simd_operation<T, T, WidthV>(bench, size, add {});
 }
-}  // namespace
 
-BENCHMARK_TEMPLATE(benchmark_subtract_units, int8_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_subtract_units, int8_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_subtract_units, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_subtract_units, int64_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_subtract_units, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_subtract_units, double_wrapping_type)->Arg(8192);
-
-// simd
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, int8_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, int8_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, int64_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_subtract_units_simd, double_wrapping_type, 32)->Arg(8192 / 32);
-
-namespace
+template<typename T>
+void benchmark_subtract_units(ankerl::nanobench::Bench& bench, size_t size)
 {
+    benchmark_units_operation<T, T>(bench, size, subtract {});
+}
+
+template<typename T, size_t WidthV>
+void benchmark_subtract_units_simd(ankerl::nanobench::Bench& bench, size_t size)
+{
+    benchmark_units_simd_operation<T, T, WidthV>(bench, size, subtract {});
+}
+
 template<typename T, typename O>
-void benchmark_multiply_units(benchmark::State& state)
+void benchmark_multiply_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<O> {}(); });
-    using res_t = decltype(T {} * O {});
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
-            res_t res;
-            benchmark::DoNotOptimize(res);
-            res = vec_a[i] * vec_b[i];
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_operation<T, O>(bench, size, multiply {});  // NOLINT
 }
 
 template<typename T, typename O, size_t WidthV>
-void benchmark_multiply_units_simd(benchmark::State& state)
+void benchmark_multiply_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_randomish<O> {}(); });
-    using res_t = decltype(T {} * O {});
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
-            auto array_c = std::array<res_t, WidthV> {};
-            benchmark::DoNotOptimize(array_c.data());
-            // We expect the inner loop to be vectorized to SIMD instructions
-            for (size_t j = 0; j < WidthV; j++) {
-                array_c[j] = vec_a[i + j] * vec_b[i + j];
-            }
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_simd_operation<T, O, WidthV>(bench, size, multiply {});  // NOLINT
 }
-}  // namespace
 
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int8_t, int8_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int8_t_wrapping_type, int8_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int64_t, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int64_t_wrapping_type, int64_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units, double, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_multiply_units, double_wrapping_type, double_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int64_t, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_multiply_units, int64_t_wrapping_type, double_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units, double, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_multiply_units, double_wrapping_type, int64_t_wrapping_type)->Arg(8192);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int8_t, int8_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int8_t_wrapping_type, int8_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int64_t, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int64_t_wrapping_type, int64_t_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double_wrapping_type, double_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int64_t, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, int64_t_wrapping_type, double_wrapping_type, 32)->Arg(8192 / 32);
-
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_multiply_units_simd, double_wrapping_type, int64_t_wrapping_type, 32)->Arg(8192 / 32);
-
-namespace
-{
 template<typename T, typename O>
-void benchmark_divide_units(benchmark::State& state)
+void benchmark_divide_units(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_none_zero_randomish<O>(); });
-    using res_t = decltype(T {} / O {});
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)); i++) {
-            res_t res;
-            benchmark::DoNotOptimize(res);
-            res = vec_a[i] / vec_b[i];
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_operation<T, O>(bench, size, divide {}, O {1});  // NOLINT
 }
 
 template<typename T, typename O, size_t WidthV>
-void benchmark_divide_units_simd(benchmark::State& state)
+void benchmark_divide_units_simd(ankerl::nanobench::Bench& bench, size_t size)
 {
-    auto vec_a = std::vector<T>(static_cast<size_t>(state.range(0)));
-    auto vec_b = std::vector<O>(static_cast<size_t>(state.range(0)));
-    std::generate(vec_a.begin(), vec_a.end(), []() { return generate_randomish<T> {}(); });
-    std::generate(vec_b.begin(), vec_b.end(), []() { return generate_none_zero_randomish<O>(); });
-    using res_t = decltype(T {} / O {});
-
-    for (auto _ : state) {
-        for (auto i = 0ULL; i < static_cast<size_t>(state.range(0)) - WidthV; i++) {
-            auto array_c = std::array<res_t, WidthV> {};
-            benchmark::DoNotOptimize(array_c.data());
-            // We expect the inner loop to be vectorized to SIMD instructions
-            for (size_t j = 0; j < WidthV; j++) {
-                array_c[j] = vec_a[i + j] / vec_b[i + j];
-            }
-            benchmark::ClobberMemory();
-        }
-    }
+    benchmark_units_simd_operation<T, O, WidthV>(bench, size, divide {}, O {1});  // NOLINT
 }
+
 }  // namespace
 
-BENCHMARK_TEMPLATE(benchmark_divide_units, int8_t, int8_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_divide_units, int8_t_wrapping_type, int8_t_wrapping_type)->Arg(8192);
+TEST_SUITE("Unit Operations Benchmarks")
+{
+    TEST_CASE("Add Units")
+    {
+        auto size = 8192ULL;
 
-BENCHMARK_TEMPLATE(benchmark_divide_units, int64_t, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_divide_units, int64_t_wrapping_type, int64_t_wrapping_type)->Arg(8192);
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units<int8_t>(bench, size);
+        benchmark_add_units<stronk_int8_t>(bench, size);
 
-BENCHMARK_TEMPLATE(benchmark_divide_units, double, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_divide_units, double_wrapping_type, double_wrapping_type)->Arg(8192);
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units<int64_t>(bench, size);
+        benchmark_add_units<stronk_int64_t>(bench, size);
 
-BENCHMARK_TEMPLATE(benchmark_divide_units, int64_t, double)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_divide_units, int64_t_wrapping_type, double_wrapping_type)->Arg(8192);
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units<double>(bench, size);
+        benchmark_add_units<stronk_double_t>(bench, size);
+    }
 
-BENCHMARK_TEMPLATE(benchmark_divide_units, double, int64_t)->Arg(8192);
-BENCHMARK_TEMPLATE(benchmark_divide_units, double_wrapping_type, int64_t_wrapping_type)->Arg(8192);
+    TEST_CASE("Add Units SIMD")
+    {
+        auto size = 8192ULL;
+        constexpr auto width = 32;
 
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int8_t, int8_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int8_t_wrapping_type, int8_t_wrapping_type, 32)->Arg(8192 / 32);
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units_simd<int8_t, width>(bench, size);
+        benchmark_add_units_simd<stronk_int8_t, width>(bench, size);
 
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int64_t, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int64_t_wrapping_type, int64_t_wrapping_type, 32)->Arg(8192 / 32);
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units_simd<int64_t, width>(bench, size);
+        benchmark_add_units_simd<stronk_int64_t, width>(bench, size);
 
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, double, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, double_wrapping_type, double_wrapping_type, 32)->Arg(8192 / 32);
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_add_units_simd<double, width>(bench, size);
+        benchmark_add_units_simd<stronk_double_t, width>(bench, size);
+    }
 
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int64_t, double, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, int64_t_wrapping_type, double_wrapping_type, 32)->Arg(8192 / 32);
+    TEST_CASE("Subtract Units")
+    {
+        auto size = 8192ULL;
 
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, double, int64_t, 32)->Arg(8192 / 32);
-BENCHMARK_TEMPLATE(benchmark_divide_units_simd, double_wrapping_type, int64_t_wrapping_type, 32)->Arg(8192 / 32);
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units<int8_t>(bench, size);
+        benchmark_subtract_units<stronk_int8_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units<int64_t>(bench, size);
+        benchmark_subtract_units<stronk_int64_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units<double>(bench, size);
+        benchmark_subtract_units<stronk_double_t>(bench, size);
+    }
+
+    TEST_CASE("Subtract Units SIMD<32>")
+    {
+        auto size = 8192ULL;
+        constexpr auto width = 32;
+
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units_simd<int8_t, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_int8_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units_simd<int64_t, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_int64_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_subtract_units_simd<double, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_double_t, width>(bench, size);
+    }
+
+    TEST_CASE("multiply_units_benchmarks")
+    {
+        auto size = 8192ULL;
+
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units<int8_t, int8_t>(bench, size);
+        benchmark_multiply_units<stronk_int8_t, stronk_int8_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units<int64_t, int64_t>(bench, size);
+        benchmark_multiply_units<stronk_int64_t, stronk_int64_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units<double, double>(bench, size);
+        benchmark_multiply_units<stronk_double_t, stronk_double_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units<int64_t, double>(bench, size);
+        benchmark_multiply_units<stronk_int64_t, stronk_double_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units<double, int64_t>(bench, size);
+        benchmark_multiply_units<stronk_double_t, stronk_int64_t>(bench, size);
+    }
+
+    TEST_CASE("Multiply Units SIMD<32>")
+    {
+        auto size = 8192ULL;
+        constexpr auto width = 32;
+
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units_simd<int8_t, int8_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int8_t, stronk_int8_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units_simd<int64_t, int64_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int64_t, stronk_int64_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units_simd<double, double, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_double_t, stronk_double_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units_simd<int64_t, double, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int64_t, stronk_double_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_multiply_units_simd<double, int64_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_double_t, stronk_int64_t, width>(bench, size);
+    }
+
+    TEST_CASE("Divide Units")
+    {
+        auto size = 8192ULL;
+
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units<int8_t, int8_t>(bench, size);
+        benchmark_divide_units<stronk_int8_t, stronk_int8_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units<int64_t, int64_t>(bench, size);
+        benchmark_divide_units<stronk_int64_t, stronk_int64_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units<double, double>(bench, size);
+        benchmark_divide_units<stronk_double_t, stronk_double_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units<int64_t, double>(bench, size);
+        benchmark_divide_units<stronk_int64_t, stronk_double_t>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units<double, int64_t>(bench, size);
+        benchmark_divide_units<stronk_double_t, stronk_int64_t>(bench, size);
+    }
+
+    TEST_CASE("Divide Units SIMD<32>")
+    {
+        auto size = 8192ULL;
+        constexpr auto width = 32;
+
+        auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units_simd<int8_t, int8_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int8_t, stronk_int8_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units_simd<int64_t, int64_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int64_t, stronk_int64_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units_simd<double, double, width>(bench, size);
+        benchmark_divide_units_simd<stronk_double_t, stronk_double_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units_simd<int64_t, double, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int64_t, stronk_double_t, width>(bench, size);
+
+        bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
+        benchmark_divide_units_simd<double, int64_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_double_t, stronk_int64_t, width>(bench, size);
+    }
+}

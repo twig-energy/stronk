@@ -10,18 +10,19 @@ if (PROJECT_IS_TOP_LEVEL)
     find_package(stronk REQUIRED)
 endif ()
 
-find_package(benchmark CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
+find_package(nanobench CONFIG REQUIRED)
+find_package(doctest CONFIG REQUIRED)
 
 # ---- Benchmarks ----
-add_executable(stronk_benchmarks src/construction_benchmarks.cpp src/unit_benchmarks.cpp)
-
+add_executable(stronk_benchmarks src/construction_benchmarks.cpp src/main.cpp src/unit_benchmarks.cpp)
 target_link_libraries(
     stronk_benchmarks
     PRIVATE absl::hash
-            benchmark::benchmark_main
+            doctest::doctest
             fmt::fmt
+            nanobench::nanobench
             twig::stronk
 )
 target_compile_features(stronk_benchmarks PRIVATE cxx_std_20)
