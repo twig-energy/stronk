@@ -18,7 +18,7 @@ struct add
     constexpr static auto name = "+";
 
     template<typename T, typename O>
-    constexpr auto operator()(T a, O b) const noexcept -> auto
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
     {
         return a + b;
     }
@@ -29,7 +29,7 @@ struct subtract
     constexpr static auto name = "-";
 
     template<typename T, typename O>
-    constexpr auto operator()(T a, O b) const noexcept -> auto
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
     {
         return a - b;
     }
@@ -40,7 +40,7 @@ struct multiply
     constexpr static auto name = "*";
 
     template<typename T, typename O>
-    constexpr auto operator()(T a, O b) const noexcept -> auto
+    constexpr auto operator()(const T& a, const O& b) const noexcept -> auto
     {
         return a * b;
     }
@@ -51,7 +51,7 @@ struct divide
     constexpr static auto name = "/";
 
     template<typename T, typename O>
-    constexpr auto operator()(T a, O b) const -> auto
+    constexpr auto operator()(const T& a, const O& b) const -> auto
     {
         return a / b;
     }
@@ -86,7 +86,7 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
 
     using ResT = decltype(op(T {}, O {}));
     auto array_c = std::array<ResT, WidthV> {};
-    bench.batch(size * WidthV - WidthV)
+    bench.batch((size - WidthV) * WidthV)
         .run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
              [&vec_a, &vec_b, &op, &array_c]()
              {
@@ -174,18 +174,19 @@ TEST_SUITE("Unit Operations Benchmarks")
     TEST_CASE("Add Units SIMD")
     {
         auto size = 8192ULL;
+        constexpr auto width = 32;
 
         auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_add_units_simd<int8_t, 32>(bench, size);
-        benchmark_add_units_simd<stronk_int8_t, 32>(bench, size);
+        benchmark_add_units_simd<int8_t, width>(bench, size);
+        benchmark_add_units_simd<stronk_int8_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_add_units_simd<int64_t, 32>(bench, size);
-        benchmark_add_units_simd<stronk_int64_t, 32>(bench, size);
+        benchmark_add_units_simd<int64_t, width>(bench, size);
+        benchmark_add_units_simd<stronk_int64_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_add_units_simd<double, 32>(bench, size);
-        benchmark_add_units_simd<stronk_double_t, 32>(bench, size);
+        benchmark_add_units_simd<double, width>(bench, size);
+        benchmark_add_units_simd<stronk_double_t, width>(bench, size);
     }
 
     TEST_CASE("Subtract Units")
@@ -205,21 +206,22 @@ TEST_SUITE("Unit Operations Benchmarks")
         benchmark_subtract_units<stronk_double_t>(bench, size);
     }
 
-    TEST_CASE("Subtract Units SIMD")
+    TEST_CASE("Subtract Units SIMD<32>")
     {
         auto size = 8192ULL;
+        constexpr auto width = 32;
 
         auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_subtract_units_simd<int8_t, 32>(bench, size);
-        benchmark_subtract_units_simd<stronk_int8_t, 32>(bench, size);
+        benchmark_subtract_units_simd<int8_t, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_int8_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_subtract_units_simd<int64_t, 32>(bench, size);
-        benchmark_subtract_units_simd<stronk_int64_t, 32>(bench, size);
+        benchmark_subtract_units_simd<int64_t, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_int64_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_subtract_units_simd<double, 32>(bench, size);
-        benchmark_subtract_units_simd<stronk_double_t, 32>(bench, size);
+        benchmark_subtract_units_simd<double, width>(bench, size);
+        benchmark_subtract_units_simd<stronk_double_t, width>(bench, size);
     }
 
     TEST_CASE("multiply_units_benchmarks")
@@ -247,29 +249,30 @@ TEST_SUITE("Unit Operations Benchmarks")
         benchmark_multiply_units<stronk_double_t, stronk_int64_t>(bench, size);
     }
 
-    TEST_CASE("Multiply Units SIMD")
+    TEST_CASE("Multiply Units SIMD<32>")
     {
         auto size = 8192ULL;
+        constexpr auto width = 32;
 
         auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_multiply_units_simd<int8_t, int8_t, 32>(bench, size);
-        benchmark_multiply_units_simd<stronk_int8_t, stronk_int8_t, 32>(bench, size);
+        benchmark_multiply_units_simd<int8_t, int8_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int8_t, stronk_int8_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_multiply_units_simd<int64_t, int64_t, 32>(bench, size);
-        benchmark_multiply_units_simd<stronk_int64_t, stronk_int64_t, 32>(bench, size);
+        benchmark_multiply_units_simd<int64_t, int64_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int64_t, stronk_int64_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_multiply_units_simd<double, double, 32>(bench, size);
-        benchmark_multiply_units_simd<stronk_double_t, stronk_double_t, 32>(bench, size);
+        benchmark_multiply_units_simd<double, double, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_double_t, stronk_double_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_multiply_units_simd<int64_t, double, 32>(bench, size);
-        benchmark_multiply_units_simd<stronk_int64_t, stronk_double_t, 32>(bench, size);
+        benchmark_multiply_units_simd<int64_t, double, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_int64_t, stronk_double_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_multiply_units_simd<double, int64_t, 32>(bench, size);
-        benchmark_multiply_units_simd<stronk_double_t, stronk_int64_t, 32>(bench, size);
+        benchmark_multiply_units_simd<double, int64_t, width>(bench, size);
+        benchmark_multiply_units_simd<stronk_double_t, stronk_int64_t, width>(bench, size);
     }
 
     TEST_CASE("Divide Units")
@@ -297,28 +300,29 @@ TEST_SUITE("Unit Operations Benchmarks")
         benchmark_divide_units<stronk_double_t, stronk_int64_t>(bench, size);
     }
 
-    TEST_CASE("Divide Units SIMD")
+    TEST_CASE("Divide Units SIMD<32>")
     {
         auto size = 8192ULL;
+        constexpr auto width = 32;
 
         auto bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_divide_units_simd<int8_t, int8_t, 32>(bench, size);
-        benchmark_divide_units_simd<stronk_int8_t, stronk_int8_t, 32>(bench, size);
+        benchmark_divide_units_simd<int8_t, int8_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int8_t, stronk_int8_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_divide_units_simd<int64_t, int64_t, 32>(bench, size);
-        benchmark_divide_units_simd<stronk_int64_t, stronk_int64_t, 32>(bench, size);
+        benchmark_divide_units_simd<int64_t, int64_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int64_t, stronk_int64_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_divide_units_simd<double, double, 32>(bench, size);
-        benchmark_divide_units_simd<stronk_double_t, stronk_double_t, 32>(bench, size);
+        benchmark_divide_units_simd<double, double, width>(bench, size);
+        benchmark_divide_units_simd<stronk_double_t, stronk_double_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_divide_units_simd<int64_t, double, 32>(bench, size);
-        benchmark_divide_units_simd<stronk_int64_t, stronk_double_t, 32>(bench, size);
+        benchmark_divide_units_simd<int64_t, double, width>(bench, size);
+        benchmark_divide_units_simd<stronk_int64_t, stronk_double_t, width>(bench, size);
 
         bench = ankerl::nanobench::Bench {}.title(current_test_name()).warmup(100).relative(true);
-        benchmark_divide_units_simd<double, int64_t, 32>(bench, size);
-        benchmark_divide_units_simd<stronk_double_t, stronk_int64_t, 32>(bench, size);
+        benchmark_divide_units_simd<double, int64_t, width>(bench, size);
+        benchmark_divide_units_simd<stronk_double_t, stronk_int64_t, width>(bench, size);
     }
 }
