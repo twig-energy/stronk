@@ -323,91 +323,91 @@ Calling "Skill" functions (which internally calls unwrap) performs identically t
 
 | relative |               ns/op |                op/s |    err% |     total | Add Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:----------
-|   100.0% |                1.09 |      918,547,216.25 |    1.1% |      0.01 | `int8_t + int8_t`
-|   100.8% |                1.08 |      925,465,732.99 |    0.7% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
-|   100.0% |                1.14 |      879,567,144.37 |    0.8% |      0.01 | `int64_t + int64_t`
-|   101.0% |                1.13 |      888,444,778.56 |    0.4% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
-|   100.0% |                1.16 |      862,908,076.97 |    0.2% |      0.01 | `double + double`
-|   100.6% |                1.15 |      867,891,078.18 |    0.2% |      0.01 | `double_wrapping_type + double_wrapping_type`
+|   100.0% |                1.16 |      862,247,921.69 |    2.7% |      0.01 | `int8_t + int8_t`
+|   110.2% |                1.05 |      950,445,945.79 |    0.1% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
+|   100.0% |                1.12 |      892,138,939.67 |    0.7% |      0.01 | `int64_t + int64_t`
+|    98.2% |                1.14 |      876,198,203.85 |    2.9% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
+|   100.0% |                1.15 |      870,496,183.84 |    0.0% |      0.01 | `double + double`
+|    99.3% |                1.16 |      864,688,203.99 |    0.0% |      0.01 | `double_wrapping_type + double_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Add Units SIMD
 |---------:|--------------------:|--------------------:|--------:|----------:|:---------------
-|   100.0% |               17.02 |       58,740,331.10 |    0.1% |      0.01 | `int8_t + int8_t`
-|   652.6% |                2.61 |      383,332,910.89 |    0.2% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
-|   100.0% |               24.99 |       40,021,222.19 |    0.0% |      0.01 | `int64_t + int64_t`
-|    98.5% |               25.36 |       39,431,402.26 |    0.0% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
-|   100.0% |               25.36 |       39,434,097.59 |    0.3% |      0.01 | `double + double`
-|   101.2% |               25.06 |       39,911,783.53 |    0.0% |      0.01 | `double_wrapping_type + double_wrapping_type`
+|   100.0% |                0.47 |    2,110,065,601.48 |    0.1% |      0.01 | `int8_t + int8_t`
+|   799.5% |                0.06 |   16,869,674,082.83 |    0.3% |      0.01 | `int8_t_wrapping_type + int8_t_wrapping_type`
+|   100.0% |                0.67 |    1,496,494,873.61 |    0.1% |      0.01 | `int64_t + int64_t`
+|    99.9% |                0.67 |    1,494,978,604.65 |    0.0% |      0.01 | `int64_t_wrapping_type + int64_t_wrapping_type`
+|   100.0% |                0.67 |    1,496,546,133.38 |    0.1% |      0.01 | `double + double`
+|    99.8% |                0.67 |    1,494,152,069.00 |    0.1% |      0.01 | `double_wrapping_type + double_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Subtract Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:---------------
-|   100.0% |                1.09 |      916,284,928.30 |    1.6% |      0.01 | `int8_t - int8_t`
-|   100.6% |                1.09 |      921,615,806.78 |    0.7% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
-|   100.0% |                1.13 |      888,585,001.14 |    0.4% |      0.01 | `int64_t - int64_t`
-|   100.4% |                1.12 |      892,292,956.52 |    0.1% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
-|   100.0% |                1.16 |      861,364,564.51 |    0.4% |      0.01 | `double - double`
-|   100.8% |                1.15 |      867,941,420.31 |    0.2% |      0.01 | `double_wrapping_type - double_wrapping_type`
+|   100.0% |                1.09 |      915,786,276.70 |    0.3% |      0.01 | `int8_t - int8_t`
+|   100.4% |                1.09 |      919,078,229.16 |    0.1% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
+|   100.0% |                1.15 |      872,006,517.52 |    0.3% |      0.01 | `int64_t - int64_t`
+|   100.4% |                1.14 |      875,610,181.82 |    0.2% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
+|   100.0% |                1.19 |      841,618,793.06 |    2.8% |      0.01 | `double - double`
+|   102.6% |                1.16 |      863,868,395.05 |    0.1% |      0.01 | `double_wrapping_type - double_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Subtract Units SIMD
 |---------:|--------------------:|--------------------:|--------:|----------:|:--------------------
-|   100.0% |               17.03 |       58,736,645.87 |    0.1% |      0.01 | `int8_t - int8_t`
-|   650.4% |                2.62 |      382,004,424.80 |    0.4% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
-|   100.0% |               24.96 |       40,059,619.98 |    0.1% |      0.01 | `int64_t - int64_t`
-|    98.5% |               25.35 |       39,451,227.26 |    0.1% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
-|   100.0% |               25.29 |       39,548,895.41 |    0.1% |      0.01 | `double - double`
-|   100.9% |               25.06 |       39,906,741.37 |    0.0% |      0.01 | `double_wrapping_type - double_wrapping_type`
+|   100.0% |                0.47 |    2,110,046,494.13 |    0.1% |      0.01 | `int8_t - int8_t`
+|   790.2% |                0.06 |   16,673,956,042.89 |    0.4% |      0.01 | `int8_t_wrapping_type - int8_t_wrapping_type`
+|   100.0% |                0.67 |    1,497,115,922.77 |    0.1% |      0.01 | `int64_t - int64_t`
+|    99.9% |                0.67 |    1,494,877,724.02 |    0.1% |      0.01 | `int64_t_wrapping_type - int64_t_wrapping_type`
+|   100.0% |                0.67 |    1,496,773,997.08 |    0.1% |      0.01 | `double - double`
+|    99.9% |                0.67 |    1,495,591,285.07 |    0.0% |      0.01 | `double_wrapping_type - double_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | multiply_units_benchmarks
 |---------:|--------------------:|--------------------:|--------:|----------:|:--------------------------
-|   100.0% |                1.07 |      935,659,443.04 |    0.2% |      0.01 | `int8_t * int8_t`
-|   100.1% |                1.07 |      936,973,688.60 |    0.1% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
-|   100.0% |                1.14 |      876,992,986.35 |    2.8% |      0.01 | `int64_t * int64_t`
-|   102.6% |                1.11 |      900,088,684.10 |    0.5% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
-|   100.0% |                1.18 |      847,724,492.35 |    1.1% |      0.01 | `double * double`
-|   101.6% |                1.16 |      861,177,889.60 |    0.9% |      0.01 | `double_wrapping_type * double_wrapping_type`
-|   100.0% |                1.16 |      858,816,905.78 |    0.7% |      0.01 | `int64_t * double`
-|   103.9% |                1.12 |      892,148,795.72 |    0.3% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
-|   100.0% |                1.16 |      864,198,534.34 |    0.5% |      0.01 | `double * int64_t`
-|   100.8% |                1.15 |      871,442,195.18 |    0.0% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
+|   100.0% |                1.09 |      918,159,836.59 |    0.1% |      0.01 | `int8_t * int8_t`
+|    94.6% |                1.15 |      868,948,691.89 |    1.7% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
+|   100.0% |                1.18 |      849,982,844.03 |    3.3% |      0.01 | `int64_t * int64_t`
+|   103.0% |                1.14 |      875,246,576.62 |    0.2% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
+|   100.0% |                1.17 |      854,804,146.91 |    0.7% |      0.01 | `double * double`
+|    99.2% |                1.18 |      847,821,755.96 |    1.3% |      0.01 | `double_wrapping_type * double_wrapping_type`
+|   100.0% |                1.21 |      824,911,977.46 |    2.4% |      0.01 | `int64_t * double`
+|   103.8% |                1.17 |      856,030,938.92 |    0.9% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
+|   100.0% |                1.16 |      861,363,332.63 |    0.3% |      0.01 | `double * int64_t`
+|   100.0% |                1.16 |      861,143,204.33 |    1.2% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Multiply Units SIMD
 |---------:|--------------------:|--------------------:|--------:|----------:|:--------------------
-|   100.0% |               17.01 |       58,775,732.77 |    0.1% |      0.01 | `int8_t * int8_t`
-|   112.2% |               15.17 |       65,928,737.49 |    0.1% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
-|   100.0% |               32.27 |       30,991,241.15 |    0.0% |      0.01 | `int64_t * int64_t`
-|    99.8% |               32.32 |       30,939,652.19 |    0.2% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
-|   100.0% |               25.01 |       39,984,348.57 |    0.1% |      0.01 | `double * double`
-|    99.8% |               25.05 |       39,913,741.10 |    0.1% |      0.01 | `double_wrapping_type * double_wrapping_type`
-|   100.0% |               30.73 |       32,546,133.01 |    0.1% |      0.01 | `int64_t * double`
-|    93.5% |               32.85 |       30,445,439.22 |    0.2% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
-|   100.0% |               30.74 |       32,531,237.65 |    0.1% |      0.01 | `double * int64_t`
-|   100.0% |               30.73 |       32,540,315.41 |    0.1% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
+|   100.0% |                0.47 |    2,109,791,762.45 |    0.0% |      0.01 | `int8_t * int8_t`
+|   401.1% |                0.12 |    8,463,163,492.03 |    0.1% |      0.01 | `int8_t_wrapping_type * int8_t_wrapping_type`
+|   100.0% |                0.98 |    1,022,333,715.85 |    0.1% |      0.01 | `int64_t * int64_t`
+|   100.0% |                0.98 |    1,021,974,016.35 |    0.1% |      0.01 | `int64_t_wrapping_type * int64_t_wrapping_type`
+|   100.0% |                0.67 |    1,494,992,814.29 |    0.1% |      0.01 | `double * double`
+|   100.0% |                0.67 |    1,495,518,760.73 |    0.0% |      0.01 | `double_wrapping_type * double_wrapping_type`
+|   100.0% |                0.84 |    1,192,119,597.59 |    0.0% |      0.01 | `int64_t * double`
+|    99.7% |                0.84 |    1,188,772,183.14 |    0.3% |      0.01 | `int64_t_wrapping_type * double_wrapping_type`
+|   100.0% |                0.82 |    1,213,763,368.37 |    0.0% |      0.01 | `double * int64_t`
+|   100.0% |                0.82 |    1,213,527,378.71 |    0.0% |      0.01 | `double_wrapping_type * int64_t_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Divide Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:-------------
-|   100.0% |                1.86 |      537,004,260.90 |    0.1% |      0.01 | `int8_t / int8_t`
-|   100.0% |                1.86 |      537,010,040.37 |    0.0% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
-|   100.0% |                2.17 |      460,303,190.01 |    0.0% |      0.01 | `int64_t / int64_t`
-|   100.0% |                2.17 |      460,258,600.98 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
-|   100.0% |                1.40 |      714,971,460.49 |    0.1% |      0.01 | `double / double`
-|   100.0% |                1.40 |      714,967,119.62 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
-|   100.0% |                1.40 |      714,839,057.47 |    0.1% |      0.01 | `int64_t / double`
-|   100.0% |                1.40 |      714,811,335.30 |    0.1% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
-|   100.0% |                1.40 |      714,812,479.96 |    0.1% |      0.01 | `double / int64_t`
-|   100.0% |                1.40 |      714,777,440.86 |    0.1% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
+|   100.0% |                1.86 |      536,884,496.24 |    0.1% |      0.01 | `int8_t / int8_t`
+|   100.0% |                1.86 |      536,813,014.62 |    0.1% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
+|   100.0% |                2.18 |      459,739,876.14 |    0.2% |      0.01 | `int64_t / int64_t`
+|   100.1% |                2.17 |      460,052,845.43 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
+|   100.0% |                1.40 |      714,606,440.31 |    0.0% |      0.01 | `double / double`
+|   100.0% |                1.40 |      714,822,156.14 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
+|   100.0% |                1.40 |      714,650,866.18 |    0.0% |      0.01 | `int64_t / double`
+|   100.0% |                1.40 |      714,786,550.69 |    0.0% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
+|   100.0% |                1.69 |      590,600,196.31 |    1.7% |      0.01 | `double / int64_t`
+|   104.0% |                1.63 |      614,167,627.43 |    1.5% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
 
 | relative |               ns/op |                op/s |    err% |     total | Divide Units SIMD
 |---------:|--------------------:|--------------------:|--------:|----------:|:------------------
-|   100.0% |               59.39 |       16,837,881.95 |    0.0% |      0.01 | `int8_t / int8_t`
-|   100.0% |               59.40 |       16,833,902.89 |    0.0% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
-|   100.0% |               73.92 |       13,528,331.55 |    0.1% |      0.01 | `int64_t / int64_t`
-|   100.0% |               73.96 |       13,521,621.47 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
-|   100.0% |               29.66 |       33,714,674.34 |    0.2% |      0.01 | `double / double`
-|   100.7% |               29.47 |       33,938,540.25 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
-|   100.0% |               55.23 |       18,107,348.82 |    0.4% |      0.01 | `int64_t / double`
-|    97.0% |               56.95 |       17,559,258.75 |    0.2% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
-|   100.0% |               55.70 |       17,954,065.03 |    0.3% |      0.01 | `double / int64_t`
-|   100.3% |               55.55 |       18,002,628.31 |    0.2% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
+|   100.0% |                1.86 |      538,603,543.58 |    0.1% |      0.01 | `int8_t / int8_t`
+|   100.0% |                1.86 |      538,481,842.90 |    0.1% |      0.01 | `int8_t_wrapping_type / int8_t_wrapping_type`
+|   100.0% |                2.26 |      441,784,333.87 |    0.1% |      0.01 | `int64_t / int64_t`
+|   100.1% |                2.26 |      442,199,052.32 |    0.1% |      0.01 | `int64_t_wrapping_type / int64_t_wrapping_type`
+|   100.0% |                0.73 |    1,373,869,931.40 |    0.0% |      0.01 | `double / double`
+|    99.9% |                0.73 |    1,372,956,100.01 |    0.1% |      0.01 | `double_wrapping_type / double_wrapping_type`
+|   100.0% |                1.42 |      706,363,570.22 |    0.2% |      0.01 | `int64_t / double`
+|   100.0% |                1.42 |      706,604,742.43 |    0.1% |      0.01 | `int64_t_wrapping_type / double_wrapping_type`
+|   100.0% |                1.39 |      718,059,127.90 |    0.0% |      0.01 | `double / int64_t`
+|    99.9% |                1.39 |      717,468,235.71 |    0.0% |      0.01 | `double_wrapping_type / int64_t_wrapping_type`
 ```
 
 # Licensing
