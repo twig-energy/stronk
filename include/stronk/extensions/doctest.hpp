@@ -11,9 +11,7 @@ namespace twig
 {
 template<typename U>
 concept has_doctest_to_string = requires(U val) {
-    {
-        doctest::toString(val)
-    } -> std::same_as<doctest::String>;
+    { doctest::toString(val) } -> std::same_as<doctest::String>;
 };
 }  // namespace twig
 

@@ -102,8 +102,8 @@ struct unit
         {
             using converter = twig::ratio_divide<ScaleT, NewScaleT>;
             using result_value_t = scaled_t<NewScaleT>::template value<UnderlyingT>;
-            return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
-                                   / static_cast<UnderlyingT>(converter::den)};
+            return result_value_t {
+                this->val() * static_cast<UnderlyingT>(converter::num) / static_cast<UnderlyingT>(converter::den)};
         }
     };
 };
@@ -189,15 +189,15 @@ struct underlying_multiply_operation
         decltype(std::declval<typename T1::underlying_type>() * std::declval<typename T2::underlying_type>());
 
     STRONK_FORCEINLINE
-    constexpr static auto multiply(const typename T1::underlying_type& v1,
-                                   const typename T2::underlying_type& v2) noexcept -> res_type
+    constexpr static auto multiply(const typename T1::underlying_type& v1, const typename T2::underlying_type& v2)
+        -> res_type
     {
         return v1 * v2;
     }
 };
 
 template<unit_value_like A, unit_value_like B>
-STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b)
 {
     auto res = underlying_multiply_operation<A, B>::multiply(a.template unwrap<A>(), b.template unwrap<B>());
 
@@ -210,21 +210,21 @@ STRONK_FORCEINLINE constexpr auto operator*(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator*(const T& a, const B& b) noexcept -> B
+STRONK_FORCEINLINE constexpr auto operator*(const T& a, const B& b) -> B
 {
     return B {a * b.template unwrap<B>()};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator*(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator*(const A& a, const T& b) -> A
 {
     return A {a.template unwrap<A>() * b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator*=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator*=(A& a, const T& b) -> A&
 {
     a.template unwrap<A>() *= b;
     return a;
@@ -249,15 +249,15 @@ struct underlying_divide_operation
         decltype(std::declval<typename T1::underlying_type>() / std::declval<typename T2::underlying_type>());
 
     STRONK_FORCEINLINE
-    constexpr static auto divide(const typename T1::underlying_type& v1,
-                                 const typename T2::underlying_type& v2) noexcept -> res_type
+    constexpr static auto divide(const typename T1::underlying_type& v1, const typename T2::underlying_type& v2)
+        -> res_type
     {
         return v1 / v2;
     }
 };
 
 template<unit_value_like A, unit_value_like B>
-STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b)
 {
     auto res = underlying_divide_operation<A, B>::divide(a.template unwrap<A>(), b.template unwrap<B>());
 
@@ -270,7 +270,7 @@ STRONK_FORCEINLINE constexpr auto operator/(const A& a, const B& b) noexcept
 
 template<typename T, unit_value_like B>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator/(const T& a, const B& b) noexcept
+STRONK_FORCEINLINE constexpr auto operator/(const T& a, const B& b)
 {
     auto res = a / b.template unwrap<B>();
     using resulting_unit = divided_unit_t<identity_unit, typename B::unit_t>;
@@ -282,14 +282,14 @@ STRONK_FORCEINLINE constexpr auto operator/(const T& a, const B& b) noexcept
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator/(const A& a, const T& b) noexcept -> A
+STRONK_FORCEINLINE constexpr auto operator/(const A& a, const T& b) -> A
 {
     return A {a.template unwrap<A>() / b};
 }
 
 template<unit_value_like A, typename T>
     requires(!unit_value_like<T>)
-STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) noexcept -> A&
+STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) -> A&
 {
     a.template unwrap<A>() /= b;
     return a;

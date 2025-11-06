@@ -10,9 +10,7 @@ namespace twig
 
 template<typename T>
 concept is_stronk_and_can_ostream = stronk_like<T> && requires(T v, std::ostream& os) {
-    {
-        os << v.template unwrap<T>()
-    } -> std::same_as<std::ostream&>;
+    { os << v.template unwrap<T>() } -> std::same_as<std::ostream&>;
 };
 
 template<twig::is_stronk_and_can_ostream StronkT>

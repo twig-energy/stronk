@@ -23,7 +23,7 @@
             "inherits": [
                 "dev-common",
                 "ci-unix",
-                "clang-19"
+                "clang-21"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",

@@ -33,9 +33,7 @@ struct can_fmt_format
 
 template<typename T>
 concept can_special_fmt_format_like = stronk_like<T> && requires(T v) {
-    {
-        static_cast<std::string_view>(T::fmt_string)
-    } -> std::same_as<std::string_view>;
+    { static_cast<std::string_view>(T::fmt_string) } -> std::same_as<std::string_view>;
 };
 
 }  // namespace twig

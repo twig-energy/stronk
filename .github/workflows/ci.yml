@@ -45,10 +45,10 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Lint
-        run: cmake -D FORMAT_COMMAND=clang-format-19 -P cmake/lint.cmake
+        run: cmake -D FORMAT_COMMAND=clang-format-21 -P cmake/lint.cmake
 
       - name: Spell check
         if: always()
@@ -77,10 +77,10 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Install Build Wrapper
-        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -101,12 +101,12 @@ jobs:
         run: cmake --build build -t ccov-all -j 4
 
       - name: Run sonar-scanner
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define "sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
 
       - name: clang-tidy
         run: |
@@ -132,7 +132,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1
@@ -155,7 +155,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-24.04]
-        compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-19, clang-20]
+        compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-19, clang-20, clang-21]
         include:
           - os: windows-2022
             compiler: msvc
