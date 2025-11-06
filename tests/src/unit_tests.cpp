@@ -1,5 +1,6 @@
 #include <concepts>
 #include <cstdint>
+#include <stdexcept>
 
 #include "stronk/unit.hpp"
 
