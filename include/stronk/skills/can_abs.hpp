@@ -18,9 +18,7 @@ struct can_abs
 
 template<typename T>
 concept can_abs_like = stronk_like<T> && requires(T v) {
-    {
-        v.abs()
-    } -> std::same_as<T>;
+    { v.abs() } -> std::same_as<T>;
 };
 
 [[nodiscard]]

@@ -45,7 +45,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Lint
         run: cmake -D FORMAT_COMMAND=clang-format-21 -P cmake/lint.cmake
@@ -77,7 +77,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Install Build Wrapper
         uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
@@ -132,7 +132,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
         with:
-          version: "19"
+          version: "21"
 
       - name: Install vcpkg
         uses: friendlyanon/setup-vcpkg@v1

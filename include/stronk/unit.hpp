@@ -102,8 +102,8 @@ struct unit
         {
             using converter = twig::ratio_divide<ScaleT, NewScaleT>;
             using result_value_t = scaled_t<NewScaleT>::template value<UnderlyingT>;
-            return result_value_t {this->val() * static_cast<UnderlyingT>(converter::num)
-                                   / static_cast<UnderlyingT>(converter::den)};
+            return result_value_t {
+                this->val() * static_cast<UnderlyingT>(converter::num) / static_cast<UnderlyingT>(converter::den)};
         }
     };
 };

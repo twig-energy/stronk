@@ -35,9 +35,7 @@ struct can_isnan
 
 template<typename T>
 concept can_isnan_like = stronk_like<T> && requires(T v) {
-    {
-        v.isnan()
-    } -> std::same_as<bool>;
+    { v.isnan() } -> std::same_as<bool>;
 };
 
 [[nodiscard]]

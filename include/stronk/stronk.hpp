@@ -122,9 +122,7 @@ struct stronk : public Skills<Tag>...
 
 template<typename T>
 concept stronk_like = requires(T v) {
-    {
-        v.template unwrap<T>()
-    } -> std::convertible_to<typename T::underlying_type>;
+    { v.template unwrap<T>() } -> std::convertible_to<typename T::underlying_type>;
 };
 
 template<typename StronkT>
