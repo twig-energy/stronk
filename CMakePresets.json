@@ -121,7 +121,7 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_EXTENSIONS": "OFF",
-        "CMAKE_CXX_STANDARD": "21",
+        "CMAKE_CXX_STANDARD": "20",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON"
       }
     },
