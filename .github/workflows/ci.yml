@@ -101,12 +101,12 @@ jobs:
         run: cmake --build build -t ccov-all -j 4
 
       - name: Run sonar-scanner
-        uses: sonarsource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            "--define sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define "sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
 
       - name: clang-tidy
         run: |
