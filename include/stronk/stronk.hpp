@@ -130,7 +130,7 @@ concept stronk_like = requires(T v) {
 template<typename StronkT>
 struct can_negate
 {
-    STRONK_FORCEINLINE constexpr friend auto operator-(const StronkT& elem) noexcept -> StronkT
+    STRONK_FORCEINLINE constexpr friend auto operator-(const StronkT& elem) -> StronkT
     {
         return StronkT {-elem.template unwrap<StronkT>()};
     }
@@ -139,13 +139,13 @@ struct can_negate
 template<typename StronkT>
 struct can_add
 {
-    STRONK_FORCEINLINE constexpr friend auto operator+=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    STRONK_FORCEINLINE constexpr friend auto operator+=(StronkT& lhs, const StronkT& rhs) -> StronkT
     {
         lhs.template unwrap<StronkT>() += rhs.template unwrap<StronkT>();
         return lhs;
     }
 
-    STRONK_FORCEINLINE constexpr friend auto operator+(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    STRONK_FORCEINLINE constexpr friend auto operator+(const StronkT& lhs, const StronkT& rhs) -> StronkT
     {
         return StronkT {lhs.template unwrap<StronkT>() + rhs.template unwrap<StronkT>()};
     }
@@ -154,13 +154,13 @@ struct can_add
 template<typename StronkT>
 struct can_subtract
 {
-    STRONK_FORCEINLINE constexpr friend auto operator-=(StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    STRONK_FORCEINLINE constexpr friend auto operator-=(StronkT& lhs, const StronkT& rhs) -> StronkT
     {
         lhs.template unwrap<StronkT>() -= rhs.template unwrap<StronkT>();
         return lhs;
     }
 
-    STRONK_FORCEINLINE constexpr friend auto operator-(const StronkT& lhs, const StronkT& rhs) noexcept -> StronkT
+    STRONK_FORCEINLINE constexpr friend auto operator-(const StronkT& lhs, const StronkT& rhs) -> StronkT
     {
         return StronkT {lhs.template unwrap<StronkT>() - rhs.template unwrap<StronkT>()};
     }
@@ -169,7 +169,7 @@ struct can_subtract
 template<typename StronkT>
 struct can_equate
 {
-    STRONK_FORCEINLINE constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    STRONK_FORCEINLINE constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         static_assert(!std::is_floating_point_v<typename StronkT::underlying_type>);
         return lhs.template unwrap<StronkT>() == rhs.template unwrap<StronkT>();
@@ -179,11 +179,11 @@ struct can_equate
 template<typename StronkT>
 struct can_less_than_greater_than
 {
-    constexpr friend auto operator<(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    constexpr friend auto operator<(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         return lhs.template unwrap<StronkT>() < rhs.template unwrap<StronkT>();
     }
-    constexpr friend auto operator>(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    constexpr friend auto operator>(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         return lhs.template unwrap<StronkT>() > rhs.template unwrap<StronkT>();
     }
@@ -192,11 +192,11 @@ struct can_less_than_greater_than
 template<typename StronkT>
 struct can_less_than_greater_than_or_equal
 {
-    constexpr friend auto operator<=(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    constexpr friend auto operator<=(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         return lhs.template unwrap<StronkT>() <= rhs.template unwrap<StronkT>();
     }
-    constexpr friend auto operator>=(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    constexpr friend auto operator>=(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         return lhs.template unwrap<StronkT>() >= rhs.template unwrap<StronkT>();
     }
@@ -254,7 +254,7 @@ struct is_close_using_abs_tol_only_params
 template<typename StronkT, typename CloseParamsT>
 struct can_equate_with_is_close_base
 {
-    constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         return twig::stronk_details::almost_equals<CloseParamsT>(lhs, rhs);
     }
@@ -291,7 +291,7 @@ struct default_can_equate_builder<T>
 template<typename StronkT>
 struct can_equate_underlying_type_specific
 {
-    STRONK_FORCEINLINE constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) noexcept -> bool
+    STRONK_FORCEINLINE constexpr friend auto operator==(const StronkT& lhs, const StronkT& rhs) -> bool
     {
         if constexpr (std::is_floating_point_v<typename StronkT::underlying_type>) {
             return twig::stronk_details::almost_equals<is_close_using_abs_tol_only_params>(lhs, rhs);
@@ -307,7 +307,7 @@ struct can_order
     // note you probably also want the == operator either from can_equate or one
     // of the can_equate_with_is_close
 
-    STRONK_FORCEINLINE constexpr friend auto operator<=>(const StronkT& lhs, const StronkT& rhs) noexcept
+    STRONK_FORCEINLINE constexpr friend auto operator<=>(const StronkT& lhs, const StronkT& rhs)
     {
         return lhs.template unwrap<StronkT>() <=> rhs.template unwrap<StronkT>();
     }
@@ -317,12 +317,12 @@ template<typename StronkT>
 struct can_size
 {
     [[nodiscard]]
-    constexpr auto size() const noexcept -> std::size_t
+    constexpr auto size() const -> std::size_t
     {
         return static_cast<const StronkT&>(*this).template unwrap<StronkT>().size();
     }
     [[nodiscard]]
-    constexpr auto empty() const noexcept -> bool
+    constexpr auto empty() const -> bool
     {
         return this->size() == static_cast<std::size_t>(0);
     }

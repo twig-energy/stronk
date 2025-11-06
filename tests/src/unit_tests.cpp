@@ -423,6 +423,28 @@ TEST_SUITE("unit")
         constexpr auto val = make<meters, int>(1);
         static_assert(val == meters::value<int>(1));
     }
+
+    struct inner_throw_on_operations
+    {
+        auto operator/([[maybe_unused]] inner_throw_on_operations x) const -> inner_throw_on_operations
+        {
+            throw std::runtime_error("division by zero");
+        }
+        auto operator*([[maybe_unused]] inner_throw_on_operations x) const -> inner_throw_on_operations
+        {
+            throw std::runtime_error("division by zero");
+        }
+    };
+
+    TEST_CASE("throws inside multiply and divide can be caught")
+    {
+        // Previously the operations were noexcept so the exceptions could not be caught
+        auto unit_with_inner_throw = meters::value<inner_throw_on_operations>();
+        auto another_unit_with_inner_throw = meters::value<inner_throw_on_operations>();
+
+        CHECK_THROWS_AS(unit_with_inner_throw / another_unit_with_inner_throw, std::runtime_error);
+        CHECK_THROWS_AS(unit_with_inner_throw * another_unit_with_inner_throw, std::runtime_error);
+    }
 }
 
 }  // namespace twig
