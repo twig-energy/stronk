@@ -37,7 +37,7 @@
       "name": "clang-tidy",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy-17;--header-filter=^${sourceDir}/(include|tests|benchmarks)"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy-21;--header-filter=^${sourceDir}/(include|tests|benchmarks)"
       }
     },
     {
@@ -64,6 +64,19 @@
         "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-20",
         "LLVM_COV_COMMAND": "llvm-cov-20",
         "LLVM_PROFDATA_COMMAND": "llvm-profdata-20"
+      }
+    },
+    {
+      "name": "clang-21",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-21",
+        "CC": "clang-21"
+      },
+      "cacheVariables": {
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-21",
+        "LLVM_COV_COMMAND": "llvm-cov-21",
+        "LLVM_PROFDATA_COMMAND": "llvm-profdata-21"
       }
     },
     {
@@ -108,7 +121,7 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_EXTENSIONS": "OFF",
-        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD": "21",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON"
       }
     },
@@ -152,7 +165,7 @@
     {
       "name": "coverage-linux",
       "inherits": [
-        "clang-19",
+        "clang-21",
         "dev-mode",
         "ci-unix"
       ],
@@ -197,7 +210,7 @@
         "sanitize-unix",
         "dev-mode",
         "vcpkg",
-        "clang-19"
+        "clang-21"
       ]
     },
     {
@@ -284,6 +297,13 @@
       "inherits": [
         "ci-ubuntu",
         "clang-20"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-21",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-21"
       ]
     },
     {

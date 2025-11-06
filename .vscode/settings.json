@@ -1,10 +1,10 @@
 {
     "testMate.cpp.test.executables": "{build,Build,BUILD,out,Out,OUT}/**/*{test,Test,TEST,benchmark}*",
-    "clangd.path": "clangd-19",
+    "clangd.path": "clangd-21",
     "clangd.arguments": [
         "-compile-commands-dir=${workspaceFolder}/build"
     ],
-    "clang-format.executable": "clang-format-19",
+    "clang-format.executable": "clang-format-21",
     "files.associations": {
         "cctype": "cpp",
         "clocale": "cpp",
