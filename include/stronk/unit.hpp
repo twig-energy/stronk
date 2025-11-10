@@ -295,6 +295,30 @@ STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) -> A&
     return a;
 }
 
+template<unit_value_like T>
+auto log(T value) -> decltype(log(value.template unwrap<T>()))
+{
+    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
+    using std::log;  // ADL
+    return log(value.template unwrap<T>());
+}
+
+template<unit_value_like T>
+auto log2(T value) -> decltype(log(value.template unwrap<T>()))
+{
+    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
+    using std::log2;  // ADL
+    return log2(value.template unwrap<T>());
+}
+
+template<unit_value_like T>
+auto log10(T value) -> decltype(log(value.template unwrap<T>()))
+{
+    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
+    using std::log10;  // ADL
+    return log10(value.template unwrap<T>());
+}
+
 template<unit_like UnitT, typename UnderlyingT>
 constexpr auto make(UnderlyingT&& value)
 {

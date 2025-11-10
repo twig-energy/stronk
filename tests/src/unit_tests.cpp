@@ -448,4 +448,45 @@ TEST_SUITE("unit")
     }
 }
 
+TEST_SUITE("log")
+{
+    TEST_CASE("log can be called on unit values")
+    {
+        auto m = make<meters>(10.0);
+        auto result = log(m);
+        CHECK_EQ(result, std::log(10.0));
+    }
+
+    TEST_CASE("log can be called on unit values with different underlying types")
+    {
+        auto m_float = make<meters>(10.0F);
+        auto result_float = log(m_float);
+        CHECK_EQ(result_float, std::log(10.0F));
+
+        auto m_double = make<meters>(10.0);
+        auto result_double = log(m_double);
+        CHECK_EQ(result_double, std::log(10.0));
+    }
+
+    namespace
+    {
+    struct MySpecialLogFunction
+    {
+        int x;
+    };
+
+    auto log(MySpecialLogFunction value) -> auto
+    {
+        return value.x * 2;
+    }
+    }  // namespace
+
+    TEST_CASE("log uses ADL to find special log functions")
+    {
+        auto special_value = MySpecialLogFunction {5};
+        auto result = log(special_value);
+        CHECK_EQ(result, 10);
+    }
+}
+
 }  // namespace twig
