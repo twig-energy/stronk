@@ -333,26 +333,6 @@ constexpr auto sqrt(const UnitT& elem) -> auto
     return make<resulting_unit_t>(sqrt(elem.template unwrap<UnitT>()));
 }
 
-// template<auto RootV, unit_value_like UnitT>
-// constexpr auto root(const UnitT& elem) -> auto
-// {
-//     auto rooter = [](auto val) constexpr -> auto
-//     {
-//         for (auto i = 1; i <= val; ++i) {
-//             if (i * i == val) {
-//                 return i;
-//             }
-//         }
-//         throw std::runtime_error("Cannot take root of dimension with non-perfect power rank");
-//     };
-
-//     using scale_t = twig::ratio<rooter(UnitT::unit_t::scale_t::num), rooter(UnitT::unit_t::scale_t::den)>;
-//     using resulting_unit_t =
-//         twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<RootV>>::template unit_t<scale_t>;
-//     using std::pow;  // ADL
-//     return make<resulting_unit_t>(pow(elem.template unwrap<UnitT>(), 1.0 / RootV));
-// }
-
 template<int PowerV, unit_value_like UnitT>
 constexpr auto pow(const UnitT& elem) -> auto
 {
