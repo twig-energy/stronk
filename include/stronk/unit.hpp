@@ -313,26 +313,6 @@ constexpr auto make(UnderlyingT&& value)
     return unit_scaled_value_t<typename ScaleT::type, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
-template<unit_value_like UnitT>
-constexpr auto sqrt(const UnitT& elem) -> auto
-{
-    auto rooter = []<typename T>(T val) constexpr -> auto
-    {
-        for (auto i = T {0}; i <= val; ++i) {
-            if (i * i == val) {
-                return i;
-            }
-        }
-        throw std::runtime_error("Cannot take root of dimension with non-perfect power rank");
-    };
-
-    using scale_t = twig::ratio<rooter(UnitT::unit_t::scale_t::num), rooter(UnitT::unit_t::scale_t::den)>;
-    using resulting_unit_t =
-        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<2>>::template unit_t<scale_t>;
-    using std::sqrt;  // ADL
-    return make<resulting_unit_t>(sqrt(elem.template unwrap<UnitT>()));
-}
-
 template<int PowerV, unit_value_like UnitT>
 constexpr auto pow(const UnitT& elem) -> auto
 {

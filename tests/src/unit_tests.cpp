@@ -449,26 +449,6 @@ TEST_SUITE("unit")
         CHECK_THROWS_AS(unit_with_inner_throw * another_unit_with_inner_throw, std::runtime_error);
     }
 
-    TEST_CASE("sqrt works")
-    {
-        auto m2 = make<square_meters>(16.0);
-        auto m = sqrt(m2);
-        auto expected_m = make<meters>(4.0);
-        CHECK_EQ(m, expected_m);
-
-        // also for compose values
-        auto speed_sq = make<speed>(9.0) * make<speed>(9.0);
-        auto speed_val = sqrt(speed_sq);
-        auto expected_speed = make<speed>(9.0);
-        CHECK_EQ(speed_val, expected_speed);
-
-        // also works for scaled units
-        auto expected_km = make<twig::kilo, meters>(5.0);
-        auto km2 = expected_km * expected_km;
-        auto km = sqrt(km2);
-        CHECK_EQ(km, expected_km);
-    }
-
     TEST_CASE("Power is the same as multiplying the unit repeatedly")
     {
         auto m = make<meters>(2.0);
