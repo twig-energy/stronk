@@ -51,7 +51,6 @@ target_sources(
                    include/stronk/skills/can_index.hpp
                    include/stronk/skills/can_isnan.hpp
                    include/stronk/skills/can_iterate.hpp
-                   include/stronk/skills/can_log.hpp
                    include/stronk/skills/can_multiply.hpp
                    include/stronk/skills/can_stream.hpp
                    include/stronk/stronk.hpp
