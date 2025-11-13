@@ -61,6 +61,7 @@ constexpr auto isqrt(u_biggest_int_t n) -> u_biggest_int_t
     return result;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 constexpr auto pow(u_biggest_int_t base, unsigned int exp) -> u_biggest_int_t
 {
     auto result = base;
