@@ -6,6 +6,7 @@
 
 #include <doctest/doctest.h>
 
+#include "stronk/cmath.hpp"
 #include "stronk/stronk.hpp"
 
 namespace twig

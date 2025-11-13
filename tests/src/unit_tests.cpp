@@ -1,3 +1,4 @@
+#include <cmath>
 #include <concepts>
 #include <cstdint>
 #include <stdexcept>
@@ -36,6 +37,7 @@ struct kilograms : unit<kilograms, twig::ratio<1>, can_equate>
 
 using per_meter = divided_unit_t<identity_unit, meters>;
 using square_meters = multiplied_unit_t<meters, meters>;
+using meters_cubed = multiplied_unit_t<multiplied_unit_t<meters, meters>, meters>;
 using speed = divided_unit_t<meters, seconds>;
 using seconds_per_meter = divided_unit_t<seconds, meters>;
 using acceleration_m_per_s2 = divided_unit_t<speed, seconds>;
@@ -446,46 +448,39 @@ TEST_SUITE("unit")
         CHECK_THROWS_AS(unit_with_inner_throw / another_unit_with_inner_throw, std::runtime_error);
         CHECK_THROWS_AS(unit_with_inner_throw * another_unit_with_inner_throw, std::runtime_error);
     }
-}
 
-TEST_SUITE("log")
-{
-    TEST_CASE("log can be called on unit values")
+    TEST_CASE("sqrt works")
     {
-        auto m = make<meters>(10.0);
-        auto result = log(m);
-        CHECK_EQ(result, std::log(10.0));
+        auto m2 = make<square_meters>(16.0);
+        auto m = sqrt(m2);
+        auto expected_m = make<meters>(4.0);
+        CHECK_EQ(m, expected_m);
+
+        // also for compose values
+        auto speed_sq = make<speed>(9.0) * make<speed>(9.0);
+        auto speed_val = sqrt(speed_sq);
+        auto expected_speed = make<speed>(9.0);
+        CHECK_EQ(speed_val, expected_speed);
+
+        // also works for scaled units
+        auto expected_km = make<twig::kilo, meters>(5.0);
+        auto km2 = expected_km * expected_km;
+        auto km = sqrt(km2);
+        CHECK_EQ(km, expected_km);
     }
 
-    TEST_CASE("log can be called on unit values with different underlying types")
+    TEST_CASE("Power is the same as multiplying the unit repeatedly")
     {
-        auto m_float = make<meters>(10.0F);
-        auto result_float = log(m_float);
-        CHECK_EQ(result_float, std::log(10.0F));
+        auto m = make<meters>(2.0);
+        auto m4_via_pow = pow<4>(m);
+        auto m4_via_multiply = m * m * m * m;
+        CHECK_EQ(m4_via_pow, m4_via_multiply);
 
-        auto m_double = make<meters>(10.0);
-        auto result_double = log(m_double);
-        CHECK_EQ(result_double, std::log(10.0));
-    }
-
-    namespace
-    {
-    struct MySpecialLogFunction
-    {
-        int x;
-    };
-
-    auto log(MySpecialLogFunction value) -> auto
-    {
-        return value.x * 2;
-    }
-    }  // namespace
-
-    TEST_CASE("log uses ADL to find special log functions")
-    {
-        auto special_value = MySpecialLogFunction {5};
-        auto result = log(special_value);
-        CHECK_EQ(result, 10);
+        // now for scaled units
+        auto km = make<twig::kilo, meters>(2.0);
+        auto km3_via_pow = pow<3>(km);
+        auto km3_via_multiply = km * km * km;
+        CHECK_EQ(km3_via_pow, km3_via_multiply);
     }
 }
 

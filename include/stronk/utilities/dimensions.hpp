@@ -2,6 +2,7 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
 
 #include <boost/type_index/ctti_type_index.hpp>
 #include <stronk/utilities/constexpr_helpers.hpp>
@@ -30,6 +31,13 @@ struct dimension
     using subtract_t = dimension<UnitT, RankV - OtherDimT::rank>;
 
     using negate_t = dimension<UnitT, -RankV>;
+
+    template<auto RootV>
+        requires(RootV != 0) && (RankV % RootV == 0)
+    using root_t = dimension<UnitT, RankV / RootV>;
+
+    template<auto PowerV>
+    using power_t = dimension<UnitT, RankV * PowerV>;
 };
 
 namespace details
@@ -151,6 +159,12 @@ struct dimensions
     }
     template<typename OtherDimensionsT>
     using divide_t = decltype(divide(OtherDimensionsT {}));
+
+    template<auto RootV>
+    using root_t = dimensions<typename Ts::template root_t<RootV>...>;
+
+    template<auto PowerV>
+    using power_t = dimensions<typename Ts::template power_t<PowerV>...>;
 };
 
 template<typename... ExistingDimTs>

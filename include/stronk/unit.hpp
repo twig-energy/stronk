@@ -1,5 +1,7 @@
 #pragma once
+#include <cmath>
 #include <concepts>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
@@ -295,30 +297,6 @@ STRONK_FORCEINLINE constexpr auto operator/=(A& a, const T& b) -> A&
     return a;
 }
 
-template<unit_value_like T>
-auto log(T value) -> decltype(log(value.template unwrap<T>()))
-{
-    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
-    using std::log;  // ADL
-    return log(value.template unwrap<T>());
-}
-
-template<unit_value_like T>
-auto log2(T value) -> decltype(log(value.template unwrap<T>()))
-{
-    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
-    using std::log2;  // ADL
-    return log2(value.template unwrap<T>());
-}
-
-template<unit_value_like T>
-auto log10(T value) -> decltype(log(value.template unwrap<T>()))
-{
-    // In physics log removes the unit dimension, so the return type is just the underlying type's log return type
-    using std::log10;  // ADL
-    return log10(value.template unwrap<T>());
-}
-
 template<unit_like UnitT, typename UnderlyingT>
 constexpr auto make(UnderlyingT&& value)
 {
@@ -333,6 +311,66 @@ constexpr auto make(UnderlyingT&& value)
     static_assert(UnitT::dimensions_t::first_t::rank == 1, "this function is ambiguous for none rank 1");
 
     return unit_scaled_value_t<typename ScaleT::type, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
+}
+
+template<unit_value_like UnitT>
+constexpr auto sqrt(const UnitT& elem) -> auto
+{
+    auto rooter = []<typename T>(T val) constexpr -> auto
+    {
+        for (auto i = T {0}; i <= val; ++i) {
+            if (i * i == val) {
+                return i;
+            }
+        }
+        throw std::runtime_error("Cannot take root of dimension with non-perfect power rank");
+    };
+
+    using scale_t = twig::ratio<rooter(UnitT::unit_t::scale_t::num), rooter(UnitT::unit_t::scale_t::den)>;
+    using resulting_unit_t =
+        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<2>>::template unit_t<scale_t>;
+    using std::sqrt;  // ADL
+    return make<resulting_unit_t>(sqrt(elem.template unwrap<UnitT>()));
+}
+
+// template<auto RootV, unit_value_like UnitT>
+// constexpr auto root(const UnitT& elem) -> auto
+// {
+//     auto rooter = [](auto val) constexpr -> auto
+//     {
+//         for (auto i = 1; i <= val; ++i) {
+//             if (i * i == val) {
+//                 return i;
+//             }
+//         }
+//         throw std::runtime_error("Cannot take root of dimension with non-perfect power rank");
+//     };
+
+//     using scale_t = twig::ratio<rooter(UnitT::unit_t::scale_t::num), rooter(UnitT::unit_t::scale_t::den)>;
+//     using resulting_unit_t =
+//         twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<RootV>>::template unit_t<scale_t>;
+//     using std::pow;  // ADL
+//     return make<resulting_unit_t>(pow(elem.template unwrap<UnitT>(), 1.0 / RootV));
+// }
+
+template<int PowerV, unit_value_like UnitT>
+constexpr auto pow(const UnitT& elem) -> auto
+{
+    auto power = [](auto val) constexpr -> auto
+    {
+        auto res = val;
+        for (int i = 1; i < PowerV; ++i) {
+            res *= val;
+        }
+        return res;
+    };
+    using scale_t = twig::ratio<power(UnitT::unit_t::scale_t::num), power(UnitT::unit_t::scale_t::den)>::type;
+    using resulting_unit_t =
+        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template power_t<PowerV>>::template unit_t<scale_t>;
+    using std::pow;
+    auto res = pow(elem.template unwrap<UnitT>(), static_cast<double>(PowerV));
+    using res_unit_value_t = resulting_unit_t::template value<decltype(res)>;
+    return res_unit_value_t {res};
 }
 
 }  // namespace twig
