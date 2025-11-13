@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <stdexcept>
 namespace twig
 {
 namespace stronk_details
@@ -51,6 +52,11 @@ constexpr auto isqrt(u_biggest_int_t n) -> u_biggest_int_t
         } else {
             right = mid - 1;
         }
+    }
+
+    if (result * result != n) {
+        throw std::runtime_error(
+            "Square root has to be an integer for ratios, otherwise scale cannot be represented exactly.");
     }
     return result;
 }

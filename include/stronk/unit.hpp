@@ -1,7 +1,6 @@
 #pragma once
 #include <cmath>
 #include <concepts>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
