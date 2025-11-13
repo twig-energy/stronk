@@ -313,18 +313,20 @@ constexpr auto make(UnderlyingT&& value)
     return unit_scaled_value_t<typename ScaleT::type, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
 }
 
+template<unit_value_like UnitT>
+constexpr auto sqrt(const UnitT& elem) -> auto
+{
+    using scale_t = ratio_sqrt<typename UnitT::unit_t::scale_t>;
+    using resulting_unit_t =
+        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<2>>::template unit_t<scale_t>;
+    using std::sqrt;  // ADL
+    return make<resulting_unit_t>(sqrt(elem.template unwrap<UnitT>()));
+}
+
 template<int PowerV, unit_value_like UnitT>
 constexpr auto pow(const UnitT& elem) -> auto
 {
-    auto power = [](auto val) constexpr -> auto
-    {
-        auto res = val;
-        for (int i = 1; i < PowerV; ++i) {
-            res *= val;
-        }
-        return res;
-    };
-    using scale_t = twig::ratio<power(UnitT::unit_t::scale_t::num), power(UnitT::unit_t::scale_t::den)>::type;
+    using scale_t = twig::ratio_pow<typename UnitT::unit_t::scale_t, PowerV>;
     using resulting_unit_t =
         twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template power_t<PowerV>>::template unit_t<scale_t>;
     using std::pow;

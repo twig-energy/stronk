@@ -449,7 +449,7 @@ TEST_SUITE("unit")
         CHECK_THROWS_AS(unit_with_inner_throw * another_unit_with_inner_throw, std::runtime_error);
     }
 
-    TEST_CASE("Power is the same as multiplying the unit repeatedly")
+    TEST_CASE("pow is the same as multiplying the unit repeatedly")
     {
         auto m = make<meters>(2.0);
         auto m4_via_pow = pow<4>(m);
@@ -461,6 +461,55 @@ TEST_SUITE("unit")
         auto km3_via_pow = pow<3>(km);
         auto km3_via_multiply = km * km * km;
         CHECK_EQ(km3_via_pow, km3_via_multiply);
+
+        auto micro_meters = make<twig::micro, meters>(2.0);
+        auto um2_via_pow = pow<2>(micro_meters);
+        auto um2_via_multiply = micro_meters * micro_meters;
+        CHECK_EQ(um2_via_pow, um2_via_multiply);
+
+        // for composed units
+        auto speed_val = make<speed>(3.0);
+        auto speed2_via_pow = pow<2>(speed_val);
+        auto speed2_via_multiply = speed_val * speed_val;
+        CHECK_EQ(speed2_via_pow, speed2_via_multiply);
+    }
+
+    TEST_CASE("sqrt works correctly")
+    {
+        auto m = make<meters>(4.0);
+        auto m4 = m * m * m * m;
+        auto m2_via_sqrt = sqrt(m4);
+        auto m2_via_multiply = m * m;
+        CHECK_EQ(m2_via_sqrt, m2_via_multiply);
+        auto m_from_sqrt = sqrt(m2_via_sqrt);
+        CHECK_EQ(m_from_sqrt, m);
+
+        // now for scaled units
+        auto km = make<twig::kilo, meters>(4.0);
+        auto km4 = km * km * km * km;
+        auto km2_via_sqrt = sqrt(km4);
+        auto km2_via_multiply = km * km;
+        CHECK_EQ(km2_via_sqrt, km2_via_multiply);
+        auto km_from_sqrt = sqrt(km2_via_sqrt);
+        CHECK_EQ(km_from_sqrt, km);
+
+        // micro meters
+        auto micro_meters = make<twig::micro, meters>(4.0);
+        auto micro_meters4 = micro_meters * micro_meters * micro_meters * micro_meters;
+        auto micro_meters2_via_sqrt = sqrt(micro_meters4);
+        auto micro_meters2_via_multiply = micro_meters * micro_meters;
+        CHECK_EQ(micro_meters2_via_sqrt, micro_meters2_via_multiply);
+        auto micro_meters_from_sqrt = sqrt(micro_meters2_via_sqrt);
+        CHECK_EQ(micro_meters_from_sqrt, micro_meters);
+
+        // for composed units
+        auto s = make<speed>(9.0);
+        auto speed4 = s * s * s * s;
+        auto speed2_via_sqrt = sqrt(speed4);
+        auto speed2_via_multiply = s * s;
+        CHECK_EQ(speed2_via_sqrt, speed2_via_multiply);
+        auto speed_from_sqrt = sqrt(speed2_via_sqrt);
+        CHECK_EQ(speed_from_sqrt, s);
     }
 }
 
