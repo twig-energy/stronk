@@ -38,9 +38,9 @@ constexpr auto isqrt(u_biggest_int_t n) -> u_biggest_int_t
         return n;
     }
 
-    u_biggest_int_t left = 1;
-    u_biggest_int_t right = n;
-    u_biggest_int_t result = 0;
+    auto left = u_biggest_int_t {1};
+    auto right = n;
+    auto result = u_biggest_int_t {0};
 
     while (left <= right) {
         auto mid = left + ((right - left) / 2);

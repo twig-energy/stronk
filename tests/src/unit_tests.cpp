@@ -493,14 +493,14 @@ TEST_SUITE("unit")
         auto km_from_sqrt = sqrt(km2_via_sqrt);
         CHECK_EQ(km_from_sqrt, km);
 
-        // micro meters
-        auto micro_meters = make<twig::micro, meters>(4.0);
-        auto micro_meters4 = micro_meters * micro_meters * micro_meters * micro_meters;
-        auto micro_meters2_via_sqrt = sqrt(micro_meters4);
-        auto micro_meters2_via_multiply = micro_meters * micro_meters;
-        CHECK_EQ(micro_meters2_via_sqrt, micro_meters2_via_multiply);
-        auto micro_meters_from_sqrt = sqrt(micro_meters2_via_sqrt);
-        CHECK_EQ(micro_meters_from_sqrt, micro_meters);
+        // milli meters
+        auto milli_meters = make<twig::milli, meters>(4.0);
+        auto milli_meters4 = milli_meters * milli_meters * milli_meters * milli_meters;
+        auto milli_meters2_via_sqrt = sqrt(milli_meters4);
+        auto milli_meters2_via_multiply = milli_meters * milli_meters;
+        CHECK_EQ(milli_meters2_via_sqrt, milli_meters2_via_multiply);
+        auto milli_meters_from_sqrt = sqrt(milli_meters2_via_sqrt);
+        CHECK_EQ(milli_meters_from_sqrt, milli_meters);
 
         // for composed units
         auto s = make<speed>(9.0);
