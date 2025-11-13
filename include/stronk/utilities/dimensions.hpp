@@ -2,7 +2,6 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <stdexcept>
 
 #include <boost/type_index/ctti_type_index.hpp>
 #include <stronk/utilities/constexpr_helpers.hpp>

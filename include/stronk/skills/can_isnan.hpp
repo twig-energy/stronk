@@ -1,6 +1,5 @@
 #pragma once
 #include <cmath>
-#include <concepts>
 #include <limits>
 #include <type_traits>
 
