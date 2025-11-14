@@ -12,8 +12,7 @@ struct [[deprecated("twig::abs now just works for all stronk types which support
     [[nodiscard]]
     constexpr auto abs() const noexcept -> StronkT
     {
-        using twig::abs;
-        return StronkT {abs(static_cast<const StronkT&>(*this))};
+        return StronkT {twig::abs(static_cast<const StronkT&>(*this))};
     }
 };
 
