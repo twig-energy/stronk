@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 
 #include "stronk/cmath.hpp"
 
@@ -145,6 +146,20 @@ TEST_SUITE("log10")
         for (auto i = 1; i <= 1000; i++) {
             CHECK_EQ(T {U {std::log10(static_cast<double>(i)) - 3.0}}, twig::log10(T {U {static_cast<double>(i)}}));
         }
+    }
+}
+
+TEST_SUITE("isnan")
+{
+    TEST_CASE("isnan works")
+    {
+        CHECK_FALSE(twig::isnan(a_stronk_type {0.F}));
+        CHECK_FALSE(twig::isnan(a_stronk_type {1.F}));
+        CHECK_FALSE(twig::isnan(a_stronk_type {-1.1F}));
+        CHECK(twig::isnan(a_stronk_type {std::numeric_limits<float>::quiet_NaN()}));
+        CHECK(twig::isnan(a_stronk_type {-std::numeric_limits<float>::quiet_NaN()}));
+        CHECK(twig::isnan(a_stronk_type {std::numeric_limits<float>::signaling_NaN()}));
+        CHECK(twig::isnan(a_stronk_type {-std::numeric_limits<float>::signaling_NaN()}));
     }
 }
 

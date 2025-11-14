@@ -3,6 +3,8 @@
 #include <limits>
 #include <type_traits>
 
+#include "stronk/cmath.hpp"
+
 namespace twig
 {
 
@@ -13,7 +15,7 @@ struct can_isnan
     constexpr auto isnan() const noexcept -> bool
     {
         static_assert(std::is_floating_point_v<typename StronkT::underlying_type>);
-        return isnan(static_cast<const StronkT&>(*this));
+        return twig::isnan(static_cast<const StronkT&>(*this));
     }
 
     [[nodiscard]]
