@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <stdexcept>
 namespace twig
 {
 namespace stronk_details
@@ -29,13 +30,56 @@ constexpr auto gcd(const auto& self, const auto& other) -> auto
     }
     return a;
 }
+
+// Compile-time integer square root using binary search
+// https://baptiste-wicht.com/posts/2014/07/compile-integer-square-roots-at-compile-time-in-cpp.html
+constexpr auto isqrt(u_biggest_int_t n) -> u_biggest_int_t
+{
+    if (n == 0 || n == 1) {
+        return n;
+    }
+
+    auto left = u_biggest_int_t {1};
+    auto right = n;
+    auto result = u_biggest_int_t {0};
+
+    while (left <= right) {
+        auto mid = left + ((right - left) / 2);
+
+        // Check if mid*mid <= n (avoid overflow by using division)
+        if (mid <= n / mid) {
+            result = mid;
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    if (result * result != n) {
+        throw std::runtime_error(
+            "Square root has to be an integer for ratios, otherwise scale cannot be represented exactly.");
+    }
+    return result;
+}
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+constexpr auto pow(u_biggest_int_t base, unsigned int exp) -> u_biggest_int_t
+{
+    auto result = base;
+    for (auto i = u_biggest_int_t {1}; i < exp; ++i) {
+        result *= base;
+    }
+    return result;
+}
+
 }  // namespace stronk_details
 
-template<stronk_details::u_biggest_int_t Num, stronk_details::u_biggest_int_t Den = stronk_details::u_biggest_int_t {1}>
+template<stronk_details::u_biggest_int_t NumV,
+         stronk_details::u_biggest_int_t DenV = stronk_details::u_biggest_int_t {1}>
 struct ratio
 {
-    constexpr static stronk_details::u_biggest_int_t num = Num / stronk_details::gcd(Num, Den);
-    constexpr static stronk_details::u_biggest_int_t den = Den / stronk_details::gcd(Num, Den);
+    constexpr static stronk_details::u_biggest_int_t num = NumV / stronk_details::gcd(NumV, DenV);
+    constexpr static stronk_details::u_biggest_int_t den = DenV / stronk_details::gcd(NumV, DenV);
 
     using type = ratio<num, den>;
 };
@@ -46,6 +90,14 @@ using ratio_multiply =
 
 template<typename Ratio1, typename Ratio2>
 using ratio_divide = typename ratio<Ratio1::type::num * Ratio2::type::den, Ratio1::type::den * Ratio2::type::num>::type;
+
+template<typename RatioT>
+using ratio_sqrt =
+    typename ratio<stronk_details::isqrt(RatioT::type::num), stronk_details::isqrt(RatioT::type::den)>::type;
+
+template<typename RatioT, int ExponentV>
+using ratio_pow = typename ratio<stronk_details::pow(RatioT::type::num, ExponentV),
+                                 stronk_details::pow(RatioT::type::den, ExponentV)>::type;
 
 using atto = ratio<1, 1000000000000000000>;
 using femto = ratio<1, 1000000000000000>;

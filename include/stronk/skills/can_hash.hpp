@@ -1,22 +1,22 @@
 #pragma once
-#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <type_traits>
+
+#include "stronk/stronk.hpp"
 
 namespace twig
 {
 
 template<typename StronkT>
-struct can_hash
+struct [[deprecated("std::hash<T> now just works for all stronk types which can be hashed")]] can_hash
 {
     using can_hash_indicator = std::true_type;
 };
-template<typename StronkT>
-concept can_hash_like = std::same_as<typename StronkT::can_hash_indicator, std::true_type>;
 
 }  // namespace twig
-template<twig::can_hash_like T>
+
+template<twig::stronk_like T>
 struct std::hash<T>  // NOLINT(cert-dcl58-cpp) std::hash is exempt from this rule
 {
     [[nodiscard]]

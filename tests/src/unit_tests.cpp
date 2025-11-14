@@ -1,3 +1,4 @@
+#include <cmath>
 #include <concepts>
 #include <cstdint>
 #include <stdexcept>
@@ -7,6 +8,7 @@
 #include <doctest/doctest.h>
 #include <fmt/format.h>
 
+#include "stronk/cmath.hpp"
 #include "stronk/stronk.hpp"
 #include "stronk/utilities/ratio.hpp"
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
@@ -36,6 +38,7 @@ struct kilograms : unit<kilograms, twig::ratio<1>, can_equate>
 
 using per_meter = divided_unit_t<identity_unit, meters>;
 using square_meters = multiplied_unit_t<meters, meters>;
+using meters_cubed = multiplied_unit_t<multiplied_unit_t<meters, meters>, meters>;
 using speed = divided_unit_t<meters, seconds>;
 using seconds_per_meter = divided_unit_t<seconds, meters>;
 using acceleration_m_per_s2 = divided_unit_t<speed, seconds>;
@@ -445,6 +448,69 @@ TEST_SUITE("unit")
 
         CHECK_THROWS_AS(unit_with_inner_throw / another_unit_with_inner_throw, std::runtime_error);
         CHECK_THROWS_AS(unit_with_inner_throw * another_unit_with_inner_throw, std::runtime_error);
+    }
+
+    TEST_CASE("pow is the same as multiplying the unit repeatedly")
+    {
+        auto m = make<meters>(2.0);
+        auto m4_via_pow = pow<4>(m);
+        auto m4_via_multiply = m * m * m * m;
+        CHECK_EQ(m4_via_pow, m4_via_multiply);
+
+        // now for scaled units
+        auto km = make<twig::kilo, meters>(2.0);
+        auto km3_via_pow = pow<3>(km);
+        auto km3_via_multiply = km * km * km;
+        CHECK_EQ(km3_via_pow, km3_via_multiply);
+
+        auto micro_meters = make<twig::micro, meters>(2.0);
+        auto um2_via_pow = pow<2>(micro_meters);
+        auto um2_via_multiply = micro_meters * micro_meters;
+        CHECK_EQ(um2_via_pow, um2_via_multiply);
+
+        // for composed units
+        auto speed_val = make<speed>(3.0);
+        auto speed2_via_pow = pow<2>(speed_val);
+        auto speed2_via_multiply = speed_val * speed_val;
+        CHECK_EQ(speed2_via_pow, speed2_via_multiply);
+    }
+
+    TEST_CASE("sqrt works correctly")
+    {
+        auto m = make<meters>(4.0);
+        auto m4 = m * m * m * m;
+        auto m2_via_sqrt = sqrt(m4);
+        auto m2_via_multiply = m * m;
+        CHECK_EQ(m2_via_sqrt, m2_via_multiply);
+        auto m_from_sqrt = sqrt(m2_via_sqrt);
+        CHECK_EQ(m_from_sqrt, m);
+
+        // now for scaled units
+        auto km = make<twig::kilo, meters>(4.0);
+        auto km4 = km * km * km * km;
+        auto km2_via_sqrt = sqrt(km4);
+        auto km2_via_multiply = km * km;
+        CHECK_EQ(km2_via_sqrt, km2_via_multiply);
+        auto km_from_sqrt = sqrt(km2_via_sqrt);
+        CHECK_EQ(km_from_sqrt, km);
+
+        // milli meters
+        auto milli_meters = make<twig::milli, meters>(4.0);
+        auto milli_meters4 = milli_meters * milli_meters * milli_meters * milli_meters;
+        auto milli_meters2_via_sqrt = sqrt(milli_meters4);
+        auto milli_meters2_via_multiply = milli_meters * milli_meters;
+        CHECK_EQ(milli_meters2_via_sqrt, milli_meters2_via_multiply);
+        auto milli_meters_from_sqrt = sqrt(milli_meters2_via_sqrt);
+        CHECK_EQ(milli_meters_from_sqrt, milli_meters);
+
+        // for composed units
+        auto s = make<speed>(9.0);
+        auto speed4 = s * s * s * s;
+        auto speed2_via_sqrt = sqrt(speed4);
+        auto speed2_via_multiply = s * s;
+        CHECK_EQ(speed2_via_sqrt, speed2_via_multiply);
+        auto speed_from_sqrt = sqrt(speed2_via_sqrt);
+        CHECK_EQ(speed_from_sqrt, s);
     }
 }
 
