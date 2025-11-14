@@ -21,20 +21,24 @@ struct dimension
     constexpr static auto rank = RankV;
     using unit_t = UnitT;
 
+    // Since dimension ranks are "exponents" we have:  unit^6 * unit^3 = unit^(6+3) = unit^9
     template<typename OtherDimT>
         requires std::same_as<UnitT, typename OtherDimT::unit_t>
-    using add_t = dimension<UnitT, RankV + OtherDimT::rank>;
+    using multiply_t = dimension<UnitT, RankV + OtherDimT::rank>;
 
+    // Since dimension ranks are "exponents" we have:  unit^6 / unit^3 = unit^(6-3) = unit^3
     template<typename OtherDimT>
         requires std::same_as<UnitT, typename OtherDimT::unit_t>
-    using subtract_t = dimension<UnitT, RankV - OtherDimT::rank>;
+    using divide_t = dimension<UnitT, RankV - OtherDimT::rank>;
 
     using negate_t = dimension<UnitT, -RankV>;
 
+    // Since dimension ranks are "exponents" we have:  sqrt(unit^6) = (unit^6)^(1/2) = unit^(6/2)
     template<auto RootV>
         requires(RootV != 0) && (RankV % RootV == 0)
     using root_t = dimension<UnitT, RankV / RootV>;
 
+    // Since dimension ranks are "exponents" we have:  pow(unit^6, 3) = (unit^6)^3 = unit^(6*3)
     template<auto PowerV>
     using power_t = dimension<UnitT, RankV * PowerV>;
 };
@@ -89,7 +93,7 @@ struct dimensions_merge<A, As...>
             ctti_type_index::type_id<typename A::unit_t>().before(ctti_type_index::type_id<typename B::unit_t>());
 
         if constexpr (a_equals_b) {
-            using new_dim = typename A::template add_t<B>;
+            using new_dim = typename A::template multiply_t<B>;
             if constexpr (new_dim::rank == 0) {
                 // The combination of the two dimensions results in a dimension with rank 0, so we can remove it
                 return dimensions_merge<As...>::template merge<AccumulatedDimensionListT, Bs...>();
@@ -175,6 +179,7 @@ auto create(dimensions<ExistingDimTs...> dim)
 template<typename... ExistingDimTs, dimension_like Dim, dimension_like... DimTs>
 auto create(dimensions<ExistingDimTs...> dims, [[maybe_unused]] Dim dim_for_type_deduction, DimTs... rest)
 {
+    // Insert each template dimension, merging as we go - this ensures order and uniqueness
     return create(dims.multiply(details::dimensions<Dim> {}), rest...);
 }
 

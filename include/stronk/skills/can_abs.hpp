@@ -7,7 +7,7 @@ namespace twig
 {
 
 template<typename StronkT>
-struct can_abs
+struct [[deprecated("twig::abs now just works for all stronk types which support abs")]] can_abs
 {
     [[nodiscard]]
     constexpr auto abs() const noexcept -> StronkT

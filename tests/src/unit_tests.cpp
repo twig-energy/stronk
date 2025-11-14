@@ -8,6 +8,7 @@
 #include <doctest/doctest.h>
 #include <fmt/format.h>
 
+#include "stronk/cmath.hpp"
 #include "stronk/stronk.hpp"
 #include "stronk/utilities/ratio.hpp"
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)

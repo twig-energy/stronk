@@ -32,6 +32,7 @@ constexpr auto gcd(const auto& self, const auto& other) -> auto
 }
 
 // Compile-time integer square root using binary search
+// https://baptiste-wicht.com/posts/2014/07/compile-integer-square-roots-at-compile-time-in-cpp.html
 constexpr auto isqrt(u_biggest_int_t n) -> u_biggest_int_t
 {
     if (n == 0 || n == 1) {
@@ -73,11 +74,12 @@ constexpr auto pow(u_biggest_int_t base, unsigned int exp) -> u_biggest_int_t
 
 }  // namespace stronk_details
 
-template<stronk_details::u_biggest_int_t Num, stronk_details::u_biggest_int_t Den = stronk_details::u_biggest_int_t {1}>
+template<stronk_details::u_biggest_int_t NumV,
+         stronk_details::u_biggest_int_t DenV = stronk_details::u_biggest_int_t {1}>
 struct ratio
 {
-    constexpr static stronk_details::u_biggest_int_t num = Num / stronk_details::gcd(Num, Den);
-    constexpr static stronk_details::u_biggest_int_t den = Den / stronk_details::gcd(Num, Den);
+    constexpr static stronk_details::u_biggest_int_t num = NumV / stronk_details::gcd(NumV, DenV);
+    constexpr static stronk_details::u_biggest_int_t den = DenV / stronk_details::gcd(NumV, DenV);
 
     using type = ratio<num, den>;
 };
@@ -93,9 +95,9 @@ template<typename RatioT>
 using ratio_sqrt =
     typename ratio<stronk_details::isqrt(RatioT::type::num), stronk_details::isqrt(RatioT::type::den)>::type;
 
-template<typename RatioT, int PowerV>
-using ratio_pow = typename ratio<stronk_details::pow(RatioT::type::num, PowerV),
-                                 stronk_details::pow(RatioT::type::den, PowerV)>::type;
+template<typename RatioT, int ExponentV>
+using ratio_pow = typename ratio<stronk_details::pow(RatioT::type::num, ExponentV),
+                                 stronk_details::pow(RatioT::type::den, ExponentV)>::type;
 
 using atto = ratio<1, 1000000000000000000>;
 using femto = ratio<1, 1000000000000000>;

@@ -1,5 +1,4 @@
 #pragma once
-#include <cmath>
 #include <concepts>
 #include <type_traits>
 #include <utility>
@@ -310,28 +309,6 @@ constexpr auto make(UnderlyingT&& value)
     static_assert(UnitT::dimensions_t::first_t::rank == 1, "this function is ambiguous for none rank 1");
 
     return unit_scaled_value_t<typename ScaleT::type, UnitT, UnderlyingT> {std::forward<UnderlyingT>(value)};
-}
-
-template<unit_value_like UnitT>
-constexpr auto sqrt(const UnitT& elem) -> auto
-{
-    using scale_t = ratio_sqrt<typename UnitT::unit_t::scale_t>;
-    using resulting_unit_t =
-        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template root_t<2>>::template unit_t<scale_t>;
-    using std::sqrt;  // ADL
-    return make<resulting_unit_t>(sqrt(elem.template unwrap<UnitT>()));
-}
-
-template<int PowerV, unit_value_like UnitT>
-constexpr auto pow(const UnitT& elem) -> auto
-{
-    using scale_t = twig::ratio_pow<typename UnitT::unit_t::scale_t, PowerV>;
-    using resulting_unit_t =
-        twig::unit_lookup<typename UnitT::unit_t::dimensions_t::template power_t<PowerV>>::template unit_t<scale_t>;
-    using std::pow;
-    auto res = pow(elem.template unwrap<UnitT>(), static_cast<double>(PowerV));
-    using res_unit_value_t = resulting_unit_t::template value<decltype(res)>;
-    return res_unit_value_t {res};
 }
 
 }  // namespace twig

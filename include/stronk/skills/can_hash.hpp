@@ -8,9 +8,8 @@
 namespace twig
 {
 
-// Deprecated, no need to add as a skill anymore
 template<typename StronkT>
-struct can_hash
+struct [[deprecated("std::hash<T> now just works for all stronk types which can be hashed")]] can_hash
 {
     using can_hash_indicator = std::true_type;
 };
