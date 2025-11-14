@@ -21,6 +21,7 @@ find_package(doctest CONFIG REQUIRED)
 # ---- Tests ----
 add_executable(
     stronk_test
+    src/cmath_tests.cpp
     src/extensions/absl_tests.cpp
     src/extensions/doctest_tests.cpp
     src/extensions/fmt_tests.cpp
@@ -32,7 +33,6 @@ add_executable(
     src/prefabs/stronk_flag_tests.cpp
     src/prefabs/stronk_string_tests.cpp
     src/prefabs/stronk_vector_tests.cpp
-    src/skills/can_abs_tests.cpp
     src/skills/can_decrement_tests.cpp
     src/skills/can_divide_tests.cpp
     src/skills/can_format_tests.cpp

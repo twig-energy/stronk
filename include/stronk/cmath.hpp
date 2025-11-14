@@ -10,7 +10,7 @@ namespace twig
 
 template<stronk_like StronkT>
     requires(!unit_value_like<StronkT>)  // units should divide by T(1) first
-auto log(StronkT value) -> decltype(log(value.template unwrap<StronkT>()))
+auto log(StronkT value) -> StronkT
 {
     using std::log;  // ADL
     return StronkT {log(value.template unwrap<StronkT>())};
@@ -18,7 +18,7 @@ auto log(StronkT value) -> decltype(log(value.template unwrap<StronkT>()))
 
 template<stronk_like StronkT>
     requires(!unit_value_like<StronkT>)  // units should divide by T(1) first
-auto log2(StronkT value) -> decltype(log(value.template unwrap<StronkT>()))
+auto log2(StronkT value) -> StronkT
 {
     using std::log2;  // ADL
     return StronkT {log2(value.template unwrap<StronkT>())};
@@ -26,7 +26,7 @@ auto log2(StronkT value) -> decltype(log(value.template unwrap<StronkT>()))
 
 template<stronk_like StronkT>
     requires(!unit_value_like<StronkT>)  // units should divide by T(1) first
-auto log10(StronkT value) -> decltype(log10(value.template unwrap<StronkT>()))
+auto log10(StronkT value) -> StronkT
 {
     using std::log10;  // ADL
     return StronkT {log10(value.template unwrap<StronkT>())};
@@ -56,6 +56,8 @@ constexpr auto sqrt(const StronkT& elem) -> StronkT
     using std::sqrt;  // ADL
     return StronkT {sqrt(elem.template unwrap<StronkT>())};
 }
+
+// === Unit special functions ===
 
 template<unit_value_like UnitT>
 constexpr auto sqrt(const UnitT& elem) -> auto
