@@ -218,13 +218,13 @@
       "hidden": true
     },
     {
-      "name": "ci-macos-gcc-14",
+      "name": "ci-macos-clang-20",
       "inherits": [
         "ci-build",
         "ci-unix",
         "dev-mode",
         "vcpkg",
-        "gcc-14"
+        "clang-20"
       ]
     },
     {
