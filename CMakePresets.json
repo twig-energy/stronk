@@ -112,14 +112,6 @@
       }
     },
     {
-      "name": "gcc-15",
-      "hidden": true,
-      "environment": {
-        "CXX": "g++-15",
-        "CC": "gcc-15"
-      }
-    },
-    {
       "name": "msvc",
       "hidden": true
     },
