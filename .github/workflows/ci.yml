@@ -177,18 +177,10 @@ jobs:
           echo "COMPILER_VERSION=$COMPILER_VERSION" >> $GITHUB_OUTPUT
 
       - name: Install LLVM and Clang
-        if: matrix.os == 'ubuntu-24.04' && contains(matrix.compiler, 'clang')
+        if: contains(matrix.compiler, 'clang')
         uses: ./.github/actions/install-clang
         with:
           version: ${{ steps.extract-version.outputs.COMPILER_VERSION }}
-
-      - name: Install LLVM and Clang on macOS
-        if: matrix.os == 'macos-15' && contains(matrix.compiler, 'clang')
-        run: |
-          brew install llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}
-          echo 'export PATH="/usr/local/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export LDFLAGS="-L/usr/local/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/lib"' >> $GITHUB_ENV
-          echo 'export CPPFLAGS="-I/usr/local/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/include"' >> $GITHUB_ENV
 
       - name: Install GCC
         if: matrix.os == 'ubuntu-24.04' && contains(matrix.compiler, 'gcc')

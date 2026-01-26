@@ -9,7 +9,7 @@ runs:
   using: "composite"
   steps:
     - name: Install LLVM and Clang
-      if: ${{ runner.environment != 'self-hosted' }}
+      if: ${{ runner.environment != 'self-hosted' }} && ${{ !contains(runner.os, 'macos') }}
       shell: bash
       run: |
         # if clang-version is already installed return
@@ -22,3 +22,11 @@ runs:
         sudo ./llvm.sh ${{ inputs.version }}
         rm llvm.sh
         sudo apt-get install -y clang-tidy-${{ inputs.version }} clang-format-${{ inputs.version }}
+
+    - name: Install LLVM and Clang on macOS
+      if: contains(matrix.os, 'macos')
+      run: |
+        brew install llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}
+        echo 'export PATH="/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/bin:$PATH"' >> $GITHUB_ENV
+        echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/lib"' >> $GITHUB_ENV
+        echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/include"' >> $GITHUB_ENV
