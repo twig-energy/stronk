@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "stronk/skills/can_hash.hpp"
+#include "stronk/skills/can_hash.hpp"  // IWYU pragma: keep to keep the overload
 
 #include <doctest/doctest.h>
 
@@ -10,7 +10,7 @@
 namespace twig
 {
 
-struct a_hashable_type : stronk<a_hashable_type, int64_t, can_hash>
+struct a_hashable_type : stronk<a_hashable_type, int64_t>
 {
     using stronk::stronk;
 };
