@@ -28,7 +28,7 @@ runs:
       shell: bash
       run: |
         brew install llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}
-        echo 'export PATH="/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/bin:$PATH"' >> $GITHUB_ENV
-        echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/lib"' >> $GITHUB_ENV
-        echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/include"' >> $GITHUB_ENV
-        echo 'export CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}' >> $GITHUB_ENV
+        echo "PATH=/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/bin:$PATH" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/include" >> $GITHUB_ENV
+        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}" >> $GITHUB_ENV
