@@ -23,7 +23,7 @@ include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 include(cmake/dev-mode.cmake)
 
-find_package(Boost REQUIRED COMPONENTS type_index)
+find_package(Boost REQUIRED CONFIG COMPONENTS type_index)
 
 # ---- Declare library ----
 add_library(twig_stronk INTERFACE)
