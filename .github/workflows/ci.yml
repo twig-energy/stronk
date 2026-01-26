@@ -161,9 +161,9 @@ jobs:
             compiler: msvc
           - os: windows-2025
             compiler: msvc
-          - os: macos-13
+          - os: macos-15
             compiler: gcc-11
-          - os: macos-13
+          - os: macos-15
             compiler: gcc-12
 
     runs-on: ${{ matrix.os }}
