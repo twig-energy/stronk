@@ -9,7 +9,7 @@ runs:
   using: "composite"
   steps:
     - name: Install LLVM and Clang
-      if: ${{ runner.environment != 'self-hosted' }}
+      if: ${{ runner.environment != 'self-hosted' && !contains(runner.os, 'macos') }}
       shell: bash
       run: |
         # if clang-version is already installed return
@@ -22,3 +22,21 @@ runs:
         sudo ./llvm.sh ${{ inputs.version }}
         rm llvm.sh
         sudo apt-get install -y clang-tidy-${{ inputs.version }} clang-format-${{ inputs.version }}
+
+    - name: Install LLVM and Clang on macOS
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        brew install llvm@${{ inputs.version }}
+        echo "PATH=/opt/homebrew/opt/llvm@${{ inputs.version }}/bin:$PATH" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@${{ inputs.version }}/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@${{ inputs.version }}/include" >> $GITHUB_ENV
+        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ inputs.version }}" >> $GITHUB_ENV
+
+        # Adds versioned symlinks for clang and clang++
+        if [ ! -e /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang-${{ inputs.version }} ]; then
+          ln -s /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang   /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang-${{ inputs.version }}
+        fi
+        if [ ! -e /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++-${{ inputs.version }} ]; then
+          ln -s /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++ /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++-${{ inputs.version }}
+        fi

@@ -41,7 +41,7 @@ TEST_SUITE("transform")
     TEST_CASE("transform gets called on the underlying type and returns a new copy")
     {
         auto val = an_int_test_type {2};
-        val = val.transform([](auto v) { return v * 10; }).transform([](auto v) { return v + 22; });
+        val = val.transform([](int v) -> int { return v * 10; }).transform([](int v) -> int { return v + 22; });
         CHECK_EQ(val.unwrap<an_int_test_type>(), 42);
     }
 }
@@ -536,7 +536,7 @@ TEST_SUITE("is_a")
     TEST_CASE("is_a works at multiple levels")
     {
         auto first_level = type_which_is_an_underlying_type {42};
-        auto func = [](const int& x) { CHECK_EQ(x, 42); };
+        auto func = [](const int& x) -> void { CHECK_EQ(x, 42); };
         func(first_level.unwrap_as<type_which_is_an_underlying_type, int>());
         auto second_level = wrapping_is_a_type {first_level};
         func(second_level.unwrap_as<wrapping_is_a_type, int>());
