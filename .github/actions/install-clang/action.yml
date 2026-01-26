@@ -32,3 +32,11 @@ runs:
         echo "LDFLAGS=-L/opt/homebrew/opt/llvm@${{ inputs.version }}/lib" >> $GITHUB_ENV
         echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@${{ inputs.version }}/include" >> $GITHUB_ENV
         echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ inputs.version }}" >> $GITHUB_ENV
+
+        # Adds versioned symlinks for clang and clang++
+        if [ ! -e /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang-${{ inputs.version }} ]; then
+          ln -s /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang   /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang-${{ inputs.version }}
+        fi
+        if [ ! -e /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++-${{ inputs.version }} ]; then
+          ln -s /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++ /opt/homebrew/opt/llvm@${{ inputs.version }}/bin/clang++-${{ inputs.version }}
+        fi
