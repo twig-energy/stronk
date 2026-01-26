@@ -218,23 +218,13 @@
       "hidden": true
     },
     {
-      "name": "ci-macos-gcc-11",
+      "name": "ci-macos-gcc-14",
       "inherits": [
         "ci-build",
         "ci-unix",
         "dev-mode",
         "vcpkg",
         "gcc-14"
-      ]
-    },
-    {
-      "name": "ci-macos-gcc-12",
-      "inherits": [
-        "ci-build",
-        "ci-unix",
-        "dev-mode",
-        "vcpkg",
-        "gcc-12"
       ]
     },
     {
