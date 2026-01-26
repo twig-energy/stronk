@@ -545,4 +545,5 @@ TEST_SUITE("is_a")
     };
 }
 
+static_assert(sizeof(an_int_test_type) == sizeof(int));
 }  // namespace twig
