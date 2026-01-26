@@ -112,6 +112,14 @@
       }
     },
     {
+      "name": "gcc-15",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-15",
+        "CC": "gcc-15"
+      }
+    },
+    {
       "name": "msvc",
       "hidden": true
     },
@@ -218,13 +226,13 @@
       "hidden": true
     },
     {
-      "name": "ci-macos-clang-20",
+      "name": "ci-macos-gcc-15",
       "inherits": [
         "ci-build",
         "ci-unix",
         "dev-mode",
         "vcpkg",
-        "clang-20"
+        "gcc-15"
       ]
     },
     {
