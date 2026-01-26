@@ -17,12 +17,7 @@
     "abseil": {
       "description": "Dependencies for abseil extension",
       "dependencies": [
-        {
-          "name": "abseil",
-          "features": [
-            "cxx17"
-          ]
-        }
+        "abseil"
       ]
     },
     "doctest": {
@@ -63,5 +58,5 @@
       ]
     }
   },
-  "builtin-baseline": "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0"
+  "builtin-baseline": "84bab45d415d22042bd0b9081aea57f362da3f35"
 }
