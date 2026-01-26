@@ -41,7 +41,7 @@ constexpr auto is_close(T abs_tol, T rel_tol, bool nan_equals = false)
     return [abs_tol, rel_tol, nan_equals](const T& a, const T& b) -> bool
     {
         // Taken from https://numpy.org/devdocs/reference/generated/numpy.allclose.html
-        auto val_equals = std::abs(a - b) <= (abs_tol + rel_tol * std::abs(b));
+        auto val_equals = std::abs(a - b) <= (abs_tol + (rel_tol * std::abs(b)));
         auto both_nan = nan_equals && std::isnan(a) && std::isnan(b);
         return both_nan || val_equals;
     };
