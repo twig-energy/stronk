@@ -9,7 +9,7 @@ runs:
   using: "composite"
   steps:
     - name: Install LLVM and Clang
-      if: ${{ runner.environment != 'self-hosted' }} && ${{ !contains(runner.os, 'macos') }}
+      if: ${{ runner.environment != 'self-hosted' && !contains(runner.os, 'macos') }}
       shell: bash
       run: |
         # if clang-version is already installed return
@@ -27,8 +27,8 @@ runs:
       if: contains(matrix.os, 'macos')
       shell: bash
       run: |
-        brew install llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}
-        echo "PATH=/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/bin:$PATH" >> $GITHUB_ENV
-        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/lib" >> $GITHUB_ENV
-        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}/include" >> $GITHUB_ENV
-        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ steps.extract-version.outputs.COMPILER_VERSION }}" >> $GITHUB_ENV
+        brew install llvm@${{ inputs.version }}
+        echo "PATH=/opt/homebrew/opt/llvm@${{ inputs.version }}/bin:$PATH" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@${{ inputs.version }}/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@${{ inputs.version }}/include" >> $GITHUB_ENV
+        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@${{ inputs.version }}" >> $GITHUB_ENV
