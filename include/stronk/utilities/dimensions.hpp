@@ -184,10 +184,14 @@ auto create(dimensions<ExistingDimTs...> dims, [[maybe_unused]] Dim dim_for_type
 }
 
 template<typename T>
-struct is_dimensions_type : std::false_type {};
+struct is_dimensions_type : std::false_type
+{
+};
 
 template<dimension_like... Ts>
-struct is_dimensions_type<dimensions<Ts...>> : std::true_type {};
+struct is_dimensions_type<dimensions<Ts...>> : std::true_type
+{
+};
 
 }  // namespace details
 
