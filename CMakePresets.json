@@ -158,7 +158,7 @@
       "name": "flags-unix",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wshadow -Wformat=2 -Wundef -Werror=float-equal -Wno-gnu-zero-variadic-macro-arguments"
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wshadow -Wformat=2 -Wundef -Werror -Wno-gnu-zero-variadic-macro-arguments"
       }
     },
     {

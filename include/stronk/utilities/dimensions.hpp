@@ -183,18 +183,17 @@ auto create(dimensions<ExistingDimTs...> dims, [[maybe_unused]] Dim dim_for_type
     return create(dims.multiply(details::dimensions<Dim> {}), rest...);
 }
 
+template<typename T>
+struct is_dimensions_type : std::false_type {};
+
+template<dimension_like... Ts>
+struct is_dimensions_type<dimensions<Ts...>> : std::true_type {};
+
 }  // namespace details
 
 using empty_dimensions = details::empty_dimensions;
 template<typename T>
-concept dimensions_like = requires(T) {
-    typename T::first_t;
-    T::size();
-    T::empty();
-    typename T::negate_t;
-    typename T::template multiply_t<empty_dimensions>;
-    typename T::template divide_t<empty_dimensions>;
-};
+concept dimensions_like = details::is_dimensions_type<T>::value;
 
 // Ensures order and uniqueness of dimensions
 template<dimension_like... DimTs>
