@@ -40,7 +40,8 @@ jobs:
         with: { python-version: "3.12" }
 
       - name: Install codespell
-        run: pip3 install codespell
+        run: |
+          pip3 install codespell --only-binary :all:
 
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
@@ -111,7 +112,7 @@ jobs:
       - name: clang-tidy
         run: |
           python3 -m venv .venv && source .venv/bin/activate
-          pip3 install clangd-tidy
+          pip3 install clangd-tidy --only-binary :all:
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             bash ./tools/run_clangd_tidy_on_changed.sh all # all files
           else
