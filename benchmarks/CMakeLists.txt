@@ -26,7 +26,9 @@ target_link_libraries(
             twig::stronk
 )
 target_compile_features(stronk_benchmarks PRIVATE cxx_std_20)
-target_compile_options(stronk_benchmarks PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-conversion>)
+target_compile_options(
+    stronk_benchmarks PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-conversion -Wno-c2y-extensions>
+)
 
 # ---- End-of-file commands ----
 add_folders(Benchmarks)

@@ -40,7 +40,8 @@ jobs:
         with: { python-version: "3.12" }
 
       - name: Install codespell
-        run: pip3 install codespell
+        run: |
+          pip3 install codespell --only-binary :all:
 
       - name: Install LLVM and Clang
         uses: ./.github/actions/install-clang
@@ -111,7 +112,7 @@ jobs:
       - name: clang-tidy
         run: |
           python3 -m venv .venv && source .venv/bin/activate
-          pip3 install clangd-tidy
+          pip3 install clangd-tidy --only-binary :all:
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             bash ./tools/run_clangd_tidy_on_changed.sh all # all files
           else
@@ -155,7 +156,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-24.04]
-        compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang-19, clang-20, clang-21]
+        compiler: [gcc-11, gcc-12, gcc-13, gcc-14, gcc-15, gcc-16, clang-19, clang-20, clang-21, clang-22]
         include:
           - os: windows-2022
             compiler: msvc

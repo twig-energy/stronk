@@ -80,6 +80,19 @@
       }
     },
     {
+      "name": "clang-22",
+      "hidden": true,
+      "environment": {
+        "CXX": "clang++-22",
+        "CC": "clang-22"
+      },
+      "cacheVariables": {
+        "LLVM_SYMBOLIZER_PATH": "llvm-symbolizer-22",
+        "LLVM_COV_COMMAND": "llvm-cov-22",
+        "LLVM_PROFDATA_COMMAND": "llvm-profdata-22"
+      }
+    },
+    {
       "name": "gcc-11",
       "hidden": true,
       "environment": {
@@ -112,6 +125,22 @@
       }
     },
     {
+      "name": "gcc-15",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-15",
+        "CC": "gcc-15"
+      }
+    },
+    {
+      "name": "gcc-16",
+      "hidden": true,
+      "environment": {
+        "CXX": "g++-16",
+        "CC": "gcc-16"
+      }
+    },
+    {
       "name": "msvc",
       "hidden": true
     },
@@ -129,7 +158,7 @@
       "name": "flags-unix",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wshadow -Wformat=2 -Wundef -Werror=float-equal -Wno-gnu-zero-variadic-macro-arguments"
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wshadow -Wformat=2 -Wundef -Werror -Wno-gnu-zero-variadic-macro-arguments"
       }
     },
     {
@@ -276,6 +305,20 @@
       ]
     },
     {
+      "name": "ci-ubuntu-gcc-15",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-15"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-gcc-16",
+      "inherits": [
+        "ci-ubuntu",
+        "gcc-16"
+      ]
+    },
+    {
       "name": "ci-ubuntu-clang-19",
       "inherits": [
         "ci-ubuntu",
@@ -294,6 +337,13 @@
       "inherits": [
         "ci-ubuntu",
         "clang-21"
+      ]
+    },
+    {
+      "name": "ci-ubuntu-clang-22",
+      "inherits": [
+        "ci-ubuntu",
+        "clang-22"
       ]
     },
     {
