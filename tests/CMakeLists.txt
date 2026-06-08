@@ -66,7 +66,8 @@ target_compile_options(
             $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
             -Wno-implicit-int-float-conversion
             -Wno-sign-conversion
-            -Wno-implicit-int-conversion>
+            -Wno-implicit-int-conversion
+            -Wno-c2y-extensions>
 )
 
 add_test(NAME stronk_test COMMAND stronk_test "--gtest_color=yes" "--gtest_output=xml:")
