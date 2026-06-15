@@ -171,6 +171,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Extract compiler version
+        if: ${{ !contains(matrix.compiler, 'msvc') }}
         id: extract-version
         run: |
           COMPILER_VERSION=$(echo "${{ matrix.compiler }}" | cut -d'-' -f2)
