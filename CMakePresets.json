@@ -141,8 +141,14 @@
       }
     },
     {
-      "name": "msvc",
-      "hidden": true
+      "name": "msvc-2022",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022"
+    },
+    {
+      "name": "msvc-2026",
+      "hidden": true,
+      "generator": "Visual Studio 18 2026"
     },
     {
       "name": "ci-std",
@@ -187,7 +193,6 @@
         "flags-windows",
         "ci-std"
       ],
-      "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "hidden": true
     },
@@ -257,14 +262,25 @@
       ]
     },
     {
-      "name": "ci-windows-msvc",
+      "name": "ci-windows-msvc-2022",
       "inherits": [
         "ci-build",
         "ci-win64",
         "dev-mode",
         "vcpkg",
         "vcpkg-win64-static",
-        "msvc"
+        "msvc-2022"
+      ]
+    },
+    {
+      "name": "ci-windows-msvc-2026",
+      "inherits": [
+        "ci-build",
+        "ci-win64",
+        "dev-mode",
+        "vcpkg",
+        "vcpkg-win64-static",
+        "msvc-2026"
       ]
     },
     {

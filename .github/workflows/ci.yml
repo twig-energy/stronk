@@ -159,9 +159,9 @@ jobs:
         compiler: [gcc-11, gcc-12, gcc-13, gcc-14, gcc-15, gcc-16, clang-19, clang-20, clang-21, clang-22]
         include:
           - os: windows-2022
-            compiler: msvc
+            compiler: msvc-2022
           - os: windows-2025
-            compiler: msvc
+            compiler: msvc-2026
           - os: macos-15
             compiler: clang-20
 
