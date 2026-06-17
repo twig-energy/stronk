@@ -34,6 +34,36 @@ TEST_SUITE("stronk_vector")
             expected *= 2;
         }
     }
+
+    TEST_CASE("can be converted to span and back")
+    {
+        auto stronk_vector = a_vector_type {1, 2, 4};
+        auto mutating_func = [](a_vector_type::mutable_view_t view) -> void
+        {
+            CHECK_EQ(view.size(), 3);
+            CHECK_EQ(view[0], 1);
+            CHECK_EQ(view[1], 2);
+            CHECK_EQ(view[2], 4);
+
+            view[0] = 5;
+            view[1] = 6;
+            view[2] = 7;
+        };
+        mutating_func(stronk_vector);
+        CHECK_EQ(stronk_vector[0], 5);
+        CHECK_EQ(stronk_vector[1], 6);
+        CHECK_EQ(stronk_vector[2], 7);
+
+        const auto const_copy = stronk_vector;
+        auto func = [](a_vector_type::view_t view) -> void
+        {
+            CHECK_EQ(view.size(), 3);
+            CHECK_EQ(view[0], 5);
+            CHECK_EQ(view[1], 6);
+            CHECK_EQ(view[2], 7);
+        };
+        func(const_copy);
+    }
 }
 
 }  // namespace twig
