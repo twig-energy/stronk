@@ -118,8 +118,8 @@ struct STRONK_EMPTY_BASES stronk : public Skills<Tag>...
     // no longer lower the copy to memcpy), while giving no vectorization benefit there. So on MSVC
     // (including clang-cl, which uses the MS STL) we leave all special members implicit and trivial.
 #if !defined(_MSC_VER)
-    constexpr stronk(const stronk&) = default;
-    constexpr stronk(stronk&&) = default;
+    constexpr stronk(const stronk&) noexcept(std::is_nothrow_copy_constructible_v<T>) = default;
+    constexpr stronk(stronk&&) noexcept(std::is_nothrow_move_constructible_v<T>) = default;
     ~stronk() = default;
 
     // NOLINTNEXTLINE(modernize-use-equals-default) -- `= default` is intentionally avoided here; see comment above.
