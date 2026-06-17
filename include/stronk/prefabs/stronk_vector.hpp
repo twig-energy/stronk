@@ -1,9 +1,11 @@
 #pragma once
 
+#include <span>  // IWYU pragma: keep, used in view skill
 #include <vector>
 
 #include "stronk/skills/can_index.hpp"
 #include "stronk/skills/can_iterate.hpp"
+#include "stronk/skills/can_view.hpp"  // IWYU pragma: keep, provides view skill
 #include "stronk/stronk.hpp"
 
 namespace twig

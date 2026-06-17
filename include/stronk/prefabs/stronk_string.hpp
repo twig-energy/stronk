@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>  // IWYU pragma: keep, used in view skill
 
 #include "stronk/skills/can_view.hpp"
 #include "stronk/stronk.hpp"
