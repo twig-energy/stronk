@@ -1,7 +1,5 @@
 
 
-#include <type_traits>
-
 #include "stronk/prefabs/stronk_string.hpp"
 
 #include <doctest/doctest.h>

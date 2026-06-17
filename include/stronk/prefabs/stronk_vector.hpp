@@ -1,11 +1,9 @@
 #pragma once
 
-#include <span>
 #include <vector>
 
 #include "stronk/skills/can_index.hpp"
 #include "stronk/skills/can_iterate.hpp"
-#include "stronk/skills/can_view.hpp"
 #include "stronk/stronk.hpp"
 
 namespace twig
