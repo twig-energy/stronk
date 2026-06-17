@@ -12,6 +12,8 @@ struct stronk_view_of : public stronk<stronk_view_of<StronkT, ViewT, Skills...>,
     using view_of_t = StronkT;
     using base_t = stronk<stronk_view_of, ViewT, Skills...>;
 
+    using base_t::base_t;
+
     explicit(false) stronk_view_of(StronkT& stronk)
         : base_t(ViewT {stronk.template unwrap<std::remove_const_t<StronkT>>()})
     {

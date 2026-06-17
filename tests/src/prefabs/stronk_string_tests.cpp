@@ -29,7 +29,7 @@ TEST_SUITE("stronk_string")
     TEST_CASE("can be converted to string_view and back")
     {
         auto stronk_string = a_string_type {"hello"};
-        auto func = [](a_string_type::view_t view) -> void { CHECK_EQ(view, a_string_type {"hello"}); };
+        auto func = [](a_string_type::view_t view) -> void { CHECK_EQ(view, a_string_type::view_t {"hello"}); };
         func(stronk_string);
 
         auto and_back = static_cast<a_string_type>(static_cast<a_string_type::view_t>(stronk_string));
