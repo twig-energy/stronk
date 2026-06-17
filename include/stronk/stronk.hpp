@@ -112,6 +112,12 @@ struct STRONK_EMPTY_BASES stronk : public Skills<Tag>...
     // that defeats auto-vectorization of element-wise loops over std::vector<stronk_value>. A
     // user-provided member-wise assignment emits a typed store and restores it. See issue #67 for
     // the full analysis and the trivial-copyability trade-off this implies.
+    //
+    // This is gated to non-MSVC compilers: hand-writing assignment makes the type
+    // non-trivially-copyable, which on the MSVC STL regresses vector-copy performance badly (it can
+    // no longer lower the copy to memcpy), while giving no vectorization benefit there. So on MSVC
+    // (including clang-cl, which uses the MS STL) we leave all special members implicit and trivial.
+#if !defined(_MSC_VER)
     constexpr stronk(const stronk&) = default;
     constexpr stronk(stronk&&) = default;
     ~stronk() = default;
@@ -131,6 +137,7 @@ struct STRONK_EMPTY_BASES stronk : public Skills<Tag>...
             std::move(other._you_should_not_be_using_this_but_rather_unwrap);
         return *this;
     }
+#endif
 
   protected:
     [[nodiscard]]
