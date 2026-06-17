@@ -10,7 +10,7 @@ template<typename StronkT, typename ViewT, template<typename> typename... Skills
 struct stronk_view_of : public stronk<stronk_view_of<StronkT, ViewT, Skills...>, ViewT, Skills...>
 {
     using view_of_t = StronkT;
-    using base_t = stronk<stronk_view_of, ViewT, Skills...>;
+    using base_t = stronk<stronk_view_of<StronkT, ViewT, Skills...>, ViewT, Skills...>;
 
     using base_t::base_t;
 
