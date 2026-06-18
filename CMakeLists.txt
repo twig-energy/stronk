@@ -61,10 +61,6 @@ target_sources(
 
 set_property(TARGET twig_stronk PROPERTY EXPORT_NAME stronk)
 
-target_include_directories(
-    twig_stronk ${warning_guard} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-)
-
 target_compile_features(twig_stronk INTERFACE cxx_std_20)
 
 target_link_libraries(twig_stronk INTERFACE Boost::type_index)
