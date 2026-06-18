@@ -13,31 +13,31 @@ struct can_be_const_viewed_as
         struct view_t : stronk<view_t, ViewT, can_equate>
         {
             using stronk<view_t, ViewT, can_equate>::stronk;
+
             constexpr auto begin() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.begin();
+                return this->val().begin();
             }
             constexpr auto end() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.end();
+                return this->val().end();
             }
             constexpr auto operator[](auto idx) const noexcept -> auto&
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap[idx];
+                return this->val()[idx];
             }
             constexpr auto size() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.size();
+                return this->val().size();
             }
             constexpr auto operator==(const StronkT& rhs) const -> bool
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap == rhs.template unwrap<StronkT>();
+                return this->val() == rhs.template unwrap<StronkT>();
             }
 
             constexpr explicit operator StronkT() const
             {
-                return StronkT {
-                    typename StronkT::underlying_type {this->_you_should_not_be_using_this_but_rather_unwrap}};
+                return StronkT {typename StronkT::underlying_type {this->val()}};
             }
         };
 
@@ -61,29 +61,28 @@ struct can_be_mutable_viewed_as
 
             constexpr auto begin() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.begin();
+                return this->val().begin();
             }
             constexpr auto end() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.end();
+                return this->val().end();
             }
             constexpr auto operator[](auto idx) const noexcept -> auto&
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap[idx];
+                return this->val()[idx];
             }
             constexpr auto size() const noexcept -> auto
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap.size();
+                return this->val().size();
             }
             constexpr auto operator==(const StronkT& rhs) const -> bool
             {
-                return this->_you_should_not_be_using_this_but_rather_unwrap == rhs.template unwrap<StronkT>();
+                return this->val() == rhs.template unwrap<StronkT>();
             }
 
             constexpr explicit operator StronkT() const
             {
-                return StronkT {
-                    typename StronkT::underlying_type {this->_you_should_not_be_using_this_but_rather_unwrap}};
+                return StronkT {typename StronkT::underlying_type {this->val()}};
             }
         };
 
