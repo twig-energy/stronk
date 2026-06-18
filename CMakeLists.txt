@@ -2,18 +2,9 @@ cmake_minimum_required(VERSION 3.28)
 
 include(cmake/prelude.cmake)
 
-file(READ "${CMAKE_CURRENT_LIST_DIR}/version.py" version_line)
-string(
-    REGEX MATCH
-          "__version__ = \"(.*)\""
-          _
-          ${version_line}
-)
-set(version ${CMAKE_MATCH_1})
-
 project(
     stronk
-    VERSION ${version}
+    VERSION 0.16.2
     DESCRIPTION "An easy to customize strong type library with built in support for unit-like behavior"
     HOMEPAGE_URL "https://github.com/twig-energy/stronk"
     LANGUAGES CXX
@@ -34,13 +25,17 @@ target_sources(
     INTERFACE
     FILE_SET HEADERS
              BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include"
-             FILES include/stronk/extensions/absl.hpp
+             FILES include/stronk/cmath.hpp
+                   include/stronk/extensions/absl.hpp
                    include/stronk/extensions/doctest.hpp
                    include/stronk/extensions/fmt.hpp
                    include/stronk/extensions/glaze.hpp
                    include/stronk/extensions/gtest.hpp
                    include/stronk/extensions/nlohmann_json.hpp
+                   include/stronk/prefabs/stronk_arithmetic.hpp
                    include/stronk/prefabs/stronk_flag.hpp
+                   include/stronk/prefabs/stronk_string.hpp
+                   include/stronk/prefabs/stronk_vector.hpp
                    include/stronk/skills/can_abs.hpp
                    include/stronk/skills/can_be_used_as_flag.hpp
                    include/stronk/skills/can_decrement.hpp
@@ -53,6 +48,7 @@ target_sources(
                    include/stronk/skills/can_iterate.hpp
                    include/stronk/skills/can_multiply.hpp
                    include/stronk/skills/can_stream.hpp
+                   include/stronk/skills/can_view.hpp
                    include/stronk/stronk.hpp
                    include/stronk/unit.hpp
                    include/stronk/utilities/constexpr_helpers.hpp
@@ -65,7 +61,9 @@ target_sources(
 
 set_property(TARGET twig_stronk PROPERTY EXPORT_NAME stronk)
 
-target_include_directories(twig_stronk ${warning_guard} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>")
+target_include_directories(
+    twig_stronk ${warning_guard} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
 
 target_compile_features(twig_stronk INTERFACE cxx_std_20)
 
