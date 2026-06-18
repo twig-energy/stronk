@@ -27,11 +27,10 @@ mark_as_advanced(stronk_INSTALL_CMAKEDIR)
 install(
     TARGETS twig_stronk
     EXPORT stronkTargets
-    FILE_SET HEADERS
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    ARCHIVE COMPONENT twig-eex_development
     INCLUDES
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    COMPONENT stronk_Development
+    FILE_SET HEADERS
 )
 
 # Install package config
