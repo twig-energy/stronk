@@ -1,37 +1,7 @@
 #pragma once
 
-#include "stronk/stronk.hpp"
-
 namespace twig
 {
-
-template<typename ConvertibleTo>
-struct can_explicitly_convert_to_stronk_of
-{
-    template<typename StronkT>
-    struct skill
-    {
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr explicit(false) operator ConvertibleTo() const noexcept
-        {
-            using new_underlying_t = ConvertibleTo::underlying_type;
-            return ConvertibleTo {new_underlying_t {static_cast<const StronkT&>(*this).template unwrap<StronkT>()}};
-        }
-    };
-};
-
-template<typename EquatableWithT>
-struct stronk_equatable_with
-{
-    template<typename StronkT>
-    struct skill
-    {
-        constexpr auto operator==(const EquatableWithT& rhs) -> bool
-        {
-            return static_cast<const StronkT&>(*this).val() == rhs.template unwrap<EquatableWithT>();
-        }
-    };
-};
 
 template<typename ViewT>
 struct can_be_const_viewed_as
