@@ -154,6 +154,7 @@ jobs:
     needs: [lint]
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-24.04]
         compiler: [gcc-11, gcc-12, gcc-13, gcc-14, gcc-15, gcc-16, clang-19, clang-20, clang-21, clang-22]
