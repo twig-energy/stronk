@@ -107,6 +107,38 @@ struct STRONK_EMPTY_BASES stronk : public Skills<Tag>...
         swap(a._you_should_not_be_using_this_but_rather_unwrap, b._you_should_not_be_using_this_but_rather_unwrap);
     }
 
+    // Assignment is written by hand (member-wise) rather than implicit/defaulted: because stronk
+    // derives from its skill base classes, a defaulted assignment is lowered as an untyped store
+    // that defeats auto-vectorization of element-wise loops over std::vector<stronk_value>. A
+    // user-provided member-wise assignment emits a typed store and restores it. See issue #67 for
+    // the full analysis and the trivial-copyability trade-off this implies.
+    //
+    // This is gated to non-MSVC compilers: hand-writing assignment makes the type
+    // non-trivially-copyable, which on the MSVC STL regresses vector-copy performance badly (it can
+    // no longer lower the copy to memcpy), while giving no vectorization benefit there. So on MSVC
+    // (including clang-cl, which uses the MS STL) we leave all special members implicit and trivial.
+#if !defined(_MSC_VER)
+    constexpr stronk(const stronk&) noexcept(std::is_nothrow_copy_constructible_v<T>) = default;
+    constexpr stronk(stronk&&) noexcept(std::is_nothrow_move_constructible_v<T>) = default;
+    ~stronk() = default;
+
+    // NOLINTNEXTLINE(modernize-use-equals-default) -- `= default` is intentionally avoided here; see comment above.
+    STRONK_FORCEINLINE constexpr auto operator=(const stronk& other) noexcept(std::is_nothrow_copy_assignable_v<T>)
+        -> stronk&
+    {
+        this->_you_should_not_be_using_this_but_rather_unwrap = other._you_should_not_be_using_this_but_rather_unwrap;
+        return *this;
+    }
+    // NOLINTNEXTLINE(modernize-use-equals-default) -- `= default` is intentionally avoided here; see comment above.
+    STRONK_FORCEINLINE constexpr auto operator=(stronk&& other) noexcept(std::is_nothrow_move_assignable_v<T>)
+        -> stronk&
+    {
+        this->_you_should_not_be_using_this_but_rather_unwrap =
+            std::move(other._you_should_not_be_using_this_but_rather_unwrap);
+        return *this;
+    }
+#endif
+
   protected:
     [[nodiscard]]
     STRONK_FORCEINLINE constexpr auto val() noexcept -> T&
