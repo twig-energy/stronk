@@ -1,9 +1,3 @@
-# Project is configured with no languages, so tell GNUInstallDirs the lib dir
-set(CMAKE_INSTALL_LIBDIR
-    lib
-    CACHE PATH ""
-)
-
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
