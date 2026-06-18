@@ -12,15 +12,14 @@ namespace twig
 {
 
 template<typename Tag, typename InnerT, template<typename> typename... Skills>
-using stronk_vector = stronk<
-    Tag,
-    std::vector<InnerT>,
-    can_equate,
-    can_size,
-    can_index,
-    can_iterate,
-    can_be_const_viewed_as<std::span<const InnerT>, can_equate, can_size, can_iterate, can_index>::template skill,
-    can_be_mutable_viewed_as<std::span<InnerT>, can_equate, can_size, can_iterate, can_index>::template skill,
-    Skills...>;
+using stronk_vector = stronk<Tag,
+                             std::vector<InnerT>,
+                             can_equate,
+                             can_size,
+                             can_index,
+                             can_iterate,
+                             can_be_const_viewed_as<std::span<const InnerT>>::template skill,
+                             can_be_mutable_viewed_as<std::span<InnerT>>::template skill,
+                             Skills...>;
 
 }  // namespace twig

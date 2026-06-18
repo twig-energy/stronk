@@ -33,60 +33,104 @@ struct stronk_equatable_with
     };
 };
 
-template<typename ViewT, template<typename> typename... Skills>
+template<typename ViewT>
 struct can_be_const_viewed_as
 {
     template<typename StronkT>
     struct skill
     {
         struct view_t
-            : stronk<view_t,
-                     ViewT,
-                     can_explicitly_convert_to_stronk_of<StronkT>::template skill,
-                     stronk_equatable_with<StronkT>::template skill,
-                     Skills...>
         {
-            using stronk<view_t,
-                         ViewT,
-                         can_explicitly_convert_to_stronk_of<StronkT>::template skill,
-                         stronk_equatable_with<StronkT>::template skill,
-                         Skills...>::stronk;
+            ViewT view;
+
+            constexpr auto val() const noexcept -> auto
+            {
+                return this->view;
+            }
+
+            constexpr auto begin() const noexcept -> auto
+            {
+                return this->view.begin();
+            }
+            constexpr auto end() const noexcept -> auto
+            {
+                return this->view.end();
+            }
+            constexpr auto operator[](auto idx) const noexcept -> auto&
+            {
+                return this->view[idx];
+            }
+            constexpr auto size() const noexcept -> auto
+            {
+                return this->view.size();
+            }
+            constexpr auto operator==(const StronkT& rhs) const -> bool
+            {
+                return this->view == rhs.template unwrap<StronkT>();
+            }
+            constexpr auto operator==(const view_t& rhs) const -> bool = default;
+
+            constexpr explicit operator StronkT() const
+            {
+                return StronkT {typename StronkT::underlying_type {view}};
+            }
         };
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         constexpr explicit(false) operator view_t() const noexcept
         {
-            using t = view_t::underlying_type;
-            return view_t {t {static_cast<const StronkT&>(*this).template unwrap<StronkT>()}};
+            return view_t {ViewT {static_cast<const StronkT&>(*this).template unwrap<StronkT>()}};
         }
     };
 };
 
-template<typename ViewT, template<typename> typename... Skills>
+template<typename ViewT>
 struct can_be_mutable_viewed_as
 {
     template<typename StronkT>
     struct skill
     {
         struct mutable_view_t
-            : stronk<mutable_view_t,
-                     ViewT,
-                     can_explicitly_convert_to_stronk_of<StronkT>::template skill,
-                     stronk_equatable_with<StronkT>::template skill,
-                     Skills...>
         {
-            using stronk<mutable_view_t,
-                         ViewT,
-                         can_explicitly_convert_to_stronk_of<StronkT>::template skill,
-                         stronk_equatable_with<StronkT>::template skill,
-                         Skills...>::stronk;
+            ViewT view;
+
+            constexpr auto val() const noexcept -> auto
+            {
+                return this->view;
+            }
+
+            constexpr auto begin() const noexcept -> auto
+            {
+                return this->view.begin();
+            }
+            constexpr auto end() const noexcept -> auto
+            {
+                return this->view.end();
+            }
+            constexpr auto operator[](auto idx) const noexcept -> auto&
+            {
+                return this->view[idx];
+            }
+            constexpr auto size() const noexcept -> auto
+            {
+                return this->view.size();
+            }
+            constexpr auto operator==(const StronkT& rhs) const -> bool
+            {
+                return this->view == rhs.template unwrap<StronkT>();
+            }
+            constexpr auto operator==(const mutable_view_t& rhs) const -> bool = default;
+
+            constexpr explicit operator StronkT() const
+            {
+                return StronkT {typename StronkT::underlying_type {view}};
+            }
         };
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         constexpr explicit(false) operator mutable_view_t() noexcept
         {
-            using t = mutable_view_t::underlying_type;
-            return mutable_view_t {t {static_cast<StronkT&>(*this).template unwrap<StronkT>()}};
+            return mutable_view_t {ViewT {static_cast<StronkT&>(*this).template unwrap<StronkT>()}};
         }
     };
 };
