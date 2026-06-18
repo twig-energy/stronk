@@ -19,7 +19,7 @@ void print_name(const LastName& lastname, const FirstName& firstname)
     // You can access the underlying type by using the .unwrap<Type>() function.
     std::cout << firstname.unwrap<FirstName>() << " ";
     // Adding the twig::can_ostream skill overloads the `operator<<(ostream&)` for your type.
-    std::cout << lastname.unwrap<LastName>() << std::endl;
+    std::cout << lastname << std::endl;
     // Generally you should prefer skills or custom functions over unwrapping to preserve your strong types
 }
 
