@@ -14,10 +14,8 @@ struct can_explicitly_convert_to_stronk_of
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         constexpr explicit(false) operator ConvertibleTo() const noexcept
         {
-            const auto& self = static_cast<const StronkT&>(*this);
-            const auto& underlying = self.template unwrap<StronkT>();
             using new_underlying_t = ConvertibleTo::underlying_type;
-            return ConvertibleTo {new_underlying_t {underlying}};
+            return ConvertibleTo {new_underlying_t {static_cast<const StronkT&>(*this).template unwrap<StronkT>()}};
         }
     };
 };
