@@ -1,6 +1,3 @@
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
 # Install headers under: <prefix>/include/stronk-<version>/
 if (PROJECT_IS_TOP_LEVEL)
     set(CMAKE_INSTALL_INCLUDEDIR
@@ -8,6 +5,9 @@ if (PROJECT_IS_TOP_LEVEL)
         CACHE PATH ""
     )
 endif ()
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 # find_package(stronk)
 set(package stronk)
