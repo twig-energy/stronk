@@ -4,7 +4,7 @@ include(cmake/prelude.cmake)
 
 project(
     stronk
-    VERSION 0.16.3
+    VERSION 0.16.4
     DESCRIPTION "An easy to customize strong type library with built in support for unit-like behavior"
     HOMEPAGE_URL "https://github.com/twig-energy/stronk"
     LANGUAGES CXX
