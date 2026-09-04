@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -58,6 +59,17 @@ TEST_SUITE("none_type_template_parameter")
     {
         auto val = type_which_requires_stronk_none_type_template_param<an_int_test_type {25}> {};
         CHECK_EQ(val.value.unwrap<an_int_test_type>(), 25);
+    }
+}
+
+TEST_SUITE("atomics")
+{
+    TEST_CASE("a stronk type can be put into an atomic")
+    {
+        auto atomic_val = std::atomic<an_int_test_type> {an_int_test_type {42}};
+        CHECK_EQ(atomic_val.load().unwrap<an_int_test_type>(), 42);
+        atomic_val.store(an_int_test_type {84});
+        CHECK_EQ(atomic_val.load().unwrap<an_int_test_type>(), 84);
     }
 }
 
