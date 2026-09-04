@@ -12,7 +12,7 @@ namespace twig
 {
 
 template<typename Tag, typename T, template<typename> typename... Skills>
-struct STRONK_EMPTY_BASES [[clang::trivial_abi]] stronk : public Skills<Tag>...
+struct STRONK_EMPTY_BASES stronk : public Skills<Tag>...
 {
     using self_t = stronk<Tag, T, Skills...>;
     using underlying_type = T;
