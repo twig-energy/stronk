@@ -36,11 +36,11 @@
 #include <stronk/skills/can_stream.hpp>
 #include <stronk/stronk.hpp>
 
-struct FirstName : twig::stronk<FirstName, std::string, twig::can_ostream>
+struct FirstName : twig::stronk<FirstName, std::string>
 {
     using stronk::stronk;
 };
-struct LastName : twig::stronk<LastName, std::string>
+struct LastName : twig::stronk<LastName, std::string, twig::can_ostream>
 {
     using stronk::stronk;
 };
@@ -48,10 +48,11 @@ struct LastName : twig::stronk<LastName, std::string>
 // Strong types protects you from accidentally passing the wrong argument to the wrong parameter.
 void print_name(const LastName& lastname, const FirstName& firstname)
 {
-    // The twig::can_ostream skill overloads the `operator<<(ostream&)` for your type.
-    std::cout << firstname << " ";
-    // You can also access the underlying type by using the .unwrap<Type>() function.
-    std::cout << lastname.unwrap<LastName>() << std::endl;
+    // You can access the underlying type by using the .unwrap<Type>() function.
+    std::cout << firstname.unwrap<FirstName>() << " ";
+    // Adding the twig::can_ostream skill overloads the `operator<<(ostream&)` for your type.
+    std::cout << lastname << std::endl;
+    // Generally you should prefer skills or custom functions over unwrapping to preserve your strong types
 }
 
 auto main() -> int
@@ -170,12 +171,13 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 ### Regular
 
 - `can_negate`: unary `operator-`
-- `can_add`: binary `operator+` `operator=+`
-- `can_subtract`: binary `operator-` and `operator=-`
-- `can_multiply`: binary `operator*` and `operator=*` (not compatible with units, we encourage you to use units instead)
-- `can_divide`: binary `operator/` and `operator=/` (not compatible with units, we encourage you to use units instead)
-- `can_abs`: overloads `twig::abs`
-- `can_isnan`: overloads `twig::isnan`
+- `can_add`: binary `operator+` `operator+=`
+- `can_subtract`: binary `operator-` and `operator-=`
+- `can_multiply`: binary `operator*` and `operator*=` (not compatible with units, we encourage you to use units instead)
+- `can_multiply_with<T>`: binary `operator*` and `operator*=` with a raw type `T` (not compatible with units)
+- `can_divide`: binary `operator/` and `operator/=` (not compatible with units, we encourage you to use units instead)
+- `can_divide_with<T>`: binary `operator/` and `operator/=` by a raw type `T` (not compatible with units)
+- `can_isnan`: `.isnan()` member, `.quiet_NaN()` and `.signaling_NaN()` static members for floating point types
 - `can_stream`: overloads `operator<<(std::ostream)` and `operator<<(std::istream)`, stream the underlying value to the stream, or create from stream. For only `ostream` or `istream` functionality, use `can_ostream` or `can_istream` respectively.
 - `can_order`: `operator<=>`, note you probably also want to add `can_equate`, since the compiler cannot generate equality with the `operator<=>` for stronk types.
 - `can_equate`: `operator==` with regular equality
@@ -183,23 +185,43 @@ Skills adds functionality to your stronk types. We have implemented a number of 
 - `can_equate_with_is_close_nan_equals`: `operator==` but with numpy's `is_close` definition of equal, nans being equal
 - `can_equate_with_is_close_abs_tol_only`: `operator==` with a small absolute tolerance for difference
 - `can_less_than_greater_than`: `operator<` and `operator>` (prefer the `can_order` skill instead)
-- `can_less_than_greater_than_or_equal`: operator <= and operator >= (prefer the `can_order` skill instead)
+- `can_less_than_greater_than_or_equal`: `operator<=` and `operator>=` (prefer the `can_order` skill instead)
 - `can_be_used_as_flag`: for boolean values used as flags
 - `can_hash`: specializes `std::hash<T>`.
 - `can_size`: implements `.size()` and `.empty()`
-- `can_const_iterate` implements `begin() const`, `end() const`, `cbegin() const` and `cend() const`.
-- `can_iterate` adds the `can_const_iterate` as well implementing `begin()`, `end()`.
-- `can_const_index` implements `operator[](const auto&) const` and `at(const auto&) const`
-- `can_index` adds the `can_const_index` as well implementing `operator[](const auto&)` and `at(const auto&)`.
-- `can_increment` adds both `operator++` operators.
-- `can_decrement` adds both `operator--` operators.
+- `can_const_iterate`: implements `begin() const`, `end() const`, `cbegin() const` and `cend() const`.
+- `can_iterate`: adds the `can_const_iterate` as well implementing `begin()`, `end()`.
+- `can_const_index`: implements `operator[](const auto&) const` and `at(const auto&) const`
+- `can_index`: adds the `can_const_index` as well implementing `operator[](const auto&)` and `at(const auto&)`.
+- `can_increment`: adds both `operator++` operators.
+- `can_decrement`: adds both `operator--` operators.
+- `can_be_const_viewed_as<ViewT>`: adds an implicit conversion to a const `view_t` wrapping `ViewT`, such as `std::span<const T>` or `std::string_view`.
+- `can_be_mutable_viewed_as<ViewT>`: adds an implicit conversion to a `mutable_view_t` wrapping `ViewT`, such as `std::span<T>`.
+
+### Math free functions (see `stronk/cmath.hpp`)
+
+Including `stronk/cmath.hpp` provides `twig::` free functions that work for any stronk-like type without requiring a skill:
+
+- `twig::abs(x)`: absolute value
+- `twig::isnan(x)`: checks for NaN
+- `twig::log(x)`, `twig::log2(x)`, `twig::log10(x)`: logarithms (non-unit types only)
+- `twig::sqrt(x)`: square root; for unit types this also infers the correct resulting unit
+- `twig::pow<N>(x)`: integer power; for unit types this also infers the correct resulting unit
 
 ### Third Party Library extensions (see `stronk/extensions/<library>.hpp`)
 
-- `can_absl_hash`: implements the `AbslHashValue` friend function.
-- `can_gtest_print`: for printing the values in gtest check macros
-- `can_fmt_format`: implements `struct fmt::formatter<T>` with default formatting string `"{}"`. In the future we will add a `can_format` for `std::format`.
-- `can_fmt_format_builder<"fmt format string{}">::skill`: implements `struct fmt::formatter<T>`. In the future we will add a `can_format_builder<"std format string">` for `std::format`.
+Some extensions just require including the header; others require adding a skill to your type.
+
+**Header-only (no skill needed):**
+- `doctest.hpp` — specializes `doctest::StringMaker<T>` so stronk values print in doctest assertions.
+- `fmt.hpp` — specializes `fmt::formatter<T>` for all stronk types using the underlying type's formatter by default. Optionally add the `can_fmt_format` skill for a `"{}"` format string, or `can_fmt_format_builder<"my format {}">::skill` for a custom format string.
+- `glaze.hpp` — specializes `glz::meta<T>` for Glaze JSON serialization.
+- `gtest.hpp` — defines a `PrintTo` free function for any stronk type whose underlying type supports `operator<<`, enabling printing in gtest assertions.
+- `nlohmann_json.hpp` — specializes `nlohmann::adl_serializer<T>` for nlohmann JSON serialization/deserialization.
+- `stronk/skills/can_format.hpp` — specializes `std::formatter<T>` so all stronk types work with `std::format` out of the box.
+
+**Requires adding a skill to your type:**
+- `absl.hpp` — `can_absl_hash` skill: implements the `AbslHashValue` friend function.
 
 Adding new skills is easy so feel free to add more.
 
@@ -283,126 +305,129 @@ For more information on how to build see the [BUILDING](BUILDING.md) and [HACKIN
 
 # Benchmarks
 
-Stronk is a close to zero cost abstraction - performance varies per compiler and we get the best results when running with gcc-14. Unfortunately the performance with MSVC is quite bad. We are investigating the [issue](https://github.com/twig-energy/stronk/issues/24), and initial results points to padding of the stronk structures being the root cause. You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
-
-Constructing and copying the structs performs identically or very close to identically with just passing the raw types:
+Stronk is a close to zero cost abstraction - performance varies per compiler.
+You can see benchmark results for all the tested platforms in the [Continuous Integration Workflow](https://github.com/twig-energy/stronk/actions/workflows/ci.yml).
 
 | relative |               ns/op |                op/s |    err% |     total | Default Construction onto Reserved Vector
 |---------:|--------------------:|--------------------:|--------:|----------:|:------------------------------------------
-|   100.0% |                1.03 |      971,250,261.72 |    0.2% |      0.01 | `int8_t`
-| 8,295.8% |                0.01 |   80,572,627,783.49 |    0.5% |      0.01 | `stronk_int8_t`
-|   100.0% |                0.09 |   11,040,892,957.64 |    0.2% |      0.01 | `int64_t`
-|   100.0% |                0.09 |   11,038,636,780.71 |    0.7% |      0.01 | `stronk_int64_t`
-|   100.0% |                2.85 |      350,589,982.10 |    0.2% |      0.01 | `std::string`
-|   100.0% |                2.85 |      350,574,762.95 |    0.3% |      0.01 | `string_stronk_t`
+|   100.0% |                0.41 |    2,421,113,737.12 |    0.4% |      0.01 | `int8_t`
+|    99.4% |                0.42 |    2,407,504,610.51 |    1.1% |      0.01 | `stronk_int8_t`
+|   100.0% |                0.07 |   14,095,550,602.57 |    0.2% |      0.01 | `int64_t`
+|    14.7% |                0.48 |    2,073,833,840.80 |    0.1% |      0.01 | `stronk_int64_t`
+|   100.0% |                1.89 |      528,491,622.36 |    0.5% |      0.01 | `std::string`
+|    99.8% |                1.90 |      527,202,436.19 |    0.3% |      0.01 | `string_stronk_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Random Construction onto Reserved Vector
 |---------:|--------------------:|--------------------:|--------:|----------:|:-----------------------------------------
-|   100.0% |                5.43 |      184,104,291.14 |    0.1% |      0.01 | `int8_t`
-|    99.9% |                5.44 |      183,908,984.32 |    0.2% |      0.01 | `stronk_int8_t`
-|   100.0% |               15.49 |       64,577,158.35 |    0.1% |      0.01 | `int64_t`
-|   100.2% |               15.46 |       64,690,083.71 |    0.1% |      0.01 | `stronk_int64_t`
-|   100.0% |              327.60 |        3,052,463.47 |    0.2% |      0.03 | `std::string`
-|   100.1% |              327.12 |        3,056,949.11 |    0.1% |      0.03 | `string_stronk_t`
+|   100.0% |                4.01 |      249,119,843.74 |    0.5% |      0.01 | `int8_t`
+|   100.4% |                4.00 |      250,159,580.76 |    0.1% |      0.01 | `stronk_int8_t`
+|   100.0% |               13.80 |       72,457,600.88 |    0.1% |      0.01 | `int64_t`
+|    97.4% |               14.16 |       70,603,282.29 |    0.3% |      0.01 | `stronk_int64_t`
+|   100.0% |              264.20 |        3,784,970.08 |    0.2% |      0.02 | `std::string`
+|   100.1% |              264.05 |        3,787,180.08 |    0.3% |      0.02 | `string_stronk_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Copy Vector Benchmarks
 |---------:|--------------------:|--------------------:|--------:|----------:|:-----------------------
-|   100.0% |            2,692.52 |          371,399.69 |    0.1% |      0.01 | `int8_t`
-|    99.9% |            2,694.08 |          371,183.71 |    0.1% |      0.01 | `stronk_int8_t`
-|   100.0% |           22,820.28 |           43,820.67 |    0.0% |      0.01 | `int64_t`
-|   100.0% |           22,820.89 |           43,819.50 |    0.1% |      0.01 | `stronk_int64_t`
-|   100.0% |           38,859.33 |           25,733.84 |    0.0% |      0.01 | `std::string`
-|   100.0% |           38,858.08 |           25,734.68 |    0.1% |      0.01 | `string_stronk_t`
+|   100.0% |              169.93 |        5,884,825.15 |    0.3% |      0.01 | `int8_t`
+|   100.6% |              168.96 |        5,918,404.11 |    0.2% |      0.01 | `stronk_int8_t`
+|   100.0% |            1,162.08 |          860,523.69 |    0.1% |      0.01 | `int64_t`
+|   100.1% |            1,161.35 |          861,063.55 |    0.1% |      0.01 | `stronk_int64_t`
+|   100.0% |           38,399.12 |           26,042.26 |    0.2% |      0.01 | `std::string`
+|   100.0% |           38,386.75 |           26,050.66 |    0.1% |      0.01 | `string_stronk_t`
 
-Calling "Skill" functions (which internally calls unwrap) performs close to identically with calling the functions directly on the raw types. However they do not seem to vectorize as well. We will investigate this further:
-
- | relative |               ns/op |                op/s |    err% |     total | Add Units
+| relative |               ns/op |                op/s |    err% |     total | Add Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:----------
-|   100.0% |                1.09 |      916,332,894.41 |    0.1% |      0.01 | `int8_t + int8_t`
-|    87.1% |                1.25 |      798,272,122.38 |    0.8% |      0.01 | `stronk_int8_t + stronk_int8_t`
-|   100.0% |                1.16 |      862,869,523.84 |    0.7% |      0.01 | `int64_t + int64_t`
-|   100.3% |                1.15 |      865,822,162.10 |    0.6% |      0.01 | `stronk_int64_t + stronk_int64_t`
-|   100.0% |                1.16 |      862,616,711.01 |    0.1% |      0.01 | `double + double`
-|    92.8% |                1.25 |      800,919,023.29 |    0.1% |      0.01 | `stronk_double_t + stronk_double_t`
+|   100.0% |                0.91 |    1,104,478,972.78 |    0.2% |      0.01 | `int8_t + int8_t`
+|    91.4% |                0.99 |    1,009,863,863.02 |    0.1% |      0.01 | `stronk_int8_t + stronk_int8_t`
+|   100.0% |                0.99 |    1,010,994,393.00 |    0.0% |      0.01 | `int64_t + int64_t`
+|    95.4% |                1.04 |      964,989,864.58 |    0.2% |      0.01 | `stronk_int64_t + stronk_int64_t`
+|   100.0% |                0.91 |    1,100,096,354.88 |    0.2% |      0.01 | `double + double`
+|    92.9% |                0.98 |    1,022,027,805.72 |    0.1% |      0.01 | `stronk_double_t + stronk_double_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Add Units SIMD
 |---------:|--------------------:|--------------------:|--------:|----------:|:---------------
-|   100.0% |                0.44 |    2,287,932,879.20 |    0.0% |      0.01 | `int8_t + int8_t`
-|    74.6% |                0.59 |    1,706,867,474.60 |    0.3% |      0.01 | `stronk_int8_t + stronk_int8_t`
-|   100.0% |                0.48 |    2,099,685,191.96 |    0.1% |      0.01 | `int64_t + int64_t`
-|    80.4% |                0.59 |    1,688,152,161.26 |    0.3% |      0.01 | `stronk_int64_t + stronk_int64_t`
-|   100.0% |                0.48 |    2,098,557,402.52 |    0.2% |      0.01 | `double + double`
-|    80.5% |                0.59 |    1,688,464,046.79 |    0.5% |      0.01 | `stronk_double_t + stronk_double_t`
+|   100.0% |                0.45 |    2,206,628,741.22 |    0.2% |      0.01 | `int8_t + int8_t`
+|    47.4% |                0.96 |    1,045,931,212.01 |    3.0% |      0.01 | `stronk_int8_t + stronk_int8_t`
+|   100.0% |                0.51 |    1,972,214,424.48 |    0.2% |      0.01 | `int64_t + int64_t`
+|    50.0% |                1.01 |      986,615,432.18 |    0.1% |      0.01 | `stronk_int64_t + stronk_int64_t`
+|   100.0% |                0.49 |    2,054,456,864.43 |    0.1% |      0.01 | `double + double`
+|    52.5% |                0.93 |    1,078,415,635.40 |    1.5% |      0.01 | `stronk_double_t + stronk_double_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Subtract Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:---------------
-|   100.0% |                1.10 |      911,857,398.39 |    0.5% |      0.01 | `int8_t - int8_t`
-|    88.0% |                1.25 |      802,442,563.29 |    0.3% |      0.01 | `stronk_int8_t - stronk_int8_t`
-|   100.0% |                1.15 |      868,967,946.80 |    0.2% |      0.01 | `int64_t - int64_t`
-|    91.6% |                1.26 |      795,783,363.99 |    0.4% |      0.01 | `stronk_int64_t - stronk_int64_t`
-|   100.0% |                1.12 |      895,845,385.46 |    0.5% |      0.01 | `double - double`
-|   100.1% |                1.11 |      896,986,529.46 |    0.6% |      0.01 | `stronk_double_t - stronk_double_t`
+|   100.0% |                0.91 |    1,104,666,683.60 |    0.2% |      0.01 | `int8_t - int8_t`
+|    88.5% |                1.02 |      978,047,069.71 |    1.7% |      0.01 | `stronk_int8_t - stronk_int8_t`
+|   100.0% |                1.00 |    1,003,823,935.58 |    0.5% |      0.01 | `int64_t - int64_t`
+|    94.5% |                1.05 |      948,138,320.84 |    0.7% |      0.01 | `stronk_int64_t - stronk_int64_t`
+|   100.0% |                0.91 |    1,100,779,360.39 |    0.2% |      0.01 | `double - double`
+|    92.8% |                0.98 |    1,021,084,687.19 |    0.2% |      0.01 | `stronk_double_t - stronk_double_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Subtract Units SIMD<32>
 |---------:|--------------------:|--------------------:|--------:|----------:|:------------------------
-|   100.0% |                0.44 |    2,286,730,699.43 |    0.1% |      0.01 | `int8_t - int8_t`
-|    72.2% |                0.61 |    1,650,848,041.63 |    1.1% |      0.01 | `stronk_int8_t - stronk_int8_t`
-|   100.0% |                0.48 |    2,100,719,829.61 |    0.1% |      0.01 | `int64_t - int64_t`
-|    79.6% |                0.60 |    1,672,551,917.24 |    1.2% |      0.01 | `stronk_int64_t - stronk_int64_t`
-|   100.0% |                0.48 |    2,099,642,983.50 |    0.1% |      0.01 | `double - double`
-|    64.5% |                0.74 |    1,353,800,720.87 |    0.1% |      0.01 | `stronk_double_t - stronk_double_t`
+|   100.0% |                0.46 |    2,181,537,567.39 |    0.4% |      0.01 | `int8_t - int8_t`
+|    49.8% |                0.92 |    1,085,557,161.61 |    0.1% |      0.01 | `stronk_int8_t - stronk_int8_t`
+|   100.0% |                0.50 |    1,981,894,296.86 |    0.1% |      0.01 | `int64_t - int64_t`
+|    49.1% |                1.03 |      972,958,727.21 |    0.8% |      0.01 | `stronk_int64_t - stronk_int64_t`
+|   100.0% |                0.49 |    2,053,575,780.23 |    0.1% |      0.01 | `double - double`
+|    52.2% |                0.93 |    1,071,713,581.75 |    1.6% |      0.01 | `stronk_double_t - stronk_double_t`
 
 | relative |               ns/op |                op/s |    err% |     total | multiply_units_benchmarks
 |---------:|--------------------:|--------------------:|--------:|----------:|:--------------------------
-|   100.0% |                1.09 |      916,520,627.28 |    0.1% |      0.01 | `int8_t * int8_t`
-|    87.8% |                1.24 |      804,790,654.47 |    0.1% |      0.01 | `stronk_int8_t * stronk_int8_t`
-|   100.0% |                1.16 |      862,928,718.45 |    0.1% |      0.01 | `int64_t * int64_t`
-|    99.9% |                1.16 |      861,813,820.72 |    0.2% |      0.01 | `stronk_int64_t * stronk_int64_t`
-|   100.0% |                1.16 |      858,926,098.98 |    0.4% |      0.01 | `double * double`
-|    93.2% |                1.25 |      800,786,710.38 |    0.1% |      0.01 | `stronk_double_t * stronk_double_t`
-|   100.0% |                1.19 |      840,043,478.81 |    0.0% |      0.01 | `int64_t * double`
-|   106.5% |                1.12 |      894,897,013.01 |    0.6% |      0.01 | `stronk_int64_t * stronk_double_t`
-|   100.0% |                1.16 |      861,931,672.36 |    0.2% |      0.01 | `double * int64_t`
-|    99.7% |                1.16 |      859,383,332.31 |    0.4% |      0.01 | `stronk_double_t * stronk_int64_t`
+|   100.0% |                0.94 |    1,058,274,138.61 |    0.3% |      0.01 | `int8_t * int8_t`
+|    89.9% |                1.05 |      951,191,276.68 |    1.2% |      0.01 | `stronk_int8_t * stronk_int8_t`
+|   100.0% |                0.95 |    1,052,160,657.60 |    0.1% |      0.01 | `int64_t * int64_t`
+|    91.8% |                1.04 |      965,658,452.01 |    0.1% |      0.01 | `stronk_int64_t * stronk_int64_t`
+|   100.0% |                0.91 |    1,099,982,124.62 |    0.1% |      0.01 | `double * double`
+|    92.1% |                0.99 |    1,012,999,459.00 |    1.0% |      0.01 | `stronk_double_t * stronk_double_t`
+|   100.0% |                0.95 |    1,055,468,731.70 |    1.2% |      0.01 | `int64_t * double`
+|    96.4% |                0.98 |    1,017,923,361.08 |    0.2% |      0.01 | `stronk_int64_t * stronk_double_t`
+|   100.0% |                0.92 |    1,087,366,477.02 |    0.1% |      0.01 | `double * int64_t`
+|    92.8% |                0.99 |    1,009,063,900.11 |    0.7% |      0.01 | `stronk_double_t * stronk_int64_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Multiply Units SIMD<32>
 |---------:|--------------------:|--------------------:|--------:|----------:|:------------------------
-|   100.0% |                0.44 |    2,288,625,819.49 |    0.1% |      0.01 | `int8_t * int8_t`
-|    81.3% |                0.54 |    1,860,009,562.89 |    0.2% |      0.01 | `stronk_int8_t * stronk_int8_t`
-|   100.0% |                0.72 |    1,385,183,403.83 |    0.0% |      0.01 | `int64_t * int64_t`
-|    71.1% |                1.02 |      984,214,573.25 |   18.5% |      0.01 | :wavy_dash: `stronk_int64_t * stronk_int64_t` (Unstable with ~4.2 iters. Increase `minEpochIterations` to e.g. 42)
-|   100.0% |                0.48 |    2,081,315,559.21 |    0.1% |      0.01 | `double * double`
-|    65.8% |                0.73 |    1,370,350,188.36 |    0.1% |      0.01 | `stronk_double_t * stronk_double_t`
-|   100.0% |                0.68 |    1,471,204,960.36 |    0.0% |      0.01 | `int64_t * double`
-|    70.0% |                0.97 |    1,029,532,221.67 |    0.1% |      0.01 | `stronk_int64_t * stronk_double_t`
-|   100.0% |                0.69 |    1,450,343,025.31 |    0.0% |      0.01 | `double * int64_t`
-|    94.4% |                0.73 |    1,369,031,807.06 |    0.1% |      0.01 | `stronk_double_t * stronk_int64_t`
+|   100.0% |                0.54 |    1,864,542,799.92 |    2.2% |      0.01 | `int8_t * int8_t`
+|    54.3% |                0.99 |    1,012,313,557.37 |    0.1% |      0.01 | `stronk_int8_t * stronk_int8_t`
+|   100.0% |                0.49 |    2,023,579,079.74 |    0.2% |      0.01 | `int64_t * int64_t`
+|    46.6% |                1.06 |      942,899,643.48 |    0.1% |      0.01 | `stronk_int64_t * stronk_int64_t`
+|   100.0% |                0.49 |    2,048,699,462.69 |    0.3% |      0.01 | `double * double`
+|    51.0% |                0.96 |    1,045,841,206.83 |    2.6% |      0.01 | `stronk_double_t * stronk_double_t`
+|   100.0% |                0.48 |    2,072,819,189.63 |    0.1% |      0.01 | `int64_t * double`
+|    49.4% |                0.98 |    1,024,408,162.63 |    0.0% |      0.01 | `stronk_int64_t * stronk_double_t`
+|   100.0% |                0.48 |    2,067,939,710.98 |    0.1% |      0.01 | `double * int64_t`
+|    49.5% |                0.98 |    1,023,675,179.99 |    0.1% |      0.01 | `stronk_double_t * stronk_int64_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Divide Units
 |---------:|--------------------:|--------------------:|--------:|----------:|:-------------
-|   100.0% |                1.86 |      537,192,235.15 |    0.0% |      0.01 | `int8_t / int8_t`
-|    99.9% |                1.86 |      536,831,459.66 |    0.1% |      0.01 | `stronk_int8_t / stronk_int8_t`
-|   100.0% |                2.17 |      460,169,894.52 |    0.0% |      0.01 | `int64_t / int64_t`
-|   100.0% |                2.17 |      459,965,857.97 |    0.1% |      0.01 | `stronk_int64_t / stronk_int64_t`
-|   100.0% |                1.51 |      661,496,984.93 |    0.7% |      0.01 | `double / double`
-|    99.0% |                1.53 |      654,687,651.01 |    0.6% |      0.01 | `stronk_double_t / stronk_double_t`
-|   100.0% |                1.40 |      714,490,949.89 |    0.1% |      0.01 | `int64_t / double`
-|    99.5% |                1.41 |      710,694,688.44 |    0.1% |      0.01 | `stronk_int64_t / stronk_double_t`
-|   100.0% |                1.40 |      714,343,241.16 |    0.1% |      0.01 | `double / int64_t`
-|    96.5% |                1.45 |      689,027,611.68 |    0.2% |      0.01 | `stronk_double_t / stronk_int64_t`
+|   100.0% |                1.15 |      868,567,613.87 |    0.5% |      0.01 | `int8_t / int8_t`
+|   100.7% |                1.14 |      874,412,229.01 |    0.2% |      0.01 | `stronk_int8_t / stronk_int8_t`
+|   100.0% |                1.91 |      524,338,336.48 |    0.0% |      0.01 | `int64_t / int64_t`
+|   100.0% |                1.91 |      524,328,812.62 |    0.0% |      0.01 | `stronk_int64_t / stronk_int64_t`
+|   100.0% |                1.28 |      782,300,995.59 |    1.4% |      0.01 | `double / double`
+|   100.6% |                1.27 |      787,012,708.41 |    0.7% |      0.01 | `stronk_double_t / stronk_double_t`
+|   100.0% |                1.30 |      768,764,396.42 |    0.6% |      0.01 | `int64_t / double`
+|   100.3% |                1.30 |      770,995,561.03 |    0.2% |      0.01 | `stronk_int64_t / stronk_double_t`
+|   100.0% |                1.28 |      782,191,944.99 |    0.3% |      0.01 | `double / int64_t`
+|    99.8% |                1.28 |      780,882,528.17 |    0.4% |      0.01 | `stronk_double_t / stronk_int64_t`
 
 | relative |               ns/op |                op/s |    err% |     total | Divide Units SIMD<32>
 |---------:|--------------------:|--------------------:|--------:|----------:|:----------------------
-|   100.0% |                1.86 |      536,658,952.74 |    0.0% |      0.01 | `int8_t / int8_t`
-|   100.0% |                1.86 |      536,775,339.42 |    0.0% |      0.01 | `stronk_int8_t / stronk_int8_t`
-|   100.0% |                2.17 |      460,430,842.80 |    0.0% |      0.01 | `int64_t / int64_t`
-|    99.9% |                2.17 |      459,776,996.18 |    0.2% |      0.01 | `stronk_int64_t / stronk_int64_t`
-|   100.0% |                0.70 |    1,428,834,603.13 |    0.1% |      0.01 | `double / double`
-|    99.9% |                0.70 |    1,427,596,443.77 |    0.1% |      0.01 | `stronk_double_t / stronk_double_t`
-|   100.0% |                1.47 |      678,021,847.72 |    0.1% |      0.01 | `int64_t / double`
-|   105.2% |                1.40 |      713,302,950.70 |    0.1% |      0.01 | `stronk_int64_t / stronk_double_t`
-|   100.0% |                1.40 |      714,783,656.04 |    0.1% |      0.01 | `double / int64_t`
-|   100.0% |                1.40 |      715,090,979.30 |    0.1% |      0.01 | `stronk_double_t / stronk_int64_t`
+|   100.0% |                2.11 |      475,018,337.96 |    0.1% |      0.01 | `int8_t / int8_t`
+|   100.0% |                2.11 |      474,802,214.04 |    0.1% |      0.01 | `stronk_int8_t / stronk_int8_t`
+|   100.0% |                1.91 |      524,734,246.72 |    0.1% |      0.01 | `int64_t / int64_t`
+|    99.9% |                1.91 |      524,264,172.57 |    0.1% |      0.01 | `stronk_int64_t / stronk_int64_t`
+|   100.0% |                1.36 |      734,675,235.46 |    0.1% |      0.01 | `double / double`
+|   100.0% |                1.36 |      735,040,798.44 |    0.1% |      0.01 | `stronk_double_t / stronk_double_t`
+|   100.0% |                1.36 |      734,904,486.86 |    0.6% |      0.01 | `int64_t / double`
+|   100.0% |                1.36 |      734,658,560.65 |    0.1% |      0.01 | `stronk_int64_t / stronk_double_t`
+|   100.0% |                1.36 |      735,295,090.25 |    0.3% |      0.01 | `double / int64_t`
+|   100.0% |                1.36 |      735,311,466.16 |    0.2% |      0.01 | `stronk_double_t / stronk_int64_t`
+
+
+### Notes
+- Some benchmarks shows weak SIMD performance we are investigating why in the following issues:
+    - https://github.com/twig-energy/stronk/issues/24
+    - https://github.com/twig-energy/stronk/issues/67
 
 # Licensing
 
