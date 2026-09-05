@@ -57,6 +57,17 @@ struct divide
     }
 };
 
+// The barrier copies a class-type operand to the stack, so it gets the scalar instead.
+template<typename T>
+constexpr auto underlying_of(T& value) -> auto&
+{
+    if constexpr (twig::stronk_like<T>) {
+        return value.template unwrap<T>();
+    } else {
+        return value;
+    }
+}
+
 template<typename T, typename O, typename Op>
 void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t size, const Op& op, O o_min_val = O {})
 {
@@ -99,7 +110,7 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
                                       array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
                                   }
                                   for (size_t j = 0; j < WidthV; j++) {
-                                      ankerl::nanobench::doNotOptimizeAway(array_c[j]);  // NOLINT
+                                      ankerl::nanobench::doNotOptimizeAway(underlying_of(array_c[j]));  // NOLINT
                                   }
                               }
                           });

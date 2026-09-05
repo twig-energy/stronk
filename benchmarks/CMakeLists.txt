@@ -29,6 +29,8 @@ target_compile_features(stronk_benchmarks PRIVATE cxx_std_20)
 target_compile_options(
     stronk_benchmarks PRIVATE $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>: -Wno-conversion -Wno-c2y-extensions>
 )
+# Sub-nanosecond loops, so the rows shift with loop placement unless padded.
+target_compile_options(stronk_benchmarks PRIVATE $<$<CXX_COMPILER_ID:GNU>:-falign-loops=32>)
 
 # ---- End-of-file commands ----
 add_folders(Benchmarks)
