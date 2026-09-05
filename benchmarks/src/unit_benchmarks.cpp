@@ -9,6 +9,7 @@
 #include <nanobench.h>
 
 #include "./benchmark_helpers.hpp"
+#include "stronk/stronk.hpp"
 
 namespace
 {
