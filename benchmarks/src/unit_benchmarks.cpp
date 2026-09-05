@@ -57,17 +57,6 @@ struct divide
     }
 };
 
-// The barrier copies a class-type operand to the stack, so it gets the scalar instead.
-template<typename T>
-constexpr auto underlying_of(T& value) -> auto&
-{
-    if constexpr (twig::stronk_like<T>) {
-        return value.template unwrap<T>();
-    } else {
-        return value;
-    }
-}
-
 template<typename T, typename O, typename Op>
 void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t size, const Op& op, O o_min_val = O {})
 {
@@ -101,19 +90,25 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
         size -= size % WidthV;  // Ensure size is a multiple of WidthV
     }
 
-    bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
-                          [&vec_a, &vec_b, &op, &array_c]() -> void
-                          {
-                              for (auto i = 0ULL; i < vec_a.size(); i += WidthV) {
-                                  // We expect the inner loop to be vectorized to SIMD instructions
-                                  for (size_t j = 0; j < WidthV; j++) {
-                                      array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
-                                  }
-                                  for (size_t j = 0; j < WidthV; j++) {
-                                      ankerl::nanobench::doNotOptimizeAway(underlying_of(array_c[j]));  // NOLINT
-                                  }
-                              }
-                          });
+    bench.batch(size).run(
+        fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
+        [&vec_a, &vec_b, &op, &array_c]() -> void
+        {
+            for (auto i = 0ULL; i < vec_a.size(); i += WidthV) {
+                // We expect the inner loop to be vectorized to SIMD instructions
+                for (size_t j = 0; j < WidthV; j++) {
+                    array_c[j] = op(vec_a[i + j], vec_b[i + j]);  // NOLINT
+                }
+                for (size_t j = 0; j < WidthV; j++) {
+                    // the barrier copies a class-type operand to the stack, so it gets the scalar
+                    if constexpr (twig::stronk_like<ResT>) {
+                        ankerl::nanobench::doNotOptimizeAway(array_c[j].template unwrap<ResT>());  // NOLINT
+                    } else {
+                        ankerl::nanobench::doNotOptimizeAway(array_c[j]);  // NOLINT
+                    }
+                }
+            }
+        });
 }
 
 template<typename T>
