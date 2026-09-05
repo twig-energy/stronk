@@ -73,12 +73,12 @@ void benchmark_units_operation(ankerl::nanobench::Bench& bench, size_t size, con
 {
     auto vec_a = std::vector<T>(size);
     auto vec_b = std::vector<O>(size);
-    std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
-    std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
+    std::ranges::generate(vec_a, []() -> T { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_b, [&o_min_val]() -> O { return generate_randomish<O> {}() + o_min_val; });
 
     auto tmp = decltype(op(T {}, O {})) {};
     bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
-                          [&vec_a, &vec_b, &op, &tmp]()
+                          [&vec_a, &vec_b, &op, &tmp]() -> void
                           {
                               for (auto i = 0ULL; i < vec_a.size(); i++) {
                                   tmp = op(vec_a[i], vec_b[i]);  // NOLINT
@@ -92,8 +92,8 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
 {
     auto vec_a = std::vector<T>(size);
     auto vec_b = std::vector<O>(size);
-    std::ranges::generate(vec_a, []() { return generate_randomish<T> {}(); });
-    std::ranges::generate(vec_b, [&o_min_val]() { return generate_randomish<O> {}() + o_min_val; });
+    std::ranges::generate(vec_a, []() -> T { return generate_randomish<T> {}(); });
+    std::ranges::generate(vec_b, [&o_min_val]() -> O { return generate_randomish<O> {}() + o_min_val; });
 
     using ResT = decltype(op(T {}, O {}));
     auto array_c = std::array<ResT, WidthV> {};
@@ -102,7 +102,7 @@ void benchmark_units_simd_operation(ankerl::nanobench::Bench& bench, size_t size
     }
 
     bench.batch(size).run(fmt::format("{} {} {}", get_name<T>(), Op::name, get_name<O>()),
-                          [&vec_a, &vec_b, &op, &array_c]()
+                          [&vec_a, &vec_b, &op, &array_c]() -> void
                           {
                               for (auto i = 0ULL; i < vec_a.size(); i += WidthV) {
                                   // We expect the inner loop to be vectorized to SIMD instructions
