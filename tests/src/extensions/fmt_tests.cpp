@@ -1,16 +1,15 @@
 #if !defined(__GNUC__) || defined(__clang__) || (__GNUC__ >= 12)
 #    include <array>
-#    include <vector>
 
 #    include "stronk/extensions/fmt.hpp"
 
 #    include <doctest/doctest.h>
 #    include <fmt/core.h>
 #    include <fmt/format.h>
-#    include <fmt/ranges.h>  //  IWYU pragma: keep
 
 #    include "stronk/prefabs/stronk_string.hpp"
 #    include "stronk/prefabs/stronk_vector.hpp"
+#    include "stronk/skills/can_iterate.hpp"
 #    include "stronk/stronk.hpp"
 
 namespace twig
@@ -93,6 +92,51 @@ TEST_SUITE("can_fmt_format")
         CHECK_EQ(fmt::format("{}", v), "[1, 2]");
     }
 
+    struct custom_pair_without_formatter
+    {
+      private:
+        int first;
+        int second;
+
+      public:
+        custom_pair_without_formatter() = default;
+        custom_pair_without_formatter(int first_, int second_)
+            : first(first_)
+            , second(second_)
+        {
+        }
+
+        auto get_first() const -> const int&
+        {
+            return first;
+        }
+        auto get_second() const -> const int&
+        {
+            return second;
+        }
+    };
+
+    struct a_custom_iterable_type : stronk<a_custom_iterable_type, custom_pair_without_formatter>
+    {
+        using stronk::stronk;
+
+        auto begin() const -> const int*
+        {
+            return &this->val().get_first();
+        }
+
+        auto end() const -> const int*
+        {
+            return &this->val().get_second() + 1;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        }
+    };
+
+    TEST_CASE("format on a custom iterable type")
+    {
+        auto v = a_custom_iterable_type {custom_pair_without_formatter {1, 2}};
+        CHECK_EQ(fmt::format("{}", v), "[1, 2]");
+    }
+
     struct a_string_type : stronk_string<a_string_type>
     {
         using stronk::stronk;
@@ -119,6 +163,20 @@ TEST_SUITE("can_fmt_format")
 
         auto view = static_cast<a_string_type_with_iterators::view_t>(v);
         CHECK_EQ(fmt::format("{}", view), "hello");
+    }
+
+    struct a_vector_of_stronk_strings : stronk_vector<a_vector_of_stronk_strings, a_string_type>
+    {
+        using stronk::stronk;
+    };
+
+    TEST_CASE("format on a vector of stronk strings")
+    {
+        auto v = a_vector_of_stronk_strings {a_string_type {"hello"}, a_string_type {"world"}};
+        CHECK_EQ(fmt::format("{}", v), R"(["hello", "world"])");
+
+        auto view = static_cast<a_vector_of_stronk_strings::view_t>(v);
+        CHECK_EQ(fmt::format("{}", view), R"(["hello", "world"])");
     }
 }
 
