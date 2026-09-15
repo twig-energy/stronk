@@ -2,6 +2,7 @@
 // IWYU pragma: always_keep
 
 #include <concepts>
+#include <ranges>
 #include <string_view>
 #include <type_traits>
 
@@ -59,9 +60,12 @@ struct fmt::formatter<T>
 /**
  * @brief Allows all stronk values to be fmt formattable.
  *   Use the can_fmt_format skill to specify the format string.
+ *   Iterable stronks are formatted by fmt's range formatter instead (include fmt/ranges.h).
  */
 template<twig::stronk_like T>
-    requires(!twig::can_special_fmt_format_like<T>)
+    requires(!twig::can_special_fmt_format_like<T>
+             && !std::ranges::range<T>
+             && fmt::formattable<typename T::underlying_type>)
 struct fmt::formatter<T> : formatter<typename T::underlying_type>
 {
     template<typename FormatContext>
