@@ -142,7 +142,7 @@ TEST_SUITE("can_fmt_format")
         using stronk::stronk;
     };
 
-    TEST_CASE("format on an string should be printed normally")
+    TEST_CASE("format on a string should be printed normally")
     {
         auto v = a_string_type {"hello"};
         CHECK_EQ(fmt::format("{}", v), "hello");
@@ -156,7 +156,7 @@ TEST_SUITE("can_fmt_format")
         using stronk::stronk;
     };
 
-    TEST_CASE("format on an string with iterators should be printed normally")
+    TEST_CASE("format on a string with iterators should be printed normally")
     {
         auto v = a_string_type_with_iterators {"hello"};
         CHECK_EQ(fmt::format("{}", v), "hello");
