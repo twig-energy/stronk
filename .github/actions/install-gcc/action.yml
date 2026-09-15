@@ -14,10 +14,12 @@ runs:
       run: |
         GCC_VERSION=`echo ${{ inputs.version }} | cut -d'-' -f2`
 
+        sudo apt-get update -q
         if ! apt-cache show  "gcc-$GCC_VERSION" > /dev/null; then
           # Add test repository if gcc version is not available.
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update -q
         fi
+
 
         sudo apt-get install gcc-$GCC_VERSION g++-$GCC_VERSION g++-$GCC_VERSION-multilib -y -q

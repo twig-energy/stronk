@@ -1,5 +1,7 @@
 
 
+#include <ranges>
+
 #include "stronk/prefabs/stronk_vector.hpp"
 
 #include <doctest/doctest.h>
@@ -13,6 +15,8 @@ struct a_vector_type : stronk_vector<a_vector_type, int>
 {
     using stronk::stronk;
 };
+
+static_assert(std::ranges::range<a_vector_type>);
 
 TEST_SUITE("stronk_vector")
 {
