@@ -9,6 +9,7 @@
 #include <fmt/compile.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include "stronk/stronk.hpp"
 #include "stronk/utilities/strings.hpp"
@@ -36,6 +37,9 @@ concept can_special_fmt_format_like = stronk_like<T> && requires(T v) {
     { static_cast<std::string_view>(T::fmt_string) } -> std::same_as<std::string_view>;
 };
 
+template<typename T>
+concept fmt_underlying_formattable_like = stronk_like<T> && fmt::formattable<typename T::underlying_type>;
+
 }  // namespace twig
 
 template<twig::can_special_fmt_format_like T>
@@ -56,11 +60,16 @@ struct fmt::formatter<T>
     }
 };
 
+template<twig::fmt_underlying_formattable_like T, typename Char>
+struct fmt::range_format_kind<T, Char, void> : std::integral_constant<fmt::range_format, fmt::range_format::disabled>
+{
+};
+
 /**
  * @brief Allows all stronk values to be fmt formattable.
  *   Use the can_fmt_format skill to specify the format string.
  */
-template<twig::stronk_like T>
+template<twig::fmt_underlying_formattable_like T>
     requires(!twig::can_special_fmt_format_like<T>)
 struct fmt::formatter<T> : formatter<typename T::underlying_type>
 {
