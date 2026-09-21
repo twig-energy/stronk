@@ -20,7 +20,7 @@ void print_name(const LastName& lastname, const FirstName& firstname)
     std::cout << firstname.unwrap<FirstName>() << " ";
     // Adding the twig::can_ostream skill overloads the `operator<<(ostream&)` for your type.
     std::cout << lastname << std::endl;
-    // Generally you should prefer skills or custom functions over unwrapping to preserve your strong types
+    // Generally you should prefer skills or custom functions over unwrapping to preserve your strong types.
 }
 
 auto main() -> int
